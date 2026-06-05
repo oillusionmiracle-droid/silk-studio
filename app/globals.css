@@ -1,0 +1,249 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;900&family=DM+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* General Sans is loaded via <link> in layout.tsx — fontshare CDN */
+/* Fallback chain: General Sans → Inter → system sans-serif */
+
+:root {
+  --font-jakarta: 'Plus Jakarta Sans', sans-serif;
+  --font-general: 'General Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --color-bg: #0D0D0D;
+  --color-surface: #1A1A1A;
+  --color-accent: #C6FF33;
+  --color-muted: #888888;
+  --color-border: #2A2A2A;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #0D0D0D;
+  color: #ffffff;
+  font-family: 'General Sans', sans-serif;
+  font-size: 18px;
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0D0D0D;
+}
+::-webkit-scrollbar-thumb {
+  background: #2A2A2A;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #C6FF33;
+}
+
+/* Selection */
+::selection {
+  background: #C6FF33;
+  color: #0D0D0D;
+}
+
+/* Utility: DM Mono label */
+.label-mono {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: #888888;
+}
+
+/* Utility: fade-up animation delays */
+.delay-0   { animation-delay: 0ms; }
+.delay-50  { animation-delay: 50ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-450 { animation-delay: 450ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-600 { animation-delay: 600ms; }
+.delay-700 { animation-delay: 700ms; }
+.delay-800 { animation-delay: 800ms; }
+
+/* Marquee wrapper — hides overflow */
+.marquee-outer {
+  overflow: hidden;
+  width: 100%;
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+.marquee-track-slow {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+.marquee-outer:hover .marquee-track,
+.marquee-outer:hover .marquee-track-slow {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ─── Hero mesh gradient blob animations ─── */
+
+@keyframes blobDrift1 {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(80px, 60px) scale(1.1); }
+  100% { transform: translate(-40px, 30px) scale(0.95); }
+}
+
+@keyframes blobDrift2 {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(-120px, 40px) scale(1.05); }
+  100% { transform: translate(-60px, -20px) scale(1.1); }
+}
+
+@keyframes blobDrift3 {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(40px, -80px) scale(1.08); }
+  100% { transform: translate(-20px, -50px) scale(0.97); }
+}
+
+@keyframes noiseShift {
+  0%   { background-position: 0 0; }
+  100% { background-position: 200px 200px; }
+}
+
+/* Scroll reveal: elements start hidden */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1), transform 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Loading screen fade-out */
+.loading-exit {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+/* Button base */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #C6FF33;
+  color: #0D0D0D;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 14px 32px;
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn-primary:hover {
+  background: #d4ff66;
+  transform: scale(1.02);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: #ffffff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 14px 32px;
+  border-radius: 3px;
+  border: 1px solid #2A2A2A;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn-ghost:hover {
+  border-color: #C6FF33;
+  color: #C6FF33;
+}
+
+/* Scroll hint animation */
+@keyframes scrollHint {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50%       { transform: translateY(8px); opacity: 0.3; }
+}
+
+/* ─── Responsive ──────────────────────────────────── */
+
+/* Tailwind md = 768px — but we need plain CSS for inline-style components */
+@media (min-width: 768px) {
+  .hidden.md\:flex   { display: flex !important; }
+  .hidden.md\:inline-flex { display: inline-flex !important; }
+}
+
+/* Hide on desktop, show on mobile */
+.md\:hidden {
+  display: none;
+}
+@media (max-width: 767px) {
+  .md\:hidden { display: flex !important; }
+  .hidden.md\:flex { display: none !important; }
+  .hidden.md\:inline-flex { display: none !important; }
+}
+
+/* Portfolio grid → single column on mobile */
+@media (max-width: 767px) {
+  .portfolio-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Hero floating mockups → hide on mobile */
+@media (max-width: 767px) {
+  .hero-floating-mockup {
+    display: none !important;
+  }
+}
+
+/* Section padding on mobile */
+@media (max-width: 767px) {
+  section {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
+
+/* Prevent horizontal scroll on body from marquee */
+body {
+  overflow-x: hidden;
+}
+
