@@ -69,6 +69,7 @@ export default function OrderPage() {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [referenceFileUrl, setReferenceFileUrl] = useState('');
   const [isMobile, setIsMobile] = useState(false);
+  const [summaryOpen, setSummaryOpen] = useState(false);
 
   const [specs, setSpecs] = useState({
     size: 'A5',
@@ -271,7 +272,7 @@ export default function OrderPage() {
 
   return (
     <div style={{ minHeight: '100vh', position: 'relative', background: 'linear-gradient(135deg, #f0f4f8 0%, #e8f0fe 25%, #fce4ec 50%, #f3e5f5 75%, #e8f5e9 100%)' }}>
-      <div style={{ position: 'relative', zIndex: 1, maxWidth: isMobile ? '100%' : 1200, margin: '0 auto', padding: isMobile ? '20px 16px 120px' : '60px 24px' }}>
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: isMobile ? '100%' : 1200, margin: '0 auto', padding: isMobile ? '20px 16px 80px' : '60px 24px' }}>
         
         {/* HEADER */}
         <div style={{ marginBottom: isMobile ? 32 : 60, textAlign: 'center' }}>
@@ -284,305 +285,94 @@ export default function OrderPage() {
           </p>
         </div>
 
-        {/* TWO-COLUMN LAYOUT: FORM + STICKY SUMMARY */}
-        <div style={{ display: isMobile ? 'flex' : 'grid', flexDirection: isMobile ? 'column' : undefined, gridTemplateColumns: isMobile ? undefined : '1fr 380px', gap: isMobile ? 24 : 32, alignItems: isMobile ? undefined : 'start' }}>
-          
-          {/* MAIN FORM */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            
-            {/* STEP 1: CATEGORY SELECTION WITH INLINE SUB-SERVICES */}
-            <div style={{ backgroundColor: 'white', borderRadius: 20, padding: isMobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.05)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                <div style={{ width: 32, height: 32, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: '#0D0D0D', letterSpacing: 1 }}>01</span>
-                </div>
-                <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: '#0D0D0D', margin: 0 }}>What do you need?</h2>
+        {/* MAIN FORM - NO STICKY SIDEBAR ON MOBILE */}
+        <div style={{ maxWidth: isMobile ? '100%' : 800, margin: isMobile ? '0' : '0 auto' }}>
+          {/* STEP 1: CATEGORY SELECTION WITH INLINE SUB-SERVICES */}
+          <div style={{ backgroundColor: 'white', borderRadius: 20, padding: isMobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.05)', marginBottom: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+              <div style={{ width: 32, height: 32, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: '#0D0D0D', letterSpacing: 1 }}>01</span>
               </div>
-
-              {/* CATEGORY PILLS */}
-              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)', gap: 10, marginBottom: 20 }}>
-                {CATEGORIES.map(cat => (
-                  <button
-                    key={cat.id}
-                    onClick={() => {
-                      setCategory(cat.id);
-                      setSubService(null);
-                      setExpandedCategory(expandedCategory === cat.id ? null : cat.id);
-                    }}
-                    style={{
-                      position: 'relative',
-                      padding: isMobile ? '12px 14px' : '14px 16px',
-                      borderRadius: 12,
-                      border: `2px solid ${category === cat.id ? '#C6FF33' : '#e0e0e0'}`,
-                      backgroundColor: category === cat.id ? 'rgba(198,255,51,0.1)' : '#f9f9f9',
-                      fontFamily: 'var(--font-jakarta)',
-                      fontWeight: category === cat.id ? 700 : 600,
-                      fontSize: 14,
-                      color: category === cat.id ? '#3a5a00' : '#444',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: 6,
-                    }}
-                  >
-                    <span style={{ fontSize: 20 }}>{cat.icon}</span>
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* SUB-SERVICES GRID - INLINE, NO EXPANSION NEEDED */}
-              <AnimatePresence>
-                {category && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    style={{ overflow: 'hidden' }}
-                  >
-                    <div style={{ paddingTop: 20, borderTop: '1px solid #e0e0e0' }}>
-                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: '#999', marginBottom: 14 }}>Select service</p>
-                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(auto-fill, minmax(120px, 1fr))' : 'repeat(auto-fill, minmax(140px, 1fr))', gap: 10 }}>
-                        {SUB_SERVICES[category].map(sub => (
-                          <button
-                            key={sub}
-                            onClick={() => setSubService(sub)}
-                            style={{
-                              position: 'relative',
-                              padding: '14px 12px',
-                              borderRadius: 12,
-                              border: `2px solid ${subService === sub ? '#C6FF33' : '#e0e0e0'}`,
-                              backgroundColor: subService === sub ? 'rgba(198,255,51,0.15)' : '#f9f9f9',
-                              fontFamily: 'var(--font-general)',
-                              fontWeight: subService === sub ? 600 : 400,
-                              fontSize: 13,
-                              color: subService === sub ? '#3a5a00' : '#444',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s',
-                              textAlign: 'center',
-                              lineHeight: 1.3,
-                            }}
-                          >
-                            <span style={{ fontSize: 18, display: 'block', marginBottom: 4 }}>{SERVICE_ICONS[sub] || '✨'}</span>
-                            {sub}
-                            {subService === sub && (
-                              <div style={{ position: 'absolute', top: -8, right: -8, width: 24, height: 24, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(198,255,51,0.3)' }}>
-                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                  <polyline points="2 6 5 9 10 3" stroke="#0D0D0D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                              </div>
-                            )}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: '#0D0D0D', margin: 0 }}>What do you need?</h2>
             </div>
 
-            {/* STEP 2: SPECS - ONLY SHOW IF SUB-SERVICE SELECTED */}
-            <AnimatePresence>
-              {subService && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  style={{ backgroundColor: 'white', borderRadius: 20, padding: isMobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.05)' }}
+            {/* CATEGORY PILLS */}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)', gap: 10, marginBottom: 20 }}>
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    setCategory(cat.id);
+                    setSubService(null);
+                    setExpandedCategory(expandedCategory === cat.id ? null : cat.id);
+                  }}
+                  style={{
+                    position: 'relative',
+                    padding: isMobile ? '12px 14px' : '14px 16px',
+                    borderRadius: 12,
+                    border: `2px solid ${category === cat.id ? '#C6FF33' : '#e0e0e0'}`,
+                    backgroundColor: category === cat.id ? 'rgba(198,255,51,0.1)' : '#f9f9f9',
+                    fontFamily: 'var(--font-jakarta)',
+                    fontWeight: category === cat.id ? 700 : 600,
+                    fontSize: 14,
+                    color: category === cat.id ? '#3a5a00' : '#444',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 6,
+                  }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                    <div style={{ width: 32, height: 32, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: '#0D0D0D', letterSpacing: 1 }}>02</span>
-                    </div>
-                    <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: '#0D0D0D', margin: 0 }}>Specs</h2>
-                  </div>
+                  <span style={{ fontSize: 20 }}>{cat.icon}</span>
+                  {cat.label}
+                </button>
+              ))}
+            </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-                    {subService === 'Flyers & Handbills' && <>
-                      <SpecField label="Size">
-                        {['A5', 'A4', 'A3'].map(opt => <Pill key={opt} label={opt} isActive={specs.size === opt} onClick={() => updateSpec('size', opt)} />)}
-                      </SpecField>
-                      <SpecField label="Sides">
-                        {['Single-sided', 'Double-sided'].map(opt => <Pill key={opt} label={opt} isActive={specs.sides === opt} onClick={() => updateSpec('sides', opt)} />)}
-                      </SpecField>
-                      <SpecField label="Lamination">
-                        {['None', 'Matte', 'Gloss'].map(opt => <Pill key={opt} label={opt} isActive={specs.lamination === opt} onClick={() => updateSpec('lamination', opt)} />)}
-                      </SpecField>
-                      <SpecField label="Quantity">
-                        <QtyInput value={specs.quantity} min={100} step={100} onChange={v => updateSpec('quantity', v)} quickVals={[100, 250, 500, 1000]} />
-                      </SpecField>
-                    </>}
-
-                    {subService === 'Banners' && <>
-                      <div style={{ display: 'flex', gap: 16 }}>
-                        <SpecField label="Width (ft)" flex>
-                          <QtyInput value={specs.width} min={1} step={0.5} onChange={v => updateSpec('width', v)} />
-                        </SpecField>
-                        <SpecField label="Height (ft)" flex>
-                          <QtyInput value={specs.height} min={1} step={0.5} onChange={v => updateSpec('height', v)} />
-                        </SpecField>
-                      </div>
-                      <div style={{ backgroundColor: '#f5f5f5', padding: '12px 16px', borderRadius: 10, textAlign: 'center' }}>
-                        <span style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 15, color: '#0D0D0D' }}>{specs.width} × {specs.height} = {(specs.width * specs.height).toFixed(1)} sq ft</span>
-                      </div>
-                      <SpecField label="Eyelets">
-                        {['Yes', 'No'].map(opt => <Pill key={opt} label={opt} isActive={specs.eyelets === opt} onClick={() => updateSpec('eyelets', opt)} />)}
-                      </SpecField>
-                      <SpecField label="Quantity">
-                        <QtyInput value={specs.quantity} min={1} step={1} onChange={v => updateSpec('quantity', v)} />
-                      </SpecField>
-                    </>}
-
-                    {subService === 'Jotters & Notepads' && <>
-                      <SpecField label="Inner Sheets">
-                        {['Plain', 'Ruled'].map(opt => <Pill key={opt} label={opt} isActive={specs.innerSheets === opt} onClick={() => updateSpec('innerSheets', opt)} />)}
-                      </SpecField>
-                      <SpecField label="Lamination">
-                        {['None', 'Matte', 'Gloss'].map(opt => <Pill key={opt} label={opt} isActive={specs.lamination === opt} onClick={() => updateSpec('lamination', opt)} />)}
-                      </SpecField>
-                      <SpecField label="Binding">
-                        {['Spiral', 'Perfect Binding'].map(opt => <Pill key={opt} label={opt + (opt === 'Perfect Binding' ? ' +₦3,000' : '')} isActive={specs.binding === opt} onClick={() => updateSpec('binding', opt)} />)}
-                      </SpecField>
-                      <SpecField label="Cover">
-                        {['Soft Cover', 'Hard Cover'].map(opt => <Pill key={opt} label={opt + (opt === 'Hard Cover' ? ' +₦2,000' : '')} isActive={specs.cover === opt} onClick={() => updateSpec('cover', opt)} />)}
-                      </SpecField>
-                      <SpecField label="Quantity">
-                        <QtyInput value={specs.quantity} min={50} step={50} onChange={v => updateSpec('quantity', v)} quickVals={[50, 100, 200, 500]} />
-                      </SpecField>
-                    </>}
-
-                    {subService === 'ID Cards' && <>
-                      <SpecField label="Card Type">
-                        {['Standard', 'Lanyard + Holder', 'Badge Reel + Holder'].map(opt => {
-                          const price = opt === 'Standard' ? '₦4,500' : '₦7,500';
-                          return <Pill key={opt} label={`${opt} — ${price}`} isActive={specs.idType === opt} onClick={() => updateSpec('idType', opt)} />;
-                        })}
-                      </SpecField>
-                      <SpecField label="Quantity">
-                        <QtyInput value={specs.quantity} min={1} step={1} onChange={v => updateSpec('quantity', v)} />
-                      </SpecField>
-                    </>}
-
-                    {subService === 'Business Cards' && <>
-                      <SpecField label="Stock">
-                        {['Standard 300gsm', 'Super Thick 600gsm'].map(opt => <Pill key={opt} label={opt + (opt.includes('600') ? ' +₦2,000' : '')} isActive={specs.stock === opt} onClick={() => updateSpec('stock', opt)} />)}
-                      </SpecField>
-                      <SpecField label="Lamination">
-                        {['Matte', 'Gloss'].map(opt => <Pill key={opt} label={opt} isActive={specs.lamination === opt} onClick={() => updateSpec('lamination', opt)} />)}
-                      </SpecField>
-                      <SpecField label="Corners">
-                        {['Square', 'Rounded'].map(opt => <Pill key={opt} label={opt + (opt === 'Rounded' ? ' +₦2,000' : '')} isActive={specs.corners === opt} onClick={() => updateSpec('corners', opt)} />)}
-                      </SpecField>
-                      <SpecField label="Quantity">
-                        <QtyInput value={specs.quantity} min={100} step={100} onChange={v => updateSpec('quantity', v)} quickVals={[100, 250, 500, 1000]} />
-                      </SpecField>
-                    </>}
-
-                    {subService && ['Custom T-Shirts', 'Sweatshirts', 'Grey Joggers'].includes(subService) && (
-                      <SpecField label="Size Breakdown">
-                        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', width: '100%' }}>
-                          {Object.keys(specs.apparelSizes).map(size => (
-                            <div key={size} style={{ flex: '1 1 60px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-                              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 2, color: '#666', textTransform: 'uppercase', margin: 0 }}>{size}</p>
-                              <input
-                                type="number" min="0"
-                                value={specs.apparelSizes[size as keyof typeof specs.apparelSizes]}
-                                onChange={e => updateApparelSize(size, parseInt(e.target.value) || 0)}
-                                style={{ width: '100%', textAlign: 'center', backgroundColor: '#f5f5f5', border: '2px solid #e0e0e0', borderRadius: 8, color: '#0D0D0D', padding: '8px 4px', fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 16, outline: 'none' }}
-                              />
+            {/* SUB-SERVICES GRID - INLINE, NO EXPANSION NEEDED */}
+            <AnimatePresence>
+              {category && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  style={{ overflow: 'hidden' }}
+                >
+                  <div style={{ paddingTop: 20, borderTop: '1px solid #e0e0e0' }}>
+                    <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: '#999', marginBottom: 14 }}>Select service</p>
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(auto-fill, minmax(120px, 1fr))' : 'repeat(auto-fill, minmax(140px, 1fr))', gap: 10 }}>
+                      {SUB_SERVICES[category].map(sub => (
+                        <button
+                          key={sub}
+                          onClick={() => setSubService(sub)}
+                          style={{
+                            position: 'relative',
+                            padding: '14px 12px',
+                            borderRadius: 12,
+                            border: `2px solid ${subService === sub ? '#C6FF33' : '#e0e0e0'}`,
+                            backgroundColor: subService === sub ? 'rgba(198,255,51,0.15)' : '#f9f9f9',
+                            fontFamily: 'var(--font-general)',
+                            fontWeight: subService === sub ? 600 : 400,
+                            fontSize: 13,
+                            color: subService === sub ? '#3a5a00' : '#444',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            textAlign: 'center',
+                            lineHeight: 1.3,
+                          }}
+                        >
+                          <span style={{ fontSize: 18, display: 'block', marginBottom: 4 }}>{SERVICE_ICONS[sub] || '✨'}</span>
+                          {sub}
+                          {subService === sub && (
+                            <div style={{ position: 'absolute', top: -8, right: -8, width: 24, height: 24, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(198,255,51,0.3)' }}>
+                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                <polyline points="2 6 5 9 10 3" stroke="#0D0D0D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
                             </div>
-                          ))}
-                        </div>
-                        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#999', letterSpacing: 1, textTransform: 'uppercase', marginTop: 12, margin: 0 }}>Total: {totalApparelQty} pieces</p>
-                      </SpecField>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* STEP 3: DEADLINE & DESCRIPTION */}
-            <AnimatePresence>
-              {subService && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  style={{ backgroundColor: 'white', borderRadius: 20, padding: isMobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.05)' }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                    <div style={{ width: 32, height: 32, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: '#0D0D0D', letterSpacing: 1 }}>03</span>
-                    </div>
-                    <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: '#0D0D0D', margin: 0 }}>Details</h2>
-                  </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-                    <div>
-                      <label style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: 10 }}>Deadline (Optional)</label>
-                      <input
-                        type="date"
-                        value={specs.deadline}
-                        onChange={e => updateSpec('deadline', e.target.value)}
-                        min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
-                        style={{ width: '100%', padding: '12px 14px', backgroundColor: '#f5f5f5', border: '2px solid #e0e0e0', borderRadius: 10, color: '#0D0D0D', fontFamily: 'var(--font-general)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
-                      />
-                    </div>
-                    <div>
-                      <label style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: 10 }}>Description (Optional)</label>
-                      <textarea
-                        rows={3}
-                        value={specs.description}
-                        onChange={e => updateSpec('description', e.target.value)}
-                        placeholder="Tell us what this is for, colours, anything important."
-                        style={{ width: '100%', padding: '12px 14px', backgroundColor: '#f5f5f5', border: '2px solid #e0e0e0', borderRadius: 10, color: '#0D0D0D', fontFamily: 'var(--font-general)', fontSize: 14, resize: 'vertical', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
-                      />
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* STEP 4: FILES & CONTACT */}
-            <AnimatePresence>
-              {subService && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  style={{ backgroundColor: 'white', borderRadius: 20, padding: isMobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.05)' }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                    <div style={{ width: 32, height: 32, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: '#0D0D0D', letterSpacing: 1 }}>04</span>
-                    </div>
-                    <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: '#0D0D0D', margin: 0 }}>Your Info</h2>
-                  </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                    <div style={{ display: 'flex', gap: 12 }}>
-                      <FormInput label="First Name" value={contact.firstName} onChange={v => setContact(c => ({ ...c, firstName: v }))} flex />
-                      <FormInput label="Last Name" value={contact.lastName} onChange={v => setContact(c => ({ ...c, lastName: v }))} flex />
-                    </div>
-                    <FormInput label="WhatsApp Number" value={contact.whatsapp} onChange={v => setContact(c => ({ ...c, whatsapp: v }))} type="tel" />
-                    <FormInput label="Email (Optional)" value={contact.email} onChange={v => setContact(c => ({ ...c, email: v }))} type="email" />
-                    <div>
-                      <label style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: 10 }}>How did you hear about us?</label>
-                      <select
-                        value={contact.source}
-                        onChange={e => setContact(c => ({ ...c, source: e.target.value }))}
-                        style={{ width: '100%', padding: '12px 14px', backgroundColor: '#f5f5f5', border: '2px solid #e0e0e0', borderRadius: 10, color: contact.source ? '#0D0D0D' : '#999', fontFamily: 'var(--font-general)', fontSize: 14, outline: 'none' }}
-                      >
-                        <option value="">Select...</option>
-                        {['Instagram', 'TikTok', 'WhatsApp', 'Referral', 'Google', 'Other'].map(s => <option key={s} value={s}>{s}</option>)}
-                      </select>
-                    </div>
-
-                    <div style={{ borderTop: '1px solid #e0e0e0', paddingTop: 16, marginTop: 16 }}>
-                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: 10 }}>Reference Files (Optional)</p>
-                      <ReferenceUpload onUpload={(url: string) => setReferenceFileUrl(url)} />
+                          )}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </motion.div>
@@ -590,103 +380,434 @@ export default function OrderPage() {
             </AnimatePresence>
           </div>
 
-          {/* STICKY SUMMARY CARD - ALWAYS VISIBLE */}
-          <div style={{ position: isMobile ? 'fixed' : 'sticky', bottom: isMobile ? 0 : 'auto', top: isMobile ? undefined : 100, left: 0, right: 0, width: '100%', zIndex: isMobile ? 40 : 1, padding: isMobile ? '16px' : '0' }}>
-            <div style={{ backgroundColor: 'white', borderRadius: isMobile ? '20px 20px 0 0' : 20, padding: 24, boxShadow: isMobile ? '0 -4px 24px rgba(0,0,0,0.08)' : '0 4px 16px rgba(0,0,0,0.05)' }}>
-              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: '#999', marginBottom: 18, margin: 0 }}>ORDER</p>
-
-              {!subService ? (
-                <div style={{ textAlign: 'center', color: '#999' }}>
-                  <p style={{ fontFamily: 'var(--font-general)', fontSize: 14, color: '#999' }}>Select a service to see pricing and summary.</p>
+          {/* STEP 2: SPECS - ONLY SHOW IF SUB-SERVICE SELECTED */}
+          <AnimatePresence>
+            {subService && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                style={{ backgroundColor: 'white', borderRadius: 20, padding: isMobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.05)', marginBottom: 20 }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: '#0D0D0D', letterSpacing: 1 }}>02</span>
+                  </div>
+                  <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: '#0D0D0D', margin: 0 }}>Specs</h2>
                 </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                  {subService === 'Flyers & Handbills' && <>
+                    <SpecField label="Size">
+                      {['A5', 'A4', 'A3'].map(opt => <Pill key={opt} label={opt} isActive={specs.size === opt} onClick={() => updateSpec('size', opt)} />)}
+                    </SpecField>
+                    <SpecField label="Sides">
+                      {['Single-sided', 'Double-sided'].map(opt => <Pill key={opt} label={opt} isActive={specs.sides === opt} onClick={() => updateSpec('sides', opt)} />)}
+                    </SpecField>
+                    <SpecField label="Lamination">
+                      {['None', 'Matte', 'Gloss'].map(opt => <Pill key={opt} label={opt} isActive={specs.lamination === opt} onClick={() => updateSpec('lamination', opt)} />)}
+                    </SpecField>
+                    <SpecField label="Quantity">
+                      <QtyInput value={specs.quantity} min={100} step={100} onChange={v => updateSpec('quantity', v)} quickVals={[100, 250, 500, 1000]} />
+                    </SpecField>
+                  </>}
+
+                  {subService === 'Banners' && <>
+                    <div style={{ display: 'flex', gap: 16, flexWrap: isMobile ? 'wrap' : 'nowrap' }}>
+                      <SpecField label="Width (ft)" flex>
+                        <QtyInput value={specs.width} min={1} step={0.5} onChange={v => updateSpec('width', v)} />
+                      </SpecField>
+                      <SpecField label="Height (ft)" flex>
+                        <QtyInput value={specs.height} min={1} step={0.5} onChange={v => updateSpec('height', v)} />
+                      </SpecField>
+                    </div>
+                    <div style={{ backgroundColor: '#f5f5f5', padding: '12px 16px', borderRadius: 10, textAlign: 'center' }}>
+                      <span style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 15, color: '#0D0D0D' }}>{specs.width} × {specs.height} = {(specs.width * specs.height).toFixed(1)} sq ft</span>
+                    </div>
+                    <SpecField label="Eyelets">
+                      {['Yes', 'No'].map(opt => <Pill key={opt} label={opt} isActive={specs.eyelets === opt} onClick={() => updateSpec('eyelets', opt)} />)}
+                    </SpecField>
+                    <SpecField label="Quantity">
+                      <QtyInput value={specs.quantity} min={1} step={1} onChange={v => updateSpec('quantity', v)} />
+                    </SpecField>
+                  </>}
+
+                  {subService === 'Jotters & Notepads' && <>
+                    <SpecField label="Inner Sheets">
+                      {['Plain', 'Ruled'].map(opt => <Pill key={opt} label={opt} isActive={specs.innerSheets === opt} onClick={() => updateSpec('innerSheets', opt)} />)}
+                    </SpecField>
+                    <SpecField label="Lamination">
+                      {['None', 'Matte', 'Gloss'].map(opt => <Pill key={opt} label={opt} isActive={specs.lamination === opt} onClick={() => updateSpec('lamination', opt)} />)}
+                    </SpecField>
+                    <SpecField label="Binding">
+                      {['Spiral', 'Perfect Binding'].map(opt => <Pill key={opt} label={opt + (opt === 'Perfect Binding' ? ' +₦3,000' : '')} isActive={specs.binding === opt} onClick={() => updateSpec('binding', opt)} />)}
+                    </SpecField>
+                    <SpecField label="Cover">
+                      {['Soft Cover', 'Hard Cover'].map(opt => <Pill key={opt} label={opt + (opt === 'Hard Cover' ? ' +₦2,000' : '')} isActive={specs.cover === opt} onClick={() => updateSpec('cover', opt)} />)}
+                    </SpecField>
+                    <SpecField label="Quantity">
+                      <QtyInput value={specs.quantity} min={50} step={50} onChange={v => updateSpec('quantity', v)} quickVals={[50, 100, 200, 500]} />
+                    </SpecField>
+                  </>}
+
+                  {subService === 'ID Cards' && <>
+                    <SpecField label="Card Type">
+                      {['Standard', 'Lanyard + Holder', 'Badge Reel + Holder'].map(opt => {
+                        const price = opt === 'Standard' ? '₦4,500' : '₦7,500';
+                        return <Pill key={opt} label={`${opt} — ${price}`} isActive={specs.idType === opt} onClick={() => updateSpec('idType', opt)} />;
+                      })}
+                    </SpecField>
+                    <SpecField label="Quantity">
+                      <QtyInput value={specs.quantity} min={1} step={1} onChange={v => updateSpec('quantity', v)} />
+                    </SpecField>
+                  </>}
+
+                  {subService === 'Business Cards' && <>
+                    <SpecField label="Stock">
+                      {['Standard 300gsm', 'Super Thick 600gsm'].map(opt => <Pill key={opt} label={opt + (opt.includes('600') ? ' +₦2,000' : '')} isActive={specs.stock === opt} onClick={() => updateSpec('stock', opt)} />)}
+                    </SpecField>
+                    <SpecField label="Lamination">
+                      {['Matte', 'Gloss'].map(opt => <Pill key={opt} label={opt} isActive={specs.lamination === opt} onClick={() => updateSpec('lamination', opt)} />)}
+                    </SpecField>
+                    <SpecField label="Corners">
+                      {['Square', 'Rounded'].map(opt => <Pill key={opt} label={opt + (opt === 'Rounded' ? ' +₦2,000' : '')} isActive={specs.corners === opt} onClick={() => updateSpec('corners', opt)} />)}
+                    </SpecField>
+                    <SpecField label="Quantity">
+                      <QtyInput value={specs.quantity} min={100} step={100} onChange={v => updateSpec('quantity', v)} quickVals={[100, 250, 500, 1000]} />
+                    </SpecField>
+                  </>}
+
+                  {subService && ['Custom T-Shirts', 'Sweatshirts', 'Grey Joggers'].includes(subService) && (
+                    <SpecField label="Size Breakdown">
+                      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', width: '100%' }}>
+                        {Object.keys(specs.apparelSizes).map(size => (
+                          <div key={size} style={{ flex: '1 1 60px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 2, color: '#666', textTransform: 'uppercase', margin: 0 }}>{size}</p>
+                            <input
+                              type="number" min="0"
+                              value={specs.apparelSizes[size as keyof typeof specs.apparelSizes]}
+                              onChange={e => updateApparelSize(size, parseInt(e.target.value) || 0)}
+                              style={{ width: '100%', textAlign: 'center', backgroundColor: '#f5f5f5', border: '2px solid #e0e0e0', borderRadius: 8, color: '#0D0D0D', padding: '8px 4px', fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 16, outline: 'none' }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#999', letterSpacing: 1, textTransform: 'uppercase', marginTop: 12, margin: 0 }}>Total: {totalApparelQty} pieces</p>
+                    </SpecField>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* STEP 3: DEADLINE & DESCRIPTION */}
+          <AnimatePresence>
+            {subService && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                style={{ backgroundColor: 'white', borderRadius: 20, padding: isMobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.05)', marginBottom: 20 }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: '#0D0D0D', letterSpacing: 1 }}>03</span>
+                  </div>
+                  <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: '#0D0D0D', margin: 0 }}>Details</h2>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
                   <div>
-                    <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: '#aaa', margin: 0 }}>Service</p>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
-                      <span style={{ fontSize: 20 }}>{SERVICE_ICONS[subService] || '✨'}</span>
-                      <p style={{ fontFamily: 'var(--font-general)', fontSize: 15, fontWeight: 600, color: '#0D0D0D', margin: 0 }}>{subService}</p>
-                    </div>
+                    <label style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: 10 }}>Deadline (Optional)</label>
+                    <input
+                      type="date"
+                      value={specs.deadline}
+                      onChange={e => updateSpec('deadline', e.target.value)}
+                      min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
+                      style={{ width: '100%', padding: '12px 14px', backgroundColor: '#f5f5f5', border: '2px solid #e0e0e0', borderRadius: 10, color: '#0D0D0D', fontFamily: 'var(--font-general)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                    />
                   </div>
-
-                  {!isCustomQuote && (
-                    <>
-                      <div style={{ borderTop: '1px solid #e0e0e0', paddingTop: 12 }}>
-                        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: '#aaa', margin: 0 }}>Quantity</p>
-                        <p style={{ fontFamily: 'var(--font-general)', fontSize: 15, color: '#333', margin: '6px 0 0 0' }}>
-                          {['Custom T-Shirts', 'Sweatshirts', 'Grey Joggers'].includes(subService) ? `${totalApparelQty} pcs` : `${specs.quantity}`}
-                        </p>
-                      </div>
-
-                      <div style={{ backgroundColor: '#f5f5f5', borderRadius: 12, padding: '16px', textAlign: 'center' }}>
-                        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', color: '#999', margin: 0 }}>Total</p>
-                        <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 28, color: '#0D0D0D', margin: '6px 0 0 0' }}>₦{total.toLocaleString()}</p>
-                      </div>
-
-                      <div style={{ backgroundColor: '#C6FF33', borderRadius: 12, padding: '12px', textAlign: 'center' }}>
-                        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', color: '#0D0D0D', margin: 0 }}>Deposit (75%)</p>
-                        <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 900, fontSize: 24, color: '#0D0D0D', margin: '4px 0 0 0' }}>₦{deposit.toLocaleString()}</p>
-                      </div>
-                    </>
-                  )}
-
-                  {isCustomQuote && (
-                    <div style={{ backgroundColor: '#f0f0f0', borderRadius: 12, padding: '12px', textAlign: 'center' }}>
-                      <p style={{ fontFamily: 'var(--font-general)', fontSize: 13, color: '#666', lineHeight: 1.5, margin: 0 }}>Custom quote — we&apos;ll send pricing within 2hrs.</p>
-                    </div>
-                  )}
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
-                    {['75% deposit required', '1 free revision', 'WhatsApp updates', 'Within 2 hours'].map(line => (
-                      <div key={line} style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13 }}>
-                        <div style={{ width: 16, height: 16, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-                            <polyline points="2 6 5 9 10 3" stroke="#0D0D0D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </div>
-                        <span style={{ fontFamily: 'var(--font-general)', fontSize: 13, color: '#555' }}>{line}</span>
-                      </div>
-                    ))}
+                  <div>
+                    <label style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: 10 }}>Description (Optional)</label>
+                    <textarea
+                      rows={3}
+                      value={specs.description}
+                      onChange={e => updateSpec('description', e.target.value)}
+                      placeholder="Tell us what this is for, colours, anything important."
+                      style={{ width: '100%', padding: '12px 14px', backgroundColor: '#f5f5f5', border: '2px solid #e0e0e0', borderRadius: 10, color: '#0D0D0D', fontFamily: 'var(--font-general)', fontSize: 14, resize: 'vertical', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
+                    />
                   </div>
-
-                  {/* SUBMIT BUTTON */}
-                  {contact.firstName && contact.whatsapp && (
-                    <motion.button
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      onClick={handleSubmit}
-                      style={{
-                        width: '100%',
-                        padding: '16px 24px',
-                        backgroundColor: '#0D0D0D',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: 12,
-                        fontFamily: 'var(--font-jakarta)',
-                        fontWeight: 700,
-                        fontSize: 15,
-                        cursor: 'pointer',
-                        marginTop: 12,
-                        transition: 'all 0.2s',
-                      }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.9'; }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
-                    >
-                      {isCustomQuote ? 'Submit Brief →' : 'Pay Deposit →'}
-                    </motion.button>
-                  )}
-
-                  {(!contact.firstName || !contact.whatsapp) && subService && (
-                    <div style={{ backgroundColor: '#fff3cd', borderRadius: 12, padding: '12px', textAlign: 'center' }}>
-                      <p style={{ fontFamily: 'var(--font-general)', fontSize: 12, color: '#856404', margin: 0 }}>Complete your info to proceed</p>
-                    </div>
-                  )}
                 </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* STEP 4: FILES & CONTACT */}
+          <AnimatePresence>
+            {subService && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                style={{ backgroundColor: 'white', borderRadius: 20, padding: isMobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.05)' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: '#0D0D0D', letterSpacing: 1 }}>04</span>
+                  </div>
+                  <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: '#0D0D0D', margin: 0 }}>Your Info</h2>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div style={{ display: 'flex', gap: 12, flexWrap: isMobile ? 'wrap' : 'nowrap' }}>
+                    <FormInput label="First Name" value={contact.firstName} onChange={v => setContact(c => ({ ...c, firstName: v }))} flex />
+                    <FormInput label="Last Name" value={contact.lastName} onChange={v => setContact(c => ({ ...c, lastName: v }))} flex />
+                  </div>
+                  <FormInput label="WhatsApp Number" value={contact.whatsapp} onChange={v => setContact(c => ({ ...c, whatsapp: v }))} type="tel" />
+                  <FormInput label="Email (Optional)" value={contact.email} onChange={v => setContact(c => ({ ...c, email: v }))} type="email" />
+                  <div>
+                    <label style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: 10 }}>How did you hear about us?</label>
+                    <select
+                      value={contact.source}
+                      onChange={e => setContact(c => ({ ...c, source: e.target.value }))}
+                      style={{ width: '100%', padding: '12px 14px', backgroundColor: '#f5f5f5', border: '2px solid #e0e0e0', borderRadius: 10, color: contact.source ? '#0D0D0D' : '#999', fontFamily: 'var(--font-general)', fontSize: 14, outline: 'none' }}
+                    >
+                      <option value="">Select...</option>
+                      {['Instagram', 'TikTok', 'WhatsApp', 'Referral', 'Google', 'Other'].map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+
+                  <div style={{ borderTop: '1px solid #e0e0e0', paddingTop: 16, marginTop: 16 }}>
+                    <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: 10 }}>Reference Files (Optional)</p>
+                    <ReferenceUpload onUpload={(url: string) => setReferenceFileUrl(url)} />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* MOBILE SUMMARY SHEET - ONLY ON MOBILE, COLLAPSIBLE */}
+      {isMobile && subService && (
+        <>
+          {/* Floating Button */}
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            onClick={() => setSummaryOpen(true)}
+            style={{
+              position: 'fixed',
+              bottom: 24,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 50,
+              padding: '12px 24px',
+              backgroundColor: '#0D0D0D',
+              color: '#C6FF33',
+              border: 'none',
+              borderRadius: 100,
+              fontFamily: 'var(--font-jakarta)',
+              fontWeight: 700,
+              fontSize: 14,
+              cursor: 'pointer',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+              width: 'calc(100% - 32px)',
+              maxWidth: 320,
+            }}
+          >
+            View Order Summary
+          </motion.button>
+
+          {/* Modal Sheet */}
+          <AnimatePresence>
+            {summaryOpen && (
+              <>
+                {/* Backdrop */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setSummaryOpen(false)}
+                  style={{
+                    position: 'fixed',
+                    inset: 0,
+                    zIndex: 55,
+                    backgroundColor: 'rgba(0,0,0,0.4)',
+                  }}
+                />
+
+                {/* Sheet */}
+                <motion.div
+                  initial={{ y: '100%' }}
+                  animate={{ y: 0 }}
+                  exit={{ y: '100%' }}
+                  transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                  style={{
+                    position: 'fixed',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    zIndex: 56,
+                    backgroundColor: 'white',
+                    borderRadius: '20px 20px 0 0',
+                    padding: 24,
+                    maxHeight: '90vh',
+                    overflowY: 'auto',
+                    boxShadow: '0 -4px 24px rgba(0,0,0,0.08)',
+                  }}
+                >
+                  {/* Handle bar */}
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+                    <div style={{ width: 40, height: 4, backgroundColor: '#e0e0e0', borderRadius: 2 }} />
+                  </div>
+
+                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: '#999', marginBottom: 18, margin: 0 }}>ORDER SUMMARY</p>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div>
+                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: '#aaa', margin: 0 }}>Service</p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
+                        <span style={{ fontSize: 20 }}>{SERVICE_ICONS[subService] || '✨'}</span>
+                        <p style={{ fontFamily: 'var(--font-general)', fontSize: 15, fontWeight: 600, color: '#0D0D0D', margin: 0 }}>{subService}</p>
+                      </div>
+                    </div>
+
+                    {!isCustomQuote && (
+                      <>
+                        <div style={{ borderTop: '1px solid #e0e0e0', paddingTop: 12 }}>
+                          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: '#aaa', margin: 0 }}>Quantity</p>
+                          <p style={{ fontFamily: 'var(--font-general)', fontSize: 15, color: '#333', margin: '6px 0 0 0' }}>
+                            {['Custom T-Shirts', 'Sweatshirts', 'Grey Joggers'].includes(subService) ? `${totalApparelQty} pcs` : `${specs.quantity}`}
+                          </p>
+                        </div>
+
+                        <div style={{ backgroundColor: '#f5f5f5', borderRadius: 12, padding: '16px', textAlign: 'center' }}>
+                          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', color: '#999', margin: 0 }}>Total</p>
+                          <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 28, color: '#0D0D0D', margin: '6px 0 0 0' }}>₦{total.toLocaleString()}</p>
+                        </div>
+
+                        <div style={{ backgroundColor: '#C6FF33', borderRadius: 12, padding: '12px', textAlign: 'center' }}>
+                          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', color: '#0D0D0D', margin: 0 }}>Deposit (75%)</p>
+                          <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 900, fontSize: 24, color: '#0D0D0D', margin: '4px 0 0 0' }}>₦{deposit.toLocaleString()}</p>
+                        </div>
+                      </>
+                    )}
+
+                    {isCustomQuote && (
+                      <div style={{ backgroundColor: '#f0f0f0', borderRadius: 12, padding: '12px', textAlign: 'center' }}>
+                        <p style={{ fontFamily: 'var(--font-general)', fontSize: 13, color: '#666', lineHeight: 1.5, margin: 0 }}>Custom quote — we&apos;ll send pricing within 2hrs.</p>
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
+                      {['75% deposit required', '1 free revision', 'WhatsApp updates', 'Within 2 hours'].map(line => (
+                        <div key={line} style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13 }}>
+                          <div style={{ width: 16, height: 16, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
+                              <polyline points="2 6 5 9 10 3" stroke="#0D0D0D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </div>
+                          <span style={{ fontFamily: 'var(--font-general)', fontSize: 13, color: '#555' }}>{line}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {contact.firstName && contact.whatsapp && (
+                      <motion.button
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        onClick={() => { handleSubmit(); setSummaryOpen(false); }}
+                        style={{
+                          width: '100%',
+                          padding: '16px 24px',
+                          backgroundColor: '#0D0D0D',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: 12,
+                          fontFamily: 'var(--font-jakarta)',
+                          fontWeight: 700,
+                          fontSize: 15,
+                          cursor: 'pointer',
+                          marginTop: 12,
+                          transition: 'all 0.2s',
+                        }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.9'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
+                      >
+                        {isCustomQuote ? 'Submit Brief →' : 'Pay Deposit →'}
+                      </motion.button>
+                    )}
+
+                    {(!contact.firstName || !contact.whatsapp) && (
+                      <div style={{ backgroundColor: '#fff3cd', borderRadius: 12, padding: '12px', textAlign: 'center' }}>
+                        <p style={{ fontFamily: 'var(--font-general)', fontSize: 12, color: '#856404', margin: 0 }}>Complete your info to submit</p>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </>
+      )}
+
+      {/* DESKTOP STICKY SUMMARY */}
+      {!isMobile && subService && (
+        <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, width: '100%', zIndex: 40, padding: '16px' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: 20, padding: 24, boxShadow: '0 -4px 24px rgba(0,0,0,0.08)', maxWidth: 1200, margin: '0 auto' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: 24, alignItems: 'center' }}>
+              <div>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: '#aaa', margin: 0 }}>Service</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
+                  <span style={{ fontSize: 20 }}>{SERVICE_ICONS[subService] || '✨'}</span>
+                  <p style={{ fontFamily: 'var(--font-general)', fontSize: 15, fontWeight: 600, color: '#0D0D0D', margin: 0 }}>{subService}</p>
+                </div>
+              </div>
+
+              {!isCustomQuote && (
+                <>
+                  <div>
+                    <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: '#aaa', margin: 0 }}>Total</p>
+                    <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 20, color: '#0D0D0D', margin: '6px 0 0 0' }}>₦{total.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: '#aaa', margin: 0 }}>Deposit (75%)</p>
+                    <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 900, fontSize: 20, color: '#0D0D0D', margin: '6px 0 0 0' }}>₦{deposit.toLocaleString()}</p>
+                  </div>
+                </>
+              )}
+
+              {isCustomQuote && (
+                <p style={{ fontFamily: 'var(--font-general)', fontSize: 13, color: '#666', margin: 0 }}>Custom quote incoming</p>
+              )}
+
+              {contact.firstName && contact.whatsapp && (
+                <button
+                  onClick={handleSubmit}
+                  style={{
+                    padding: '12px 28px',
+                    backgroundColor: '#0D0D0D',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 12,
+                    fontFamily: 'var(--font-jakarta)',
+                    fontWeight: 700,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    whiteSpace: 'nowrap',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.9'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
+                >
+                  {isCustomQuote ? 'Submit Brief →' : 'Pay Deposit →'}
+                </button>
               )}
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

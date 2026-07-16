@@ -50,13 +50,33 @@ export default function Navbar() {
       >
         {/* Logo and Studio Name */}
         <Link href="/" style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
-          <img
-            src="/logo-white.png"
-            alt="Silk Studio"
-            height={34}
-            style={{ height: 34, width: 'auto' }}
-            onError={(e) => { (e.target as HTMLImageElement).src = '/logo-white.svg'; }}
-          />
+          <div style={{ position: 'relative', height: 34, width: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <img
+              src="/logo-white.png"
+              alt="Silk Studio"
+              height={34}
+              style={{ height: 34, width: 'auto', maxWidth: '100%', display: 'block' }}
+              onError={(e) => {
+                const img = e.target as HTMLImageElement;
+                // Fallback: Create inline SVG or use alternative
+                img.style.display = 'none';
+                const fallback = document.createElement('div');
+                fallback.textContent = 'S';
+                fallback.style.width = '34px';
+                fallback.style.height = '34px';
+                fallback.style.display = 'flex';
+                fallback.style.alignItems = 'center';
+                fallback.style.justifyContent = 'center';
+                fallback.style.backgroundColor = '#C6FF33';
+                fallback.style.color = '#0D0D0D';
+                fallback.style.fontWeight = '700';
+                fallback.style.borderRadius = '6px';
+                fallback.style.fontSize = '18px';
+                fallback.style.fontFamily = 'var(--font-jakarta)';
+                img.parentElement?.appendChild(fallback);
+              }}
+            />
+          </div>
           <span style={{
             fontFamily: 'var(--font-jakarta)',
             fontSize: 17,
@@ -110,27 +130,30 @@ export default function Navbar() {
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              padding: '9px 24px',
+              padding: '10px 28px',
               fontSize: 13,
               fontFamily: 'var(--font-jakarta)',
-              fontWeight: 600,
+              fontWeight: 700,
               color: '#0D0D0D',
-              background: '#ffffff',
+              background: 'linear-gradient(180deg, #D4FF4D 0%, #C6FF33 100%)',
               borderRadius: 100,
               textDecoration: 'none',
               border: 'none',
               transition: 'transform 0.2s ease, box-shadow 0.3s ease, background 0.2s ease',
               whiteSpace: 'nowrap',
+              letterSpacing: '0.3px',
             }}
             onMouseEnter={(e) => {
               const el = e.currentTarget as HTMLElement;
-              el.style.transform = 'scale(1.04)';
-              el.style.boxShadow = '0 0 24px rgba(255,255,255,0.2)';
+              el.style.transform = 'scale(1.05)';
+              el.style.boxShadow = '0 8px 32px rgba(198,255,51,0.4)';
+              el.style.background = 'linear-gradient(180deg, #E5FF80 0%, #D4FF4D 100%)';
             }}
             onMouseLeave={(e) => {
               const el = e.currentTarget as HTMLElement;
               el.style.transform = 'scale(1)';
               el.style.boxShadow = 'none';
+              el.style.background = 'linear-gradient(180deg, #D4FF4D 0%, #C6FF33 100%)';
             }}
           >
             Start Your Order
@@ -207,7 +230,7 @@ export default function Navbar() {
             display: 'inline-flex',
             alignItems: 'center',
             padding: '14px 36px',
-            background: '#C6FF33',
+            background: 'linear-gradient(180deg, #D4FF4D 0%, #C6FF33 100%)',
             color: '#0D0D0D',
             fontFamily: 'var(--font-jakarta)',
             fontWeight: 700,
@@ -216,6 +239,17 @@ export default function Navbar() {
             textDecoration: 'none',
             animationDelay: menuOpen ? `${navLinks.length * 60}ms` : '0ms',
             opacity: menuOpen ? undefined : 0,
+            letterSpacing: '0.3px',
+          }}
+          onMouseEnter={(e) => {
+            const el = e.currentTarget as HTMLElement;
+            el.style.boxShadow = '0 8px 32px rgba(198,255,51,0.4)';
+            el.style.background = 'linear-gradient(180deg, #E5FF80 0%, #D4FF4D 100%)';
+          }}
+          onMouseLeave={(e) => {
+            const el = e.currentTarget as HTMLElement;
+            el.style.boxShadow = 'none';
+            el.style.background = 'linear-gradient(180deg, #D4FF4D 0%, #C6FF33 100%)';
           }}
         >
           Start Your Order
