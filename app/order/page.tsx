@@ -652,14 +652,32 @@ export default function OrderPage() {
                     backgroundColor: 'white',
                     borderRadius: '20px 20px 0 0',
                     padding: 24,
-                    maxHeight: '90vh',
+                    maxHeight: '85vh',
                     overflowY: 'auto',
                     boxShadow: '0 -4px 24px rgba(0,0,0,0.08)',
                   }}
                 >
-                  {/* Handle bar */}
-                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+                  {/* Handle bar + Close button */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
                     <div style={{ width: 40, height: 4, backgroundColor: '#e0e0e0', borderRadius: 2 }} />
+                    <button
+                      onClick={() => setSummaryOpen(false)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: 24,
+                        color: '#999',
+                        padding: '0 8px',
+                        height: 32,
+                        width: 32,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      ✕
+                    </button>
                   </div>
 
                   <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: '#999', marginBottom: 18, margin: 0 }}>ORDER SUMMARY</p>
@@ -744,6 +762,28 @@ export default function OrderPage() {
                         <p style={{ fontFamily: 'var(--font-general)', fontSize: 12, color: '#856404', margin: 0 }}>Complete your info to submit</p>
                       </div>
                     )}
+
+                    <button
+                      onClick={() => setSummaryOpen(false)}
+                      style={{
+                        width: '100%',
+                        padding: '12px 24px',
+                        backgroundColor: '#f5f5f5',
+                        color: '#333',
+                        border: 'none',
+                        borderRadius: 12,
+                        fontFamily: 'var(--font-jakarta)',
+                        fontWeight: 600,
+                        fontSize: 14,
+                        cursor: 'pointer',
+                        marginTop: 8,
+                        transition: 'all 0.2s',
+                      }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#e0e0e0'; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#f5f5f5'; }}
+                    >
+                      ← Back to Edit
+                    </button>
                   </div>
                 </motion.div>
               </>

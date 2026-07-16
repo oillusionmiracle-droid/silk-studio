@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const navLinks = [
   { label: 'Home', href: '/' },
@@ -15,6 +16,8 @@ const navLinks = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const isOrderPage = pathname === '/order';
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -38,10 +41,10 @@ export default function Navbar() {
           right: 0,
           zIndex: 1000,
           height: 64,
-          backgroundColor: scrolled ? 'rgba(13, 13, 13, 0.92)' : 'transparent',
-          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
-          backdropFilter: scrolled ? 'blur(20px)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
+          backgroundColor: isOrderPage ? 'rgba(13, 13, 13, 0.98)' : scrolled ? 'rgba(13, 13, 13, 0.92)' : 'transparent',
+          borderBottom: isOrderPage ? '1px solid rgba(0,0,0,0.1)' : scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
+          backdropFilter: isOrderPage ? 'blur(20px)' : scrolled ? 'blur(20px)' : 'none',
+          WebkitBackdropFilter: isOrderPage ? 'blur(20px)' : scrolled ? 'blur(20px)' : 'none',
           transition: 'background-color 0.5s ease, border-color 0.5s ease, backdrop-filter 0.5s ease',
           display: 'flex',
           alignItems: 'center',
@@ -50,38 +53,17 @@ export default function Navbar() {
       >
         {/* Logo and Studio Name */}
         <Link href="/" style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
-          <div style={{ position: 'relative', height: 34, width: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <img
-              src="/logo-white.png"
-              alt="Silk Studio"
-              height={34}
-              style={{ height: 34, width: 'auto', maxWidth: '100%', display: 'block' }}
-              onError={(e) => {
-                const img = e.target as HTMLImageElement;
-                // Fallback: Create inline SVG or use alternative
-                img.style.display = 'none';
-                const fallback = document.createElement('div');
-                fallback.textContent = 'S';
-                fallback.style.width = '34px';
-                fallback.style.height = '34px';
-                fallback.style.display = 'flex';
-                fallback.style.alignItems = 'center';
-                fallback.style.justifyContent = 'center';
-                fallback.style.backgroundColor = '#C6FF33';
-                fallback.style.color = '#0D0D0D';
-                fallback.style.fontWeight = '700';
-                fallback.style.borderRadius = '6px';
-                fallback.style.fontSize = '18px';
-                fallback.style.fontFamily = 'var(--font-jakarta)';
-                img.parentElement?.appendChild(fallback);
-              }}
-            />
-          </div>
+          <img
+            src={isOrderPage ? '/logo-black.svg' : '/logo-white.svg'}
+            alt="Silk Studio"
+            height={34}
+            style={{ height: 34, width: 'auto', display: 'block', flexShrink: 0 }}
+          />
           <span style={{
             fontFamily: 'var(--font-jakarta)',
             fontSize: 17,
             fontWeight: 700,
-            color: '#ffffff',
+            color: isOrderPage ? '#0D0D0D' : '#ffffff',
             letterSpacing: '-0.3px',
           }}>
             Silk Studio
