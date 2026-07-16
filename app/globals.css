@@ -151,7 +151,9 @@ body {
   pointer-events: none;
 }
 
-/* Button base */
+/* ─── BUTTONS ─── */
+
+/* Button base — pill shape (Squarespace style) */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -162,16 +164,17 @@ body {
   font-weight: 600;
   font-size: 15px;
   padding: 14px 32px;
-  border-radius: 3px;
+  border-radius: 100px;
   border: none;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.3s ease;
   text-decoration: none;
   white-space: nowrap;
 }
 .btn-primary:hover {
   background: #d4ff66;
-  transform: scale(1.02);
+  transform: scale(1.03);
+  box-shadow: 0 0 32px rgba(198, 255, 51, 0.25);
 }
 
 .btn-ghost {
@@ -184,16 +187,70 @@ body {
   font-weight: 600;
   font-size: 15px;
   padding: 14px 32px;
-  border-radius: 3px;
-  border: 1px solid #2A2A2A;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
-  transition: border-color 0.2s ease, color 0.2s ease;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
   text-decoration: none;
   white-space: nowrap;
 }
 .btn-ghost:hover {
   border-color: #C6FF33;
   color: #C6FF33;
+  background: rgba(198, 255, 51, 0.06);
+}
+
+/* ─── NAV LINK ANIMATED UNDERLINE ─── */
+
+.nav-link-sqsp {
+  position: relative;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+.nav-link-sqsp::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background: #C6FF33;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.nav-link-sqsp:hover::after {
+  transform: scaleX(1);
+}
+
+/* ─── HERO SCROLL CHEVRON BOUNCE ─── */
+
+@keyframes heroBounce {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(10px); opacity: 1; }
+}
+
+.hero-scroll-chevron {
+  animation: heroBounce 2s ease-in-out infinite;
+}
+
+/* ─── MOBILE MENU STAGGERED ENTRY ─── */
+
+@keyframes mobileMenuSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobile-menu-link {
+  animation: mobileMenuSlideUp 0.5s cubic-bezier(0.25, 1, 0.5, 1) both;
 }
 
 /* Scroll hint animation */
@@ -246,4 +303,3 @@ body {
 body {
   overflow-x: hidden;
 }
-

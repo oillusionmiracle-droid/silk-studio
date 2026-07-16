@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, DM_Mono } from "next/font/google";
+import Script from "next/script"; // 1. Imported Next.js Script handler
 import "@/app/globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -20,13 +21,12 @@ const dmMono = DM_Mono({
   display: "swap",
 });
 
-// 1. Updated Metadata with PWA settings included
 export const metadata: Metadata = {
   title: "Silk Studio — Design, Print & Digital | Lagos",
   description:
     "One Brief. Fast & Smooth Delivery. Lagos-based design, print, and digital brand. Flyers, banners, logos, websites, event packages — fast turnaround.",
   keywords: "design studio Lagos, print Lagos, branding Nigeria, event package, web design Lagos",
-  manifest: "/manifest.json", // Link to your PWA manifest file
+  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -42,13 +42,12 @@ export const metadata: Metadata = {
   },
 };
 
-// 2. Added Viewport configuration for the theme color and mobile zoom protection
 export const viewport: Viewport = {
   themeColor: "#1D1D1F",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  userScalable: false, // Prevents sudden zoom shifts when tapping phone inputs
+  userScalable: false, 
 };
 
 export default function RootLayout({
@@ -64,7 +63,6 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500&display=swap"
         />
-        {/* iOS App icon fallback anchor */}
         <link rel="apple-touch-icon" href="/icons/icon-512x512.png" />
       </head>
       <body>
@@ -73,6 +71,18 @@ export default function RootLayout({
         {children}
         <Footer />
         <WhatsAppButton />
+
+        {/* 2. Mailchimp connection script from image_ff0061.png */}
+        <Script
+          id="mailchimp-connect"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              !function(c,h,i,m,p){m=c.createElement(h),p=c.getElementsByTagName(h)[0],m.async=1,m.src=i,p.parentNode.insertBefore(m,p)}
+              (document,"script","https://chimpstatic.com/mcjs-connected/js/users/66981331441b2dfe239430d16/6e0ab92c7cedbd4c5a32591eb.js");
+            `,
+          }}
+        />
       </body>
     </html>
   );

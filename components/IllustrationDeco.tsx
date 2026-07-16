@@ -104,7 +104,7 @@ export default function IllustrationDeco({
       `}</style>
 
       <img
-        src={`/illustrations/${name}.svg`}
+        src={`/illustrations/${name}.png`}
         alt=""
         aria-hidden="true"
         style={style}

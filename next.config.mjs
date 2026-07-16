@@ -2,7 +2,7 @@ import withPWAPlugin from '@ducanh2912/next-pwa';
 
 const withPWA = withPWAPlugin({
   dest: 'public',
-  disable: process.env.NODE_ENV === 'development', // Disables PWA in dev mode for faster local reloads
+  disable: true, // Disables PWA due to path escaping bug with ' in user directory
   register: true,
   skipWaiting: true,
 });

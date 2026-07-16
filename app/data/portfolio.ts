@@ -15,13 +15,13 @@ export const portfolioData: PortfolioItem[] = [
   // ─── PRINT (5) ───────────────────────────────────────────────
   {
     id: 'work-2',
-    src: '/images/portfolio/work-2.jpg',
-    title: 'Premium Foil Business Cards',
+    src: '/images/portfolio/businesscard.jpg',
+    title: 'Business Cards',
     category: 'Print',
     clientType: 'Real Estate Firm',
     description: 'We designed and printed 600gsm matte business cards featuring subtle gold foil accents to elevate the client\'s networking presence at high-ticket property showings.',
     images: [
-      '/images/portfolio/work-2.jpg',
+      '/images/portfolio/businesscard.jpg',
       '/images/portfolio/print-2b.jpg',
       '/images/portfolio/print-2c.jpg',
     ],
@@ -47,7 +47,7 @@ export const portfolioData: PortfolioItem[] = [
     src: '/images/portfolio/work-10.jpg',
     title: 'Large-Format Billboard',
     category: 'Print',
-    clientType: 'Beverage Company',
+    clientType: 'Church Billboard',
     description: 'High-resolution, weather-resistant flex printing for a massive highway billboard campaign running across three states.',
     images: [
       '/images/portfolio/work-10.jpg',
@@ -62,21 +62,21 @@ export const portfolioData: PortfolioItem[] = [
     title: 'Product Packaging',
     category: 'Print',
     clientType: 'Skincare Brand',
-    description: 'Custom packaging design and print — boxes, pouches, and inserts for an e-commerce skincare brand making its retail debut.',
+    description: 'Custom packaging design and print — boxes, pouches, and inserts for companies.',
     images: [
       '/images/portfolio/print-4.jpg',
       '/images/portfolio/print-4b.jpg',
     ],
-    tags: ['Packaging', 'Product', 'Skincare'],
+    tags: ['Packaging', 'Product', 'Food'],
     turnaround: '72hrs',
   },
   {
     id: 'print-5',
     src: '/images/portfolio/print-5.jpg',
-    title: 'Luxury Event Programs',
+    title: 'Wedding Souvenirs &Banners',
     category: 'Print',
     clientType: 'Events Company',
-    description: 'Luxury event programs, table menus, and place cards printed on heavyweight uncoated stock for a high-end gala dinner.',
+    description: 'Luxury event programs, table menus, and place cards printed on heavyweight uncoated stock for a high-end gala or weddings dinner.',
     images: [
       '/images/portfolio/print-5.jpg',
       '/images/portfolio/print-5b.jpg',

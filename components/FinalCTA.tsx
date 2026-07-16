@@ -3,171 +3,272 @@
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 
+/*
+  ── WAVING HAND PNG ──
+  📁 FILE: public/images/waving-hand.png
+  Drop your PNG there. Recommended size: 80–100px, transparent background.
+  The component references it via <img src="/images/waving-hand.png" ... />
+  The waving animation is CSS keyframes — it works on any <img> or emoji.
+*/
+
 export default function FinalCTA() {
   const sectionRef = useRef<HTMLElement>(null);
-  const line1Ref = useRef<HTMLHeadingElement>(null);
-  const line2Ref = useRef<HTMLHeadingElement>(null);
+  const line1Ref = useRef<HTMLDivElement>(null);
+  const line2Ref = useRef<HTMLDivElement>(null);
+  const decoLineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let ctx: any;
 
-    const initScrollAnimation = async () => {
+    const init = async () => {
       const { default: gsap } = await import('gsap');
       const { ScrollTrigger } = await import('gsap/ScrollTrigger');
       gsap.registerPlugin(ScrollTrigger);
 
       ctx = gsap.context(() => {
-        // Line 1 moves slightly left-to-right as you scroll down
-        gsap.fromTo(
-          line1Ref.current,
-          { x: -60, opacity: 0.8 },
-          {
-            x: 40,
-            opacity: 1,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: 'top bottom', // starts when the top of section hits bottom of screen
-              end: 'bottom top',   // ends when bottom of section leaves top of screen
-              scrub: 1,            // tracks the scrollbar smoothly
-            },
-          }
+
+        /* ── Slot-machine char drop — no SplitText license needed ── */
+        const animateSlot = (container: HTMLElement | null, delayOffset = 0) => {
+          if (!container) return;
+          const chars = Array.from(container.querySelectorAll<HTMLElement>('.slot-char'));
+          gsap.fromTo(
+            chars,
+            { yPercent: -500, opacity: 0 },
+            {
+              yPercent: 0, opacity: 1,
+              duration: 0.6, ease: 'power4.out',
+              stagger: { each: 0.05, from: 'start' },
+              delay: delayOffset,
+              scrollTrigger: { trigger: sectionRef.current, start: 'top 78%', once: true },
+            }
+          );
+        };
+
+        animateSlot(line1Ref.current, 0);
+        animateSlot(line2Ref.current, 0.15);
+
+        /* Decorative Line Expand */
+        if (decoLineRef.current) {
+          gsap.fromTo(decoLineRef.current,
+            { scaleX: 0 },
+            {
+              scaleX: 1, duration: 0.8, ease: 'power3.out', delay: 0.4,
+              scrollTrigger: { trigger: sectionRef.current, start: 'top 78%', once: true }
+            }
+          );
+        }
+
+        /* Buttons fade up */
+        gsap.fromTo('.cta-button-container',
+          { opacity: 0, y: 32 },
+          { opacity: 1, y: 0, duration: 0.8, delay: 0.5, ease: 'power3.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 76%', once: true } }
         );
 
-        // Line 2 moves cleanly right-to-left as you scroll down
-        gsap.fromTo(
-          line2Ref.current,
-          { x: 60, opacity: 0.8 },
-          {
-            x: -40,
-            opacity: 1,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: 1,
-            },
-          }
-        );
-
-        // Quick fade up for the buttons when the section scrolls into view
-        gsap.fromTo(
-          '.cta-button-container',
-          { opacity: 0, y: 30 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: 'top 80%',
-              once: true,
-            },
-          }
+        /* Hand entrance */
+        gsap.fromTo('.cta-hand-wrap',
+          { opacity: 0, y: 16, scale: 0.85 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.9, delay: 0.1, ease: 'back.out(1.5)', scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', once: true } }
         );
       });
     };
 
-    initScrollAnimation();
+    init();
     return () => ctx?.revert();
   }, []);
 
+  /* Helper: wrap each char in a span for slot-machine anim */
+  const slotChars = (text: string) =>
+    text.split('').map((ch, i) => (
+      <span
+        key={i}
+        className="slot-char"
+        style={{ display: 'inline-block', overflow: 'hidden', whiteSpace: ch === ' ' ? 'pre' : 'normal' }}
+      >
+        {ch === ' ' ? '\u00A0' : ch}
+      </span>
+    ));
+
+  const fontSans = 'var(--font-jakarta, "Plus Jakarta Sans", "DM Sans", sans-serif)';
+  const accent = '#C6FF33';
+
   return (
-    <section
-      ref={sectionRef}
-      style={{
-        padding: '140px 24px 120px',
-        textAlign: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-        backgroundColor: 'transparent',
-      }}
-    >
-      <div style={{ position: 'relative', zIndex: 2, maxWidth: 1100, margin: '0 auto' }}>
-        <p 
-          style={{ 
-            fontFamily: 'var(--font-mono)', 
-            fontSize: '11px', 
-            letterSpacing: '3px', 
-            textTransform: 'uppercase', 
-            color: 'rgba(255, 255, 255, 0.35)', 
-            marginBottom: 32 
-          }}
-        >
-          Ready to create?
-        </p>
+    <>
+      {/* CSS keyframe for waving hand */}
+      <style>{`
+        @keyframes wave {
+          0%   { transform: rotate(0deg); }
+          15%  { transform: rotate(18deg); }
+          30%  { transform: rotate(-8deg); }
+          45%  { transform: rotate(16deg); }
+          60%  { transform: rotate(-4deg); }
+          75%  { transform: rotate(10deg); }
+          100% { transform: rotate(0deg); }
+        }
+        .waving-hand {
+          display: inline-block;
+          transform-origin: 70% 80%;
+          animation: wave 2.2s ease-in-out infinite;
+          animation-delay: 1s;
+        }
+      `}</style>
 
-        {/* First Line - Brief us today. */}
-        <h2
-          ref={line1Ref}
-          style={{
-            fontFamily: 'var(--font-jakarta)',
-            fontWeight: 900,
-            fontSize: 'clamp(44px, 7.5vw, 92px)',
-            lineHeight: 0.95,
-            letterSpacing: '-2px',
-            color: '#ffffff',
-            marginBottom: 12,
-            cursor: 'default',
-            userSelect: 'none',
-            willChange: 'transform',
-          }}
-        >
-          Brief us today.
-        </h2>
+      <section
+        ref={sectionRef}
+        style={{
+          padding: 'clamp(120px, 20vw, 200px) 24px',
+          textAlign: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+          backgroundColor: '#0D0D0D',
+        }}
+      >
+        {/* Ambient warm white glow */}
+        <div style={{
+          position: 'absolute', top: '40%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 800, height: 600,
+          background: 'radial-gradient(ellipse, rgba(255,255,255,0.03) 0%, transparent 68%)',
+          pointerEvents: 'none', zIndex: 0,
+        }} />
 
-        {/* Second Line - Collect fast! */}
-        <h2
-          ref={line2Ref}
-          style={{
-            fontFamily: 'var(--font-jakarta)',
-            fontWeight: 900,
-            fontSize: 'clamp(44px, 7.5vw, 92px)',
-            lineHeight: 0.95,
-            letterSpacing: '-2px',
-            color: '#C6FF33',
-            marginBottom: 56,
-            cursor: 'default',
-            userSelect: 'none',
-            willChange: 'transform',
-          }}
-        >
-          Collect fast!
-        </h2>
+        {/* Ambient lime glow */}
+        <div style={{
+          position: 'absolute', top: '50%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 900, height: 900,
+          background: 'radial-gradient(ellipse, rgba(198,255,51,0.06) 0%, transparent 68%)',
+          pointerEvents: 'none', zIndex: 0,
+        }} />
 
-        {/* Action Buttons Container with Pill Shapes */}
-        <div 
-          className="cta-button-container"
-          style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}
-        >
-          <Link 
-            href="/order" 
-            className="btn-primary" 
-            style={{ 
-              padding: '16px 36px', 
-              fontSize: '16px',
-              borderRadius: '9999px', // Fully rounded pill shape to match layout
+        <div style={{ position: 'relative', zIndex: 2, maxWidth: 1000, margin: '0 auto' }}>
+
+          {/* ── Decorative Line ── */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+            <div
+              ref={decoLineRef}
+              style={{
+                width: 60,
+                height: 1,
+                background: accent,
+                transformOrigin: 'center',
+              }}
+            />
+          </div>
+
+          {/* ── Waving Hand ── */}
+          <div className="cta-hand-wrap" style={{ marginBottom: 'clamp(24px, 5vw, 40px)', textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
+            <img
+              src="/images/waving-hand.png"
+              alt=""
+              aria-hidden
+              className="waving-hand"
+              style={{ width: 'clamp(64px, 10vw, 90px)', height: 'auto', display: 'block' }}
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).style.display = 'none';
+              }}
+            />
+          </div>
+
+          {/* ── Headline line 1 ── */}
+          <div
+            ref={line1Ref}
+            style={{
+              fontFamily: fontSans, fontWeight: 800,
+              fontSize: 'clamp(36px, 7vw, 86px)',
+              lineHeight: 1.08, letterSpacing: '-0.03em',
+              color: '#fff', userSelect: 'none', willChange: 'transform',
+              marginBottom: 'clamp(2px, 1vw, 6px)',
+              overflow: 'hidden',
             }}
           >
-            Start Your Order →
-          </Link>
-          <a
-            href="https://wa.me/2347064829776?text=Hi+Silk+Studio%2C+I%27d+like+to+place+an+order"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-ghost"
-            style={{ 
-              padding: '16px 36px', 
-              fontSize: '16px',
-              borderRadius: '9999px', // Fully rounded pill shape to match layout
+            {slotChars('Ready to stand out?')}
+          </div>
+
+          {/* ── Headline line 2 ── */}
+          <div
+            ref={line2Ref}
+            style={{
+              fontFamily: fontSans, fontWeight: 800,
+              fontSize: 'clamp(36px, 7vw, 86px)',
+              lineHeight: 1.08, letterSpacing: '-0.03em',
+              color: '#fff', userSelect: 'none', willChange: 'transform',
+              marginBottom: 'clamp(48px, 9vw, 72px)',
+              overflow: 'hidden',
             }}
           >
-            Chat on WhatsApp
-          </a>
+            {slotChars("Let's work together!")}
+          </div>
+
+          {/* ── CTA Buttons ── */}
+          <div
+            className="cta-button-container"
+            style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}
+          >
+            {/* Primary: lime green pill */}
+            <a
+              href="https://wa.me/2347064829776?text=Hi+Silk+Studio%2C+I%27d+like+to+enquire"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex', alignItems: 'center',
+                padding: 'clamp(16px, 3vw, 20px) clamp(32px, 5vw, 48px)',
+                background: accent, borderRadius: 100,
+                fontFamily: fontSans, fontWeight: 700,
+                fontSize: 'clamp(15px, 2.5vw, 17px)',
+                color: '#0D0D0D', textDecoration: 'none',
+                letterSpacing: '-0.01em',
+                boxShadow: '0 0 30px rgba(198,255,51,0.2)',
+                transition: 'transform 0.25s ease, box-shadow 0.3s ease',
+              }}
+              onMouseEnter={e => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.transform = 'scale(1.03)';
+                el.style.boxShadow = '0 0 48px rgba(198,255,51,0.4)';
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.transform = 'scale(1)';
+                el.style.boxShadow = '0 0 30px rgba(198,255,51,0.2)';
+              }}
+            >
+              Contact us
+            </a>
+
+            {/* Secondary: ghost pill */}
+            <Link
+              href="/order"
+              style={{
+                display: 'inline-flex', alignItems: 'center',
+                padding: 'clamp(16px, 3vw, 20px) clamp(32px, 5vw, 48px)',
+                background: 'transparent',
+                border: '1.5px solid rgba(255,255,255,0.2)',
+                borderRadius: 100,
+                fontFamily: fontSans, fontWeight: 600,
+                fontSize: 'clamp(15px, 2.5vw, 17px)',
+                color: '#ffffff', textDecoration: 'none',
+                letterSpacing: '-0.01em',
+                backdropFilter: 'blur(8px)',
+                transition: 'transform 0.25s ease, background 0.25s ease, border-color 0.25s ease',
+              }}
+              onMouseEnter={e => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.transform = 'scale(1.03)';
+                el.style.borderColor = '#C6FF33';
+                el.style.background = 'rgba(198,255,51,0.06)';
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.transform = 'scale(1)';
+                el.style.borderColor = 'rgba(255,255,255,0.2)';
+                el.style.background = 'transparent';
+              }}
+            >
+              Start Your Order →
+            </Link>
+          </div>
+
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
