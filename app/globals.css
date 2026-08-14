@@ -303,3 +303,16 @@ body {
 body {
   overflow-x: hidden;
 }
+
+/* ─── Hero Video Mobile Hiding ─── */
+@media (max-width: 768px) {
+  .hero-bg-video {
+    display: none !important;
+  }
+  .hero-bg-img {
+    opacity: 1 !important;
+  }
+  .hero-bg-toggle {
+    display: none !important;
+  }
+}

@@ -484,7 +484,7 @@ export default function PortfolioPage() {
         style={{
           minHeight: '100vh',
           backgroundColor: '#000000',
-          backgroundImage: 'url(/images/portfolio-bg.jpg)',
+          backgroundImage: 'url(/images/hero-bg.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center top',
           backgroundAttachment: 'fixed',

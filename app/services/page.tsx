@@ -854,7 +854,7 @@ export default function ServicesPage() {
   return (
     <div style={{ position: 'relative', minHeight: '100vh' }}>
 
-      {/* ── CINEMATIC BACKGROUND (same as homepage) ── */}
+      {/* ── CINEMATIC BACKGROUND (hero-bg image) ── */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -862,18 +862,16 @@ export default function ServicesPage() {
         pointerEvents: 'none',
         overflow: 'hidden',
       }}>
-        {/* Video background */}
-        <video
-          autoPlay muted loop playsInline preload="auto"
+        {/* Hero background image */}
+        <img
+          src="/images/hero-bg.jpg"
+          alt=""
           style={{
             position: 'absolute', inset: 0,
             width: '100%', height: '100%',
             objectFit: 'cover', objectPosition: 'center',
           }}
-        >
-          <source src="/images/hero/hero-bg.webm" type="video/webm" />
-          <source src="/images/hero/hero-bg.mp4" type="video/mp4" />
-        </video>
+        />
 
         {/* Heavy dark overlay so content reads clearly */}
         <div style={{

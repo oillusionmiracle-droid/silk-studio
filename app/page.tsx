@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ScrollReveal from '@/components/ScrollReveal';
@@ -118,6 +119,25 @@ function HeroSection({ loaded }: { loaded: boolean }) {
             background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 100%)',
           }}
         />
+
+        {/* Curved edge — dips down at the center like the rim of a circle so the
+            background reads as spilling into the section below instead of cutting
+            off on a straight line. Fill must match the next section's bg (#0D0D0D). */}
+        <svg
+          viewBox="0 0 1440 140"
+          preserveAspectRatio="none"
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '100%',
+            height: 'clamp(48px, 8vw, 140px)',
+            zIndex: 2,
+            display: 'block',
+          }}
+        >
+          <path d="M0,140 L0,70 C480,140 960,140 1440,70 L1440,140 Z" fill="#0D0D0D" />
+        </svg>
       </div>
 
       {/* Centered content */}
@@ -129,39 +149,23 @@ function HeroSection({ loaded }: { loaded: boolean }) {
             style={{
               fontFamily: 'var(--font-jakarta)',
               fontSize: 'clamp(48px, 8vw, 84px)',
-              fontWeight: 500,
+              fontWeight: 800,
               color: '#ffffff',
               lineHeight: 1.1,
               letterSpacing: '-1.5px',
               marginBottom: 40,
             }}
           >
-            Design. Print. Deliver.<br />Flawlessly fast.
+            Design. Print. Deliver.<br />
+            <span style={{ color: '#C6FF33' }}>Flawlessly fast!</span>
           </div>
 
           {/* CTA buttons */}
           <div className="hero-anim" style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-            <Link href="/order" style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              padding: '16px 40px',
-              backgroundColor: '#ffffff',
-              color: '#000000',
-              fontFamily: 'var(--font-jakarta)',
-              fontWeight: 600,
-              fontSize: 14,
-              textDecoration: 'none',
-              borderRadius: 2,
-              transition: 'opacity 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              const el = e.currentTarget as HTMLElement;
-              el.style.opacity = '0.9';
-            }}
-            onMouseLeave={(e) => {
-              const el = e.currentTarget as HTMLElement;
-              el.style.opacity = '1';
-            }}
+            <Link
+              href="/order"
+              className="hero-btn-solid"
+              style={{ fontSize: 13, padding: '12px 28px' }}
             >
               START YOUR ORDER
             </Link>
@@ -413,6 +417,7 @@ function ServiceImageBox({ image, dark }: { image: string; dark?: boolean }) {
         boxShadow: hov ? '0 32px 80px rgba(0,0,0,0.3)' : '0 8px 32px rgba(0,0,0,0.12)',
         transition: 'transform 0.5s cubic-bezier(0.25,1,0.5,1), box-shadow 0.5s ease',
         transform: hov ? 'scale(1.02)' : 'scale(1)',
+        cursor: 'pointer',
       }}
     >
       {!imgFailed && (
@@ -493,7 +498,9 @@ function ServiceFeatureBlock({ tag, headline, body, price, ctaLabel, ctaHref, im
           <AnimatedCta label={ctaLabel} href={ctaHref} dark={dark} />
         </div>
         <div ref={imageRef} className="service-image">
-          <ServiceImageBox image={image} dark={dark} />
+          <Link href={ctaHref} style={{ display: 'block', textDecoration: 'none' }}>
+            <ServiceImageBox image={image} dark={dark} />
+          </Link>
         </div>
       </div>
     </section>
@@ -538,6 +545,7 @@ function BayWindowPortfolio() {
   const [isAnimating, setIsAnimating] = useState(false);
   const autoRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const headingRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   const total = portfolioItems.length;
 
   const goTo = useCallback((idx: number) => {
@@ -616,7 +624,16 @@ function BayWindowPortfolio() {
             <div
               key={i}
               className={`bay-panel ${isCenter ? 'bay-center' : isRight ? 'bay-right' : 'bay-left'}`}
-              onClick={() => { if (!isCenter) { goTo(i); resetAuto(); } }}
+              onClick={() => {
+                if (isCenter) {
+                  // Center panel is the "active" image — clicking it goes to the portfolio page.
+                  router.push('/portfolio');
+                } else {
+                  // Side panels cycle the carousel to bring that item to center.
+                  goTo(i);
+                  resetAuto();
+                }
+              }}
             >
               <div style={{ position: 'relative', width: '100%', height: '100%', background: portfolioFallbacks[i] }}>
                 {item.isVideo ? (
@@ -889,7 +906,7 @@ export default function HomePage() {
           transform: translateX(0) rotate(0deg) scale(1);
           opacity: 1; filter: brightness(1); z-index: 5;
           box-shadow: 0 32px 64px rgba(0,0,0,0.7);
-          cursor: default;
+          cursor: pointer;
         }
 
         .bay-right {

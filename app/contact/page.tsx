@@ -24,7 +24,33 @@ export default function ContactPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <div style={{ backgroundColor: '#0D0D0D', minHeight: '100vh', paddingBottom: 120 }}>
+    <div style={{ position: 'relative', minHeight: '100vh', paddingBottom: 120 }}>
+      
+      {/* ── FIXED HERO BACKGROUND ── */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 0,
+        pointerEvents: 'none',
+        overflow: 'hidden',
+      }}>
+        <img
+          src="/images/hero-bg.jpg"
+          alt=""
+          style={{
+            position: 'absolute', inset: 0,
+            width: '100%', height: '100%',
+            objectFit: 'cover', objectPosition: 'center',
+          }}
+        />
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to bottom, rgba(13,13,13,0.85) 0%, rgba(13,13,13,0.80) 50%, rgba(13,13,13,0.92) 100%)',
+        }} />
+      </div>
+
+      {/* ── CONTENT ── */}
+      <div style={{ position: 'relative', zIndex: 1 }}>
       
       {/* HEADER */}
       <section style={{ paddingTop: 140, paddingBottom: 80, paddingLeft: 24, paddingRight: 24, textAlign: 'center' }}>
@@ -66,7 +92,8 @@ export default function ContactPage() {
             style={{
               flex: '1 1 50%',
               minWidth: 320,
-              backgroundColor: '#1A1A1A',
+              backgroundColor: 'rgba(26,26,26,0.8)',
+              backdropFilter: 'blur(12px)',
               border: '1px solid #2A2A2A',
               borderRadius: 4,
               padding: 48,
@@ -103,7 +130,7 @@ export default function ContactPage() {
           >
             {/* Instagram */}
             <a href="https://instagram.com/thesilkstudiong" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-              <div className="card-hover" style={{ backgroundColor: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 4, padding: 32, display: 'flex', alignItems: 'center', gap: 24 }}>
+              <div className="card-hover" style={{ backgroundColor: 'rgba(26,26,26,0.8)', backdropFilter: 'blur(12px)', border: '1px solid #2A2A2A', borderRadius: 4, padding: 32, display: 'flex', alignItems: 'center', gap: 24 }}>
                 <img src="/icons/instagram.svg" alt="Instagram" width={32} height={32} style={{ filter: 'brightness(0) invert(1)' }} />
                 <div>
                   <p className="label-mono" style={{ marginBottom: 4 }}>INSTAGRAM</p>
@@ -114,7 +141,7 @@ export default function ContactPage() {
 
             {/* TikTok */}
             <a href="https://tiktok.com/@thesilkstudiong" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-              <div className="card-hover" style={{ backgroundColor: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 4, padding: 32, display: 'flex', alignItems: 'center', gap: 24 }}>
+              <div className="card-hover" style={{ backgroundColor: 'rgba(26,26,26,0.8)', backdropFilter: 'blur(12px)', border: '1px solid #2A2A2A', borderRadius: 4, padding: 32, display: 'flex', alignItems: 'center', gap: 24 }}>
                 <img src="/icons/tiktok.svg" alt="TikTok" width={32} height={32} style={{ filter: 'brightness(0) invert(1)' }} />
                 <div>
                   <p className="label-mono" style={{ marginBottom: 4 }}>TIKTOK</p>
@@ -125,7 +152,7 @@ export default function ContactPage() {
 
             {/* Email */}
             <a href="mailto:thesilkstudiong@gmail.com" style={{ textDecoration: 'none' }}>
-              <div className="card-hover" style={{ backgroundColor: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 4, padding: 32, display: 'flex', alignItems: 'center', gap: 24 }}>
+              <div className="card-hover" style={{ backgroundColor: 'rgba(26,26,26,0.8)', backdropFilter: 'blur(12px)', border: '1px solid #2A2A2A', borderRadius: 4, padding: 32, display: 'flex', alignItems: 'center', gap: 24 }}>
                 <img src="/icons/email.svg" alt="Email" width={32} height={32} style={{ filter: 'brightness(0) invert(1)' }} />
                 <div>
                   <p className="label-mono" style={{ marginBottom: 4 }}>EMAIL</p>
@@ -148,7 +175,7 @@ export default function ContactPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            style={{ flex: '1 1 45%', minWidth: 320, backgroundColor: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 4, padding: 48 }}
+            style={{ flex: '1 1 45%', minWidth: 320, backgroundColor: 'rgba(26,26,26,0.8)', backdropFilter: 'blur(12px)', border: '1px solid #2A2A2A', borderRadius: 4, padding: 48 }}
           >
             <p className="label-mono" style={{ marginBottom: 32 }}>WHEN WE&apos;RE ON</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 32 }}>
@@ -176,7 +203,7 @@ export default function ContactPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            style={{ flex: '1 1 45%', minWidth: 320, backgroundColor: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 4, padding: 48 }}
+            style={{ flex: '1 1 45%', minWidth: 320, backgroundColor: 'rgba(26,26,26,0.8)', backdropFilter: 'blur(12px)', border: '1px solid #2A2A2A', borderRadius: 4, padding: 48 }}
           >
             <p className="label-mono" style={{ marginBottom: 32 }}>WHERE WE ARE</p>
             <h3 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 32, color: '#ffffff', marginBottom: 16 }}>
@@ -234,6 +261,7 @@ export default function ContactPage() {
       {/* BOTTOM CTA */}
       <FinalCTA title="Work with us." />
 
+      </div>{/* end content wrapper */}
     </div>
   );
 }

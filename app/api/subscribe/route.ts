@@ -20,10 +20,13 @@ export async function POST(request: Request) {
 
     const url = `https://${REGION}.api.mailchimp.com/3.0/lists/${AUDIENCE_ID}/members`;
 
+    // Use Basic auth header which is broadly compatible with Mailchimp
+    const basicAuth = `Basic ${Buffer.from(`anystring:${API_KEY}`).toString('base64')}`;
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        Authorization: `apikey ${API_KEY}`,
+        Authorization: basicAuth,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -40,8 +43,9 @@ export async function POST(request: Request) {
     }
 
     if (!response.ok) {
-      console.error('Mailchimp API Error:', responseData);
-      return NextResponse.json({ error: 'Mailchimp rejection' }, { status: 400 });
+      console.error('Mailchimp API Error:', response.status, responseData);
+      // Provide a bit more detail to the client for debugging (non-sensitive)
+      return NextResponse.json({ error: 'Mailchimp rejection', detail: responseData }, { status: 400 });
     }
 
     return NextResponse.json({ message: "You're on the list! 🎉" }, { status: 201 });

@@ -41,10 +41,12 @@ export default function Navbar() {
           right: 0,
           zIndex: 1000,
           height: 64,
-          backgroundColor: isOrderPage ? 'rgba(13, 13, 13, 0.98)' : scrolled ? 'rgba(13, 13, 13, 0.92)' : 'transparent',
-          borderBottom: isOrderPage ? '1px solid rgba(0,0,0,0.1)' : scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
-          backdropFilter: isOrderPage ? 'blur(20px)' : scrolled ? 'blur(20px)' : 'none',
-          WebkitBackdropFilter: isOrderPage ? 'blur(20px)' : scrolled ? 'blur(20px)' : 'none',
+          // Keep the navbar transparent on the order page until the user scrolls,
+          // so it doesn't visually block the hero heading.
+          backgroundColor: isOrderPage && !scrolled ? 'transparent' : (scrolled ? 'rgba(13, 13, 13, 0.92)' : 'transparent'),
+          borderBottom: isOrderPage && !scrolled ? '1px solid transparent' : (scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent'),
+          backdropFilter: scrolled ? 'blur(20px)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
           transition: 'background-color 0.5s ease, border-color 0.5s ease, backdrop-filter 0.5s ease',
           display: 'flex',
           alignItems: 'center',
@@ -91,13 +93,13 @@ export default function Navbar() {
                 fontFamily: 'var(--font-jakarta)',
                 fontSize: 14,
                 fontWeight: 500,
-                color: 'rgba(255,255,255,0.6)',
+                color: isOrderPage ? 'rgba(13,13,13,0.65)' : 'rgba(255,255,255,0.6)',
                 textDecoration: 'none',
                 letterSpacing: '0.2px',
                 transition: 'color 0.25s ease',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = '#ffffff')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
+              onMouseEnter={(e) => (e.currentTarget.style.color = isOrderPage ? '#0D0D0D' : '#ffffff')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = isOrderPage ? 'rgba(13,13,13,0.65)' : 'rgba(255,255,255,0.6)')}
             >
               {link.label}
             </Link>
@@ -156,9 +158,9 @@ export default function Navbar() {
             }}
             aria-label="Toggle menu"
           >
-            <span style={{ width: 22, height: 2, background: menuOpen ? '#C6FF33' : '#fff', display: 'block', transition: 'all 0.3s cubic-bezier(0.25,1,0.5,1)', transform: menuOpen ? 'rotate(45deg) translate(4px, 4px)' : 'none' }} />
-            <span style={{ width: 22, height: 2, background: menuOpen ? '#C6FF33' : '#fff', display: 'block', transition: 'all 0.3s cubic-bezier(0.25,1,0.5,1)', opacity: menuOpen ? 0 : 1 }} />
-            <span style={{ width: 22, height: 2, background: menuOpen ? '#C6FF33' : '#fff', display: 'block', transition: 'all 0.3s cubic-bezier(0.25,1,0.5,1)', transform: menuOpen ? 'rotate(-45deg) translate(4px, -4px)' : 'none' }} />
+            <span style={{ width: 22, height: 2, background: menuOpen ? '#C6FF33' : (isOrderPage ? '#0D0D0D' : '#fff'), display: 'block', transition: 'all 0.3s cubic-bezier(0.25,1,0.5,1)', transform: menuOpen ? 'rotate(45deg) translate(4px, 4px)' : 'none' }} />
+            <span style={{ width: 22, height: 2, background: menuOpen ? '#C6FF33' : (isOrderPage ? '#0D0D0D' : '#fff'), display: 'block', transition: 'all 0.3s cubic-bezier(0.25,1,0.5,1)', opacity: menuOpen ? 0 : 1 }} />
+            <span style={{ width: 22, height: 2, background: menuOpen ? '#C6FF33' : (isOrderPage ? '#0D0D0D' : '#fff'), display: 'block', transition: 'all 0.3s cubic-bezier(0.25,1,0.5,1)', transform: menuOpen ? 'rotate(-45deg) translate(4px, -4px)' : 'none' }} />
           </button>
         </div>
       </nav>

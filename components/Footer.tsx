@@ -91,10 +91,35 @@ export default function Footer() {
   const midText = 'rgba(255,255,255,0.65)';
 
   return (
-    <footer style={{ background: '#0a0a0a', color: '#fff', overflow: 'hidden', position: 'relative' }}>
+    <footer style={{ background: '#0a0a0a', color: '#fff', overflow: 'hidden', position: 'relative', zIndex: 10 }}>
+
+      {/* ── Ambient background — the hero photo, kept almost entirely to a dark scrim.
+          Deliberately using the still image here, not the video: this section is
+          dense with nav links, addresses and a form, so anything that moves or shows
+          detail behind that text will hurt legibility and cost bandwidth for no real
+          payoff. If you actually want motion here too, swap the <img> below for the
+          same <video autoPlay muted loop playsInline> block used in the hero/FinalCTA,
+          but I'd push back on that for this section specifically. ── */}
+      <img
+        src="/images/hero-bg.jpg"
+        alt=""
+        aria-hidden
+        style={{
+          position: 'absolute', inset: 0,
+          width: '100%', height: '100%',
+          objectFit: 'cover', zIndex: 0,
+          opacity: 0.16,
+        }}
+        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+      />
+      <div style={{
+        position: 'absolute', inset: 0, zIndex: 0,
+        background: 'linear-gradient(180deg, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.96) 100%)',
+      }} />
 
       {/* ── TOP: Logo + Brand name ── */}
       <div style={{
+        position: 'relative', zIndex: 1,
         maxWidth: 1160, margin: '0 auto',
         padding: 'clamp(36px, 6vw, 52px) clamp(20px, 5vw, 40px) 0',
         display: 'flex', alignItems: 'center', gap: 14,
@@ -126,6 +151,7 @@ export default function Footer() {
 
       {/* ── MAIN 3-COLUMN GRID ── */}
       <div ref={colsRef} style={{
+        position: 'relative', zIndex: 1,
         maxWidth: 1160, margin: '0 auto',
         padding: 'clamp(40px, 7vw, 64px) clamp(20px, 5vw, 40px) clamp(40px, 7vw, 56px)',
         display: 'grid',
@@ -321,6 +347,7 @@ export default function Footer() {
 
       {/* ── BOTTOM BAR ── */}
       <div style={{
+        position: 'relative', zIndex: 1,
         borderTop: '1px solid rgba(255,255,255,0.07)',
         maxWidth: 1160, margin: '0 auto',
         padding: 'clamp(16px, 3vw, 20px) clamp(20px, 5vw, 40px)',

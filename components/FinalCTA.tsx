@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
 /*
@@ -16,6 +16,14 @@ export default function FinalCTA() {
   const line1Ref = useRef<HTMLDivElement>(null);
   const line2Ref = useRef<HTMLDivElement>(null);
   const decoLineRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     let ctx: any;
@@ -44,8 +52,30 @@ export default function FinalCTA() {
           );
         };
 
-        animateSlot(line1Ref.current, 0);
-        animateSlot(line2Ref.current, 0.15);
+        /* ── Plain fade — used on mobile instead of the per-character split,
+           since splitting into individual letters is what caused the
+           headline to wrap mid-word on narrow screens ── */
+        const animateFade = (el: HTMLElement | null, delayOffset = 0) => {
+          if (!el) return;
+          gsap.fromTo(
+            el,
+            { y: 24, opacity: 0 },
+            {
+              y: 0, opacity: 1,
+              duration: 0.7, ease: 'power3.out',
+              delay: delayOffset,
+              scrollTrigger: { trigger: sectionRef.current, start: 'top 78%', once: true },
+            }
+          );
+        };
+
+        if (isMobile) {
+          animateFade(line1Ref.current, 0);
+          animateFade(line2Ref.current, 0.1);
+        } else {
+          animateSlot(line1Ref.current, 0);
+          animateSlot(line2Ref.current, 0.15);
+        }
 
         /* Decorative Line Expand */
         if (decoLineRef.current) {
@@ -74,9 +104,10 @@ export default function FinalCTA() {
 
     init();
     return () => ctx?.revert();
-  }, []);
+  }, [isMobile]);
 
-  /* Helper: wrap each char in a span for slot-machine anim */
+  /* Helper: wrap each char in a span for slot-machine anim (desktop only —
+     on mobile we render plain text so words can wrap normally) */
   const slotChars = (text: string) =>
     text.split('').map((ch, i) => (
       <span
@@ -122,6 +153,28 @@ export default function FinalCTA() {
           backgroundColor: '#0D0D0D',
         }}
       >
+        {/* ── Ambient background — same footage as the hero, heavily dimmed so it reads
+            as texture, not a competing visual. This ties the closing CTA back to the
+            hero visually. Tune the video opacity / gradient stops below if you want it
+            more or less present — 0.32 + this gradient keeps large white text legible. ── */}
+        <video
+          autoPlay muted loop playsInline
+          className="hero-bg-video"
+          poster="/images/hero-bg.jpg"
+          style={{
+            position: 'absolute', inset: 0,
+            width: '100%', height: '100%',
+            objectFit: 'cover', zIndex: 0,
+            opacity: 0.32,
+          }}
+        >
+          <source src="/videos/hero-bg.mp4" type="video/mp4" />
+        </video>
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 0,
+          background: 'linear-gradient(180deg, rgba(13,13,13,0.86) 0%, rgba(13,13,13,0.9) 45%, #0D0D0D 100%)',
+        }} />
+
         {/* Ambient warm white glow */}
         <div style={{
           position: 'absolute', top: '40%', left: '50%',
@@ -178,10 +231,10 @@ export default function FinalCTA() {
               lineHeight: 1.08, letterSpacing: '-0.03em',
               color: '#fff', userSelect: 'none', willChange: 'transform',
               marginBottom: 'clamp(2px, 1vw, 6px)',
-              overflow: 'hidden',
+              overflow: isMobile ? 'visible' : 'hidden',
             }}
           >
-            {slotChars('Ready to stand out?')}
+            {isMobile ? 'Ready to stand out?' : slotChars('Ready to stand out?')}
           </div>
 
           {/* ── Headline line 2 ── */}
@@ -193,10 +246,10 @@ export default function FinalCTA() {
               lineHeight: 1.08, letterSpacing: '-0.03em',
               color: '#fff', userSelect: 'none', willChange: 'transform',
               marginBottom: 'clamp(48px, 9vw, 72px)',
-              overflow: 'hidden',
+              overflow: isMobile ? 'visible' : 'hidden',
             }}
           >
-            {slotChars("Let's work together!")}
+            {isMobile ? "Let's work together!" : slotChars("Let's work together!")}
           </div>
 
           {/* ── CTA Buttons ── */}

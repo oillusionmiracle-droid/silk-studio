@@ -165,7 +165,33 @@ export default function ApparelPage() {
   };
 
   return (
-    <div style={{ backgroundColor: '#0D0D0D', minHeight: '100vh', paddingBottom: 120 }}>
+    <div style={{ position: 'relative', minHeight: '100vh', paddingBottom: 120 }}>
+      
+      {/* ── FIXED HERO BACKGROUND ── */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 0,
+        pointerEvents: 'none',
+        overflow: 'hidden',
+      }}>
+        <img
+          src="/images/hero-bg.jpg"
+          alt=""
+          style={{
+            position: 'absolute', inset: 0,
+            width: '100%', height: '100%',
+            objectFit: 'cover', objectPosition: 'center',
+          }}
+        />
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to bottom, rgba(13,13,13,0.85) 0%, rgba(13,13,13,0.80) 50%, rgba(13,13,13,0.92) 100%)',
+        }} />
+      </div>
+
+      {/* ── CONTENT ── */}
+      <div style={{ position: 'relative', zIndex: 1 }}>
       
       {/* HEADER */}
       <section style={{ paddingTop: 140, paddingBottom: 80, paddingLeft: 24, paddingRight: 24, textAlign: 'center' }}>
@@ -215,7 +241,8 @@ export default function ApparelPage() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               style={{
-                backgroundColor: '#1A1A1A',
+                backgroundColor: 'rgba(26,26,26,0.8)',
+                backdropFilter: 'blur(12px)',
                 borderRadius: 4,
                 border: '1px solid #2A2A2A',
                 padding: '48px',
@@ -310,7 +337,8 @@ export default function ApparelPage() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               style={{
-                backgroundColor: '#1A1A1A',
+                backgroundColor: 'rgba(26,26,26,0.8)',
+                backdropFilter: 'blur(12px)',
                 borderRadius: 4,
                 border: '1px solid #2A2A2A',
                 padding: '64px 24px',
@@ -386,7 +414,7 @@ export default function ApparelPage() {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 24 }}>
               {PAST_DROPS.map((drop, i) => (
-                <div key={i} style={{ border: '1px solid #2A2A2A', borderRadius: 4, overflow: 'hidden', backgroundColor: '#1A1A1A' }}>
+                <div key={i} style={{ border: '1px solid #2A2A2A', borderRadius: 4, overflow: 'hidden', backgroundColor: 'rgba(26,26,26,0.8)', backdropFilter: 'blur(12px)' }}>
                   <img src={drop.img} alt={drop.name} style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover' }} />
                   <div style={{ padding: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
@@ -409,7 +437,7 @@ export default function ApparelPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-50px' }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          style={{ backgroundColor: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 4, padding: 48, textAlign: 'center' }}
+          style={{ backgroundColor: 'rgba(26,26,26,0.8)', backdropFilter: 'blur(12px)', border: '1px solid #2A2A2A', borderRadius: 4, padding: 48, textAlign: 'center' }}
         >
           <GSAPTitle as="h2" style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 'clamp(24px, 4vw, 36px)', color: '#ffffff', marginBottom: 16 }}>
             Need shirts for your event or brand?
@@ -428,6 +456,7 @@ export default function ApparelPage() {
         </motion.div>
       </section>
 
+      </div>{/* end content wrapper */}
     </div>
   );
 }

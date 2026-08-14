@@ -237,7 +237,7 @@ export default function OrderPage() {
 
   if (isSubmitted) {
     return (
-      <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg, #f0f4f8 0%, #e8f0fe 25%, #fce4ec 50%, #f3e5f5 75%, #e8f5e9 100%)' }}>
+      <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg, #f0f4f8 0%, #e8f0fe 25%, #fce4ec 50%, #f3e5f5 75%, #f2ffdb 100%)' }}>
         <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div style={{ backgroundColor: 'white', borderRadius: 24, padding: '60px 48px', textAlign: 'center', maxWidth: 520, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.08)' }}>
             <motion.div
@@ -271,12 +271,11 @@ export default function OrderPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', position: 'relative', background: 'linear-gradient(135deg, #f0f4f8 0%, #e8f0fe 25%, #fce4ec 50%, #f3e5f5 75%, #e8f5e9 100%)' }}>
+    <div style={{ minHeight: '100vh', position: 'relative', background: 'linear-gradient(135deg, #f0f4f8 0%, #e8f0fe 25%, #fce4ec 50%, #f3e5f5 75%, #f2ffdb 100%)' }}>
       <div style={{ position: 'relative', zIndex: 1, maxWidth: isMobile ? '100%' : 1200, margin: '0 auto', padding: isMobile ? '20px 16px 80px' : '60px 24px' }}>
         
         {/* HEADER */}
         <div style={{ marginBottom: isMobile ? 32 : 60, textAlign: 'center' }}>
-          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: '#666', marginBottom: 16 }}>LET&apos;S WORK</p>
           <h1 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 900, fontSize: isMobile ? 36 : 56, lineHeight: 1.1, letterSpacing: '-1px', color: '#0D0D0D', marginBottom: 16 }}>
             Tell us what you need.
           </h1>
@@ -592,32 +591,38 @@ export default function OrderPage() {
       {isMobile && subService && (
         <>
           {/* Floating Button */}
-          <motion.button
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            onClick={() => setSummaryOpen(true)}
+          <div
             style={{
               position: 'fixed',
               bottom: 24,
               left: '50%',
               transform: 'translateX(-50%)',
               zIndex: 50,
-              padding: '12px 24px',
-              backgroundColor: '#0D0D0D',
-              color: '#C6FF33',
-              border: 'none',
-              borderRadius: 100,
-              fontFamily: 'var(--font-jakarta)',
-              fontWeight: 700,
-              fontSize: 14,
-              cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
               width: 'calc(100% - 32px)',
               maxWidth: 320,
             }}
           >
-            View Order Summary
-          </motion.button>
+            <motion.button
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              onClick={() => setSummaryOpen(true)}
+              style={{
+                width: '100%',
+                padding: '12px 24px',
+                backgroundColor: '#0D0D0D',
+                color: '#C6FF33',
+                border: 'none',
+                borderRadius: 100,
+                fontFamily: 'var(--font-jakarta)',
+                fontWeight: 700,
+                fontSize: 14,
+                cursor: 'pointer',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+              }}
+            >
+              View Order Summary
+            </motion.button>
+          </div>
 
           {/* Modal Sheet */}
           <AnimatePresence>
@@ -796,7 +801,7 @@ export default function OrderPage() {
       {!isMobile && subService && (
         <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, width: '100%', zIndex: 40, padding: '16px' }}>
           <div style={{ backgroundColor: 'white', borderRadius: 20, padding: 24, boxShadow: '0 -4px 24px rgba(0,0,0,0.08)', maxWidth: 1200, margin: '0 auto' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: 24, alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 24, alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
                 <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: '#aaa', margin: 0 }}>Service</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
@@ -819,7 +824,7 @@ export default function OrderPage() {
               )}
 
               {isCustomQuote && (
-                <p style={{ fontFamily: 'var(--font-general)', fontSize: 13, color: '#666', margin: 0 }}>Custom quote incoming</p>
+                <p style={{ fontFamily: 'var(--font-general)', fontSize: 13, color: '#666', margin: 0, flex: 1, textAlign: 'center' }}>Custom quote incoming</p>
               )}
 
               {contact.firstName && contact.whatsapp && (
@@ -837,6 +842,7 @@ export default function OrderPage() {
                     cursor: 'pointer',
                     transition: 'all 0.2s',
                     whiteSpace: 'nowrap',
+                    flexShrink: 0,
                   }}
                   onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.9'; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
