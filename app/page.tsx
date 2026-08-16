@@ -8,6 +8,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ScrollReveal from '@/components/ScrollReveal';
 import FinalCTA from '@/components/FinalCTA';
+import VideoAdSection from '@/components/VideoAdSection';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -136,7 +137,7 @@ function HeroSection({ loaded }: { loaded: boolean }) {
             display: 'block',
           }}
         >
-          <path d="M0,140 L0,70 C480,140 960,140 1440,70 L1440,140 Z" fill="#0D0D0D" />
+          <path d="M0,140 L0,70 C480,140 960,140 1440,70 L1440,140 Z" fill="#f5f5f3" />
         </svg>
       </div>
 
@@ -165,7 +166,7 @@ function HeroSection({ loaded }: { loaded: boolean }) {
             <Link
               href="/order"
               className="hero-btn-solid"
-              style={{ fontSize: 13, padding: '12px 28px' }}
+              style={{ fontSize: 13, padding: '12px 28px', boxShadow: '0 0 32px rgba(198,255,51,0.55), 0 0 80px rgba(198,255,51,0.2)' }}
             >
               START YOUR ORDER
             </Link>
@@ -355,10 +356,10 @@ function CategoriesSection() {
           }}>WHAT WE DO</p>
           <h2 style={{
             fontFamily: 'var(--font-jakarta)', fontWeight: 800,
-            fontSize: 'clamp(32px, 5vw, 52px)', color: '#ffffff',
-            letterSpacing: '-1px', marginBottom: 16,
+            fontSize: 'clamp(44px, 7vw, 72px)', color: '#ffffff',
+            letterSpacing: '-2px', marginBottom: 16,
           }}>
-            Design what you need
+            Design.
           </h2>
           <p style={{
             fontFamily: 'var(--font-general)', fontSize: 16,
@@ -440,20 +441,20 @@ function ServiceImageBox({ image, dark }: { image: string; dark?: boolean }) {
 
 type ServiceFeatureProps = {
   tag: string; headline: string; body: string;
-  price: string; ctaLabel: string; ctaHref: string; image: string;
+  price: string; ctaHref: string; image: string;
   imgLeft?: boolean; dark?: boolean;
 };
 
-function ServiceFeatureBlock({ tag, headline, body, price, ctaLabel, ctaHref, image, imgLeft = false, dark = false }: ServiceFeatureProps) {
+function ServiceFeatureBlock({ tag, headline, body, price, ctaHref, image, imgLeft = false, dark = false }: ServiceFeatureProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
+  const [priceHov, setPriceHov] = useState(false);
 
   useEffect(() => {
     if (!sectionRef.current || !textRef.current || !imageRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Text slides in from the side
       gsap.fromTo(
         textRef.current,
         { opacity: 0, x: imgLeft ? 50 : -50 },
@@ -463,7 +464,6 @@ function ServiceFeatureBlock({ tag, headline, body, price, ctaLabel, ctaHref, im
           scrollTrigger: { trigger: sectionRef.current, start: 'top 75%', once: true },
         }
       );
-      // Image slides in from the opposite side
       gsap.fromTo(
         imageRef.current,
         { opacity: 0, x: imgLeft ? -50 : 50 },
@@ -482,20 +482,33 @@ function ServiceFeatureBlock({ tag, headline, body, price, ctaLabel, ctaHref, im
     <section ref={sectionRef} className={`service-section ${dark ? 'service-dark' : 'service-light'}`}>
       <div className={`service-inner ${imgLeft ? 'service-reverse' : ''}`}>
         <div ref={textRef} className="service-text">
-          <span className="service-tag">{tag}</span>
+          {tag && <span className="service-tag">{tag}</span>}
           <h2 className="service-headline" style={{ color: dark ? '#ffffff' : '#111111' }}>{headline}</h2>
           <p style={{
             fontFamily: 'var(--font-general)', fontSize: 16,
             color: dark ? 'rgba(255,255,255,0.5)' : '#555555',
-            lineHeight: 1.8, marginBottom: 24, maxWidth: 460,
+            lineHeight: 1.8, marginBottom: 32, maxWidth: 460,
           }}>{body}</p>
-          <p style={{
-            fontFamily: 'var(--font-jakarta)',
-            fontSize: 'clamp(18px, 3vw, 32px)', fontWeight: 800,
-            color: dark ? '#ffffff' : '#111111',
-            letterSpacing: '-0.5px', marginBottom: 28,
-          }}>{price}</p>
-          <AnimatedCta label={ctaLabel} href={ctaHref} dark={dark} />
+          <Link
+            href={ctaHref}
+            onMouseEnter={() => setPriceHov(true)}
+            onMouseLeave={() => setPriceHov(false)}
+            style={{
+              display: 'inline-block',
+              fontFamily: 'var(--font-jakarta)',
+              fontSize: 'clamp(22px, 3.5vw, 40px)',
+              fontWeight: 800,
+              color: priceHov ? '#C6FF33' : (dark ? '#ffffff' : '#111111'),
+              letterSpacing: '-0.5px',
+              textDecoration: 'none',
+              transition: 'color 0.25s ease, transform 0.25s ease',
+              transform: priceHov ? 'translateX(6px)' : 'none',
+              borderBottom: `2px solid ${priceHov ? '#C6FF33' : (dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)')}`,
+              paddingBottom: 4,
+            }}
+          >
+            {price} →
+          </Link>
         </div>
         <div ref={imageRef} className="service-image">
           <Link href={ctaHref} style={{ display: 'block', textDecoration: 'none' }}>
@@ -707,28 +720,22 @@ export default function HomePage() {
 
       <main style={{ backgroundColor: '#0D0D0D' }}>
         <HeroSection loaded={heroActive} />
+        <VideoAdSection />
         <CategoriesSection />
 
         <ServiceFeatureBlock
-          tag="01. Print"
-          headline="Your brand deserves print that performs."
-          body="Flyers, banners, billboards, jotters, ID cards — produced fast through our Lagos-wide production network. Fast turnaround, zero compromise on quality."
-          price="From ₦4,500" ctaLabel="Start your order" ctaHref="/order?service=print"
+          tag=""
+          headline="Print Services"
+          body="Fast. Flawless. Every time. Flyers, banners, billboards, jotters, ID cards — produced fast through our Lagos-wide production network. Zero compromise on quality."
+          price="From ₦4,500" ctaHref="/order?service=print"
           image="/images/services/print-bg.jpg" imgLeft={false} dark={false}
         />
         <ServiceFeatureBlock
-          tag="02. Design"
-          headline="Your brand deserves design that lands."
-          body="Logos, event kits, social templates, print-ready artwork. We make your brand look like it means business — with precision, strategy, and taste."
-          price="From ₦50,000" ctaLabel="Start your order" ctaHref="/order?service=design"
-          image="/images/services/design-bg.jpg" imgLeft={true} dark={true}
-        />
-        <ServiceFeatureBlock
-          tag="03. Web & AI"
-          headline="Web, AI & Digital — built to convert."
-          body="Landing pages, business websites, AI-enhanced digital assets and event pages. Fast, mobile-first, built for real-world results."
-          price="From ₦80,000" ctaLabel="Start your order" ctaHref="/order?service=web"
-          image="/images/services/web-bg.jpg" imgLeft={false} dark={false}
+          tag=""
+          headline="Web & Digital"
+          body="Built to convert, built to last. Landing pages, business websites, AI-enhanced digital assets and event pages. Fast, mobile-first, built for real-world results."
+          price="From ₦80,000" ctaHref="/order?service=web"
+          image="/images/services/web-bg.jpg" imgLeft={true} dark={true}
         />
 
         <SocialProofStrip />
@@ -995,13 +1002,13 @@ export default function HomePage() {
           text-decoration: none;
           transition: background 0.25s, transform 0.25s, box-shadow 0.35s;
           white-space: nowrap;
-          box-shadow: 0 0 24px rgba(198,255,51,0.15);
+          box-shadow: 0 0 32px rgba(198,255,51,0.55), 0 0 80px rgba(198,255,51,0.2), 0 4px 20px rgba(0,0,0,0.3);
         }
 
         .hero-btn-solid:hover {
           background: #d4ff66;
-          transform: scale(1.03);
-          box-shadow: 0 0 40px rgba(198,255,51,0.3);
+          transform: scale(1.04);
+          box-shadow: 0 0 48px rgba(198,255,51,0.8), 0 0 120px rgba(198,255,51,0.3), 0 4px 24px rgba(0,0,0,0.4);
         }
 
         @media (max-width: 640px) {

@@ -20,9 +20,21 @@ const secondaryNavLinks = [
 ];
 
 const connectLinks = [
-  { label: 'Instagram', href: 'https://instagram.com/thesilkstudiong' },
-  { label: 'TikTok', href: 'https://tiktok.com/@thesilkstudiong' },
-  { label: 'LinkedIn', href: 'https://linkedin.com/company/thesilkstudiong' },
+  {
+    name: 'Instagram',
+    url: 'https://instagram.com/thesilkstudiong',
+    icon: 'M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z',
+  },
+  {
+    name: 'TikTok',
+    url: 'https://tiktok.com/@thesilkstudiong',
+    icon: 'M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z',
+  },
+  {
+    name: 'Facebook',
+    url: 'https://facebook.com/thesilkstudiong',
+    icon: 'M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z',
+  },
 ];
 
 const legalLinks = [
@@ -149,200 +161,253 @@ export default function Footer() {
         </span>
       </div>
 
-      {/* ── MAIN 3-COLUMN GRID ── */}
+      {/* ── MAIN GRID ── */}
       <div ref={colsRef} style={{
         position: 'relative', zIndex: 1,
         maxWidth: 1160, margin: '0 auto',
         padding: 'clamp(40px, 7vw, 64px) clamp(20px, 5vw, 40px) clamp(40px, 7vw, 56px)',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
-        gap: 'clamp(36px, 8vw, 64px)',
       }}>
 
-        {/* ── COL 1: Navigation ── */}
-        <div className="footer-col" style={{ display: 'flex', flexDirection: 'column' }}>
-          <nav style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(4px, 1.5vw, 8px)' }}>
-            {primaryNavLinks.map(link => (
-              <Link key={link.href} href={link.href}
-                style={{
-                  fontFamily: fontSans,
-                  fontSize: 'clamp(26px, 5.5vw, 44px)',
-                  fontWeight: 700, letterSpacing: '-0.025em',
-                  color: '#fff', textDecoration: 'none', lineHeight: 1.2,
-                  transition: 'color 0.18s', display: 'inline-block',
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = accent; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#fff'; }}>
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-          <nav style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 'clamp(18px, 4vw, 24px)' }}>
-            {secondaryNavLinks.map(link => (
-              <Link key={link.href} href={link.href}
-                style={{
-                  fontFamily: fontSans, fontSize: 'clamp(14px, 3vw, 16px)', fontWeight: 500,
-                  color: midText, textDecoration: 'none', transition: 'color 0.18s',
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#fff'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = midText; }}>
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
+        {/* Mobile: nav links top, then 2-col row (info + connect), then newsletter */}
+        {/* Desktop: 3 equal columns */}
+        <style>{`
+          .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(32px, 6vw, 64px) clamp(20px, 4vw, 48px);
+          }
+          .footer-col-nav { grid-column: 1 / -1; }
+          .footer-col-info { grid-column: 1; }
+          .footer-col-connect { grid-column: 2; }
+          .footer-col-newsletter { grid-column: 1 / -1; }
 
-        {/* ── COL 2: Business Info ── */}
-        <div className="footer-col" style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(24px, 5vw, 32px)', paddingTop: 6 }}>
-          <div>
-            <p style={{ fontFamily: fontSans, fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 8 }}>Studio</p>
-            <p style={{ fontFamily: fontSans, fontSize: 14, color: dimText, lineHeight: 1.75, margin: 0 }}>
-              Ahmadu Bello Way,<br />Victoria Island, Lagos
-            </p>
-          </div>
-          <div>
-            <p style={{ fontFamily: fontSans, fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 8 }}>New business</p>
-            <a href="mailto:thesilkstudiong@gmail.com"
-              style={{ fontFamily: fontSans, fontSize: 14, color: dimText, textDecoration: 'none', transition: 'color 0.18s', wordBreak: 'break-word' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = accent; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = dimText; }}>
-              thesilkstudiong@gmail.com
-            </a>
-          </div>
-          <div>
-            <p style={{ fontFamily: fontSans, fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 10 }}>Connect</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {connectLinks.map(link => (
-                <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer"
-                  style={{ fontFamily: fontSans, fontSize: 14, color: dimText, textDecoration: 'none', transition: 'color 0.18s' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#fff'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = dimText; }}>
+          @media (min-width: 900px) {
+            .footer-grid {
+              grid-template-columns: 1.3fr 1fr 1.2fr;
+            }
+            .footer-col-nav { grid-column: auto; }
+            .footer-col-info { grid-column: auto; }
+            .footer-col-connect { display: none; } /* merged into info col on desktop */
+            .desktop-connect { display: block !important; }
+            .footer-col-newsletter { grid-column: auto; }
+          }
+        `}</style>
+
+        <div className="footer-grid">
+
+          {/* ── COL: Navigation (full width on mobile, col 1 on desktop) ── */}
+          <div className="footer-col footer-col-nav" style={{ display: 'flex', flexDirection: 'column' }}>
+            <nav style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(2px, 1vw, 6px)' }}>
+              {primaryNavLinks.map(link => (
+                <Link key={link.href} href={link.href}
+                  style={{
+                    fontFamily: fontSans,
+                    fontSize: 'clamp(28px, 6vw, 44px)',
+                    fontWeight: 700, letterSpacing: '-0.03em',
+                    color: '#fff', textDecoration: 'none', lineHeight: 1.15,
+                    transition: 'color 0.18s', display: 'inline-block',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = accent; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#fff'; }}>
                   {link.label}
+                </Link>
+              ))}
+            </nav>
+            <nav style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '8px 20px', marginTop: 'clamp(16px, 3vw, 24px)' }}>
+              {secondaryNavLinks.map(link => (
+                <Link key={link.href} href={link.href}
+                  style={{
+                    fontFamily: fontSans, fontSize: 'clamp(14px, 3vw, 15px)', fontWeight: 500,
+                    color: midText, textDecoration: 'none', transition: 'color 0.18s',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#fff'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = midText; }}>
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* ── COL: Business Info (col 1 of 2-col row on mobile, col 2 on desktop) ── */}
+          <div className="footer-col footer-col-info" style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(20px, 4vw, 32px)', paddingTop: 4 }}>
+            <div>
+              <p style={{ fontFamily: fontSans, fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 6, letterSpacing: '0.5px', textTransform: 'uppercase', opacity: 0.5 }}>Studio</p>
+              <p style={{ fontFamily: fontSans, fontSize: 15, color: dimText, lineHeight: 1.7, margin: 0 }}>
+                Ahmadu Bello Way,<br />Victoria Island, Lagos
+              </p>
+            </div>
+            <div>
+              <p style={{ fontFamily: fontSans, fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 6, letterSpacing: '0.5px', textTransform: 'uppercase', opacity: 0.5 }}>Email</p>
+              <a href="mailto:thesilkstudiong@gmail.com"
+                style={{ fontFamily: fontSans, fontSize: 14, color: dimText, textDecoration: 'none', transition: 'color 0.18s', wordBreak: 'break-all' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = accent; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = dimText; }}>
+                thesilkstudiong@gmail.com
+              </a>
+            </div>
+            {/* Connect — shown in this col on desktop only (hidden on mobile via separate col) */}
+            <div style={{ display: 'none' }} className="desktop-connect">
+              <p style={{ fontFamily: fontSans, fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 12, letterSpacing: '0.5px', textTransform: 'uppercase', opacity: 0.5 }}>Connect</p>
+              <div style={{ display: 'flex', flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+                {connectLinks.map(link => (
+                  <a key={link.name} href={link.url} target="_blank" rel="noopener noreferrer"
+                    aria-label={link.name}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      width: 36, height: 36, borderRadius: '50%',
+                      backgroundColor: 'rgba(255,255,255,0.06)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      color: dimText, transition: 'all 0.2s ease',
+                      textDecoration: 'none',
+                    }}
+                    onMouseEnter={e => {
+                      (e.currentTarget as HTMLElement).style.color = '#0D0D0D';
+                      (e.currentTarget as HTMLElement).style.backgroundColor = accent;
+                      (e.currentTarget as HTMLElement).style.borderColor = accent;
+                    }}
+                    onMouseLeave={e => {
+                      (e.currentTarget as HTMLElement).style.color = dimText;
+                      (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255,255,255,0.06)';
+                      (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)';
+                    }}>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+                      <path d={link.icon} />
+                    </svg>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ── COL: Connect — only shown on mobile in the 2nd column ── */}
+          <div className="footer-col footer-col-connect" style={{ paddingTop: 4 }}>
+            <p style={{ fontFamily: fontSans, fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 12, letterSpacing: '0.5px', textTransform: 'uppercase', opacity: 0.5 }}>Connect</p>
+            <div style={{ display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+              {connectLinks.map(link => (
+                <a key={link.name} href={link.url} target="_blank" rel="noopener noreferrer"
+                  aria-label={link.name}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    width: 38, height: 38, borderRadius: '50%',
+                    backgroundColor: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    color: dimText, transition: 'all 0.2s ease',
+                    textDecoration: 'none',
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLElement).style.color = '#0D0D0D';
+                    (e.currentTarget as HTMLElement).style.backgroundColor = accent;
+                    (e.currentTarget as HTMLElement).style.borderColor = accent;
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLElement).style.color = dimText;
+                    (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255,255,255,0.06)';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)';
+                  }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d={link.icon} />
+                  </svg>
                 </a>
               ))}
             </div>
           </div>
-        </div>
 
-        {/* ── COL 3: Newsletter Card ── */}
-        <div className="footer-col" style={{ position: 'relative', paddingTop: 6 }}>
-          <div style={{
-            background: 'rgba(28,28,30,0.95)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: 20,
-            padding: '28px 28px 140px', 
-            position: 'relative',
-            overflow: 'hidden',
-            minHeight: 340,
-          }}>
-            <p style={{
-              fontFamily: fontSans, fontSize: 15, fontWeight: 600, color: '#fff',
-              margin: '0 0 24px',
+          {/* ── COL: Newsletter Card (full width on mobile, col 3 on desktop) ── */}
+          <div className="footer-col footer-col-newsletter" style={{ position: 'relative', paddingTop: 4 }}>
+            <div style={{
+              background: '#151515',
+              borderRadius: 20,
+              padding: 'clamp(28px, 5vw, 40px) clamp(20px, 4vw, 32px) 32px',
+              position: 'relative',
+              overflow: 'visible',
             }}>
-              Subscribe to The Silk Letter
-            </p>
-
-            <form onSubmit={handleSubscribe} style={{ position: 'relative', zIndex: 5 }}>
-              <input
-                type="email"
-                required
-                placeholder="Enter your email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                disabled={status === 'loading' || status === 'success'}
+              <img
+                src="/images/newsletter-mascot.png"
+                alt=""
                 style={{
-                  width: '100%',
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                  fontFamily: fontSans,
-                  fontSize: '16px', 
-                  fontWeight: 400,
-                  color: '#fff', 
-                  caretColor: accent,
-                  padding: '12px 0 12px',
-                  borderBottom: `1px solid ${status === 'error' ? 'rgba(255,80,80,0.6)' : 'rgba(255,255,255,0.25)'}`,
-                  marginBottom: 16,
-                  transition: 'border-color 0.2s',
-                  display: 'block',
+                  position: 'absolute',
+                  top: -60,
+                  right: 20,
+                  width: 140,
+                  height: 'auto',
+                  pointerEvents: 'none',
+                  zIndex: 10,
+                }}
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).style.display = 'none';
                 }}
               />
 
-              {/* Submit arrow button */}
-              <button
-                type="submit"
-                disabled={status === 'loading' || status === 'success'}
-                style={{
-                  background: status === 'success' ? 'rgba(198,255,51,0.12)' : accent,
-                  border: 'none', cursor: 'pointer',
-                  width: 42, height: 42, borderRadius: '50%',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#000', fontSize: 16, fontWeight: 700,
-                  transition: 'transform 0.18s, box-shadow 0.18s',
-                  flexShrink: 0,
-                }}
-                onMouseEnter={e => {
-                  const el = e.currentTarget as HTMLElement;
-                  el.style.transform = 'scale(1.05)';
-                  el.style.boxShadow = `0 0 20px rgba(198,255,51,0.4)`;
-                }}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLElement;
-                  el.style.transform = 'scale(1)';
-                  el.style.boxShadow = 'none';
-                }}
-              >
-                {status === 'loading' ? '·' : status === 'success' ? '✓' : '→'}
-              </button>
+              <h3 style={{ fontFamily: fontSans, fontSize: 18, fontWeight: 700, color: '#fff', margin: '0 0 20px', paddingRight: 80 }}>
+                Subscribe to Silk Studio
+              </h3>
 
-              {message && (
+              <form onSubmit={handleSubscribe} style={{ position: 'relative', zIndex: 5, display: 'flex', flexDirection: 'column', gap: 24 }}>
+                <input
+                  type="email"
+                  required
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  disabled={status === 'loading' || status === 'success'}
+                  style={{
+                    width: '100%',
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                    fontFamily: fontSans,
+                    fontSize: '22px',
+                    fontWeight: 400,
+                    color: '#fff',
+                    padding: '0',
+                  }}
+                />
+
                 <p style={{
-                  fontFamily: fontMono, fontSize: 12,
-                  color: status === 'success' ? accent : '#ff5555',
-                  marginTop: 12, letterSpacing: 0.3,
-                  fontWeight: 500,
+                  fontFamily: fontSans, fontSize: 15, color: '#aaa',
+                  lineHeight: 1.5, margin: 0,
                 }}>
-                  {message}
+                  Digestible selection of inspiring finds. Sent monthly, from our screen to yours.
                 </p>
-              )}
-            </form>
 
-            {/* Description */}
-            <p style={{
-              position: 'absolute',
-              bottom: 24, right: 24,
-              maxWidth: 160,
-              textAlign: 'right',
-              fontFamily: fontSans, fontSize: 12, color: dimText,
-              lineHeight: 1.5, margin: 0,
-              zIndex: 3,
-            }}>
-              Digestible selection of inspiring finds. Sent monthly.
-            </p>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 }}>
+                  <button
+                    type="submit"
+                    disabled={status === 'loading' || status === 'success'}
+                    style={{
+                      background: '#00bcd4',
+                      border: 'none', cursor: 'pointer',
+                      padding: '14px 28px', borderRadius: 100,
+                      color: '#fff', fontSize: 16, fontWeight: 700,
+                      transition: 'opacity 0.2s',
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.9'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
+                  >
+                    {status === 'loading' ? 'Subscribing...' : status === 'success' ? 'Subscribed!' : 'Subscribe'}
+                  </button>
 
-            {/* Mascot */}
-            <img
-              src="/images/newsletter-mascot.png"
-              alt=""
-              aria-hidden
-              style={{
-                position: 'absolute',
-                bottom: -8,
-                left: -8,
-                width: 130,
-                height: 'auto',
-                pointerEvents: 'none',
-                zIndex: 2,
-                maxWidth: 'clamp(90px, 20vw, 140px)',
-              }}
-              onError={(e) => {
-                (e.currentTarget as HTMLImageElement).style.display = 'none';
-              }}
-            />
+                  <Link href="/privacy" style={{ fontFamily: fontSans, fontSize: 14, color: '#aaa', textDecoration: 'underline' }}>
+                    Privacy
+                  </Link>
+                </div>
+
+                {message && (
+                  <p style={{
+                    fontFamily: fontMono, fontSize: 12,
+                    color: status === 'success' ? '#00bcd4' : '#ff5555',
+                    marginTop: 8, letterSpacing: 0.3,
+                    fontWeight: 500,
+                  }}>
+                    {message}
+                  </p>
+                )}
+              </form>
+            </div>
           </div>
-        </div>
 
+        </div>
       </div>
 
       {/* ── BOTTOM BAR ── */}

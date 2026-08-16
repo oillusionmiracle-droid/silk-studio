@@ -29,78 +29,25 @@ function SplitReveal({
   className?: string;
   style?: React.CSSProperties;
 }) {
-  const containerRef = useRef<HTMLSpanElement>(null);
-  const splitRef = useRef<{ revert: () => void } | null>(null);
-
-  useEffect(() => {
-    // Dynamically import GSAP + SplitType so they only run client-side
-    let ctx: { revert?: () => void } = {};
-
-    (async () => {
-      const [{ gsap }, { default: SplitType }] = await Promise.all([
-        import('gsap'),
-        import('split-type'),
-      ]);
-
-      const el = containerRef.current;
-      if (!el) return;
-
-      // Split into individual characters
-      const split = new SplitType(el, { types: 'chars' });
-      splitRef.current = split;
-
-      const chars = split.chars ?? [];
-
-      // Apply highlight color to chars in the last word if highlight=true
-      if (highlight) {
-        const words = text.split(' ');
-        const lastWordLength = words[words.length - 1].length;
-        const start = chars.length - lastWordLength;
-        chars.slice(start).forEach((c) => {
-          (c as HTMLElement).style.color = '#C6FF33';
-        });
-      }
-
-      // Initial hidden state
-      gsap.set(chars, {
-        opacity: 0,
-        rotationY: -90,
-        rotationX: 45,
-        scale: 0.5,
-        transformPerspective: 800,
-        transformOrigin: '50% 50% -20px',
-      });
-
-      // Staggered 3D unfold animation
-      ctx = gsap.context(() => {
-        gsap.to(chars, {
-          rotationY: 0,
-          rotationX: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 1.2,
-          ease: 'power3.out',
-          stagger: 0.045,
-          delay,
-        });
-      }, el);
-    })();
-
-    return () => {
-      // Cleanup: revert SplitType and kill GSAP context
-      splitRef.current?.revert();
-      (ctx as { revert?: () => void }).revert?.();
-    };
-  }, [text, delay, highlight]);
-
+  const words = text.split(' ');
+  
   return (
-    <span
-      ref={containerRef}
+    <motion.span
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
       className={className}
-      style={{ display: 'inline', ...style }}
+      style={{ display: 'inline-block', ...style }}
     >
-      {text}
-    </span>
+      {words.map((word, i) => {
+        const isHighlight = highlight && i === words.length - 1;
+        return (
+          <span key={i} style={{ color: isHighlight ? '#C6FF33' : 'inherit' }}>
+            {word}{i !== words.length - 1 ? ' ' : ''}
+          </span>
+        );
+      })}
+    </motion.span>
   );
 }
 
@@ -225,57 +172,6 @@ function PortfolioCard({
   onClick: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
-  const titleRef = useRef<HTMLSpanElement>(null);
-  const splitRef = useRef<{ revert: () => void } | null>(null);
-  const gsapCtxRef = useRef<{ revert?: () => void } | null>(null);
-
-  // Animate title on hover with GSAP SplitType 3D unfold
-  useEffect(() => {
-    if (!titleRef.current) return;
-
-    (async () => {
-      const [{ gsap }, { default: SplitType }] = await Promise.all([
-        import('gsap'),
-        import('split-type'),
-      ]);
-
-      const el = titleRef.current;
-      if (!el) return;
-
-      // Revert previous split
-      splitRef.current?.revert();
-      gsapCtxRef.current?.revert?.();
-
-      if (hovered) {
-        const split = new SplitType(el, { types: 'chars' });
-        splitRef.current = split;
-        const chars = split.chars ?? [];
-
-        gsap.set(chars, {
-          opacity: 0,
-          rotationY: -90,
-          rotationX: 45,
-          scale: 0.5,
-          transformPerspective: 800,
-          transformOrigin: '50% 50% -10px',
-        });
-
-        const ctx = gsap.context(() => {
-          gsap.to(chars, {
-            rotationY: 0,
-            rotationX: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 0.7,
-            ease: 'power3.out',
-            stagger: 0.03,
-          });
-        }, el);
-
-        gsapCtxRef.current = ctx;
-      }
-    })();
-  }, [hovered]);
 
   return (
     <TiltCard style={{ breakInside: 'avoid', marginBottom: 18, cursor: 'pointer' }}>
@@ -361,9 +257,7 @@ function PortfolioCard({
             pointerEvents: 'none',
           }}
         >
-          {/* SplitType animated title */}
           <span
-            ref={titleRef}
             style={{
               fontFamily: 'var(--font-jakarta)',
               fontWeight: 600,

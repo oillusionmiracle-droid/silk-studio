@@ -97,6 +97,7 @@ export default function OrderPage() {
   const [total, setTotal] = useState(0);
   const [deposit, setDeposit] = useState(0);
   const [isCustomQuote, setIsCustomQuote] = useState(true);
+  const [payFull, setPayFull] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -142,7 +143,7 @@ export default function OrderPage() {
     const handler = (window as any).PaystackPop.setup({
       key: PAYSTACK_PUBLIC_KEY,
       email: contact.email || `${contact.whatsapp.replace(/\D/g, '')}@silk.studio`,
-      amount: deposit * 100,
+      amount: payFull ? total * 100 : deposit * 100,
       currency: 'NGN',
       ref: orderRef,
       metadata: {
@@ -181,7 +182,7 @@ export default function OrderPage() {
         break;
       }
       case 'Banners': {
-        t = specs.width * specs.height * BANNER_RATE + (specs.eyelets === 'Yes' ? EYELET_FEE : 0);
+        t = (specs.width * specs.height * BANNER_RATE + (specs.eyelets === 'Yes' ? EYELET_FEE : 0)) * specs.quantity;
         break;
       }
       case 'Jotters & Notepads': {
@@ -239,7 +240,7 @@ export default function OrderPage() {
     return (
       <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg, #f0f4f8 0%, #e8f0fe 25%, #fce4ec 50%, #f3e5f5 75%, #f2ffdb 100%)' }}>
         <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: 24, padding: '60px 48px', textAlign: 'center', maxWidth: 520, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.08)' }}>
+          <div style={{ backgroundColor: 'rgba(25,25,25,0.6)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 24, padding: '60px 48px', textAlign: 'center', maxWidth: 520, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
             <motion.div
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -250,17 +251,17 @@ export default function OrderPage() {
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </motion.div>
-            <h1 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 900, fontSize: 48, color: '#0D0D0D', marginBottom: 16, lineHeight: 1.1 }}>
+            <h1 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 900, fontSize: 48, color: '#ffffff', marginBottom: 16, lineHeight: 1.1 }}>
               You&apos;re booked.
             </h1>
-            <p style={{ fontFamily: 'var(--font-general)', fontSize: 18, color: '#555', lineHeight: 1.6, marginBottom: 32 }}>
+            <p style={{ fontFamily: 'var(--font-general)', fontSize: 18, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, marginBottom: 32 }}>
               We&apos;ve received your brief. Expect a WhatsApp message within 2 hours to confirm details.
             </p>
             <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link href="/portfolio" style={{ backgroundColor: '#f5f5f5', borderRadius: 12, padding: '14px 28px', textDecoration: 'none', fontFamily: 'var(--font-jakarta)', fontWeight: 600, fontSize: 15, color: '#333' }}>
+              <Link href="/portfolio" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '14px 28px', textDecoration: 'none', fontFamily: 'var(--font-jakarta)', fontWeight: 600, fontSize: 15, color: '#fff' }}>
                 View Portfolio
               </Link>
-              <Link href="/" style={{ backgroundColor: '#0D0D0D', borderRadius: 12, padding: '14px 28px', textDecoration: 'none', fontFamily: 'var(--font-jakarta)', fontWeight: 600, fontSize: 15, color: '#fff' }}>
+              <Link href="/" style={{ backgroundColor: '#C6FF33', borderRadius: 12, padding: '14px 28px', textDecoration: 'none', fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 15, color: '#0D0D0D' }}>
                 Back to Home
               </Link>
             </div>
@@ -271,15 +272,16 @@ export default function OrderPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', position: 'relative', background: 'linear-gradient(135deg, #f0f4f8 0%, #e8f0fe 25%, #fce4ec 50%, #f3e5f5 75%, #f2ffdb 100%)' }}>
-      <div style={{ position: 'relative', zIndex: 1, maxWidth: isMobile ? '100%' : 1200, margin: '0 auto', padding: isMobile ? '20px 16px 80px' : '60px 24px' }}>
+    <div style={{ minHeight: '100vh', position: 'relative', background: 'url(/images/order-bg.jpg) center/cover no-repeat', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', inset: 0, backdropFilter: 'blur(12px)', backgroundColor: 'rgba(13,13,13,0.85)', zIndex: 0 }} />
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: isMobile ? '100%' : 1200, margin: '0 auto', padding: isMobile ? '100px 16px 80px' : '140px 24px 60px' }}>
         
         {/* HEADER */}
         <div style={{ marginBottom: isMobile ? 32 : 60, textAlign: 'center' }}>
-          <h1 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 900, fontSize: isMobile ? 36 : 56, lineHeight: 1.1, letterSpacing: '-1px', color: '#0D0D0D', marginBottom: 16 }}>
+          <h1 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 900, fontSize: isMobile ? 36 : 56, lineHeight: 1.1, letterSpacing: '-1px', color: '#ffffff', marginBottom: 16 }}>
             Tell us what you need.
           </h1>
-          <p style={{ fontFamily: 'var(--font-general)', fontSize: 16, color: '#666', lineHeight: 1.6, maxWidth: 600, margin: '0 auto' }}>
+          <p style={{ fontFamily: 'var(--font-general)', fontSize: 16, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, maxWidth: 600, margin: '0 auto' }}>
             Fill this in and we&apos;ll reach out within 2 hours. Deposit locks your slot.
           </p>
         </div>
@@ -287,12 +289,12 @@ export default function OrderPage() {
         {/* MAIN FORM - NO STICKY SIDEBAR ON MOBILE */}
         <div style={{ maxWidth: isMobile ? '100%' : 800, margin: isMobile ? '0' : '0 auto' }}>
           {/* STEP 1: CATEGORY SELECTION WITH INLINE SUB-SERVICES */}
-          <div style={{ backgroundColor: 'white', borderRadius: 20, padding: isMobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.05)', marginBottom: 20 }}>
+          <div style={{ backgroundColor: 'rgba(25,25,25,0.6)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: isMobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.05)', marginBottom: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
               <div style={{ width: 32, height: 32, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: '#0D0D0D', letterSpacing: 1 }}>01</span>
               </div>
-              <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: '#0D0D0D', margin: 0 }}>What do you need?</h2>
+              <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: '#ffffff', margin: 0 }}>What do you need?</h2>
             </div>
 
             {/* CATEGORY PILLS */}
@@ -309,12 +311,12 @@ export default function OrderPage() {
                     position: 'relative',
                     padding: isMobile ? '12px 14px' : '14px 16px',
                     borderRadius: 12,
-                    border: `2px solid ${category === cat.id ? '#C6FF33' : '#e0e0e0'}`,
-                    backgroundColor: category === cat.id ? 'rgba(198,255,51,0.1)' : '#f9f9f9',
+                    border: `1px solid ${category === cat.id ? '#C6FF33' : 'rgba(255,255,255,0.1)'}`,
+                    backgroundColor: category === cat.id ? 'rgba(198,255,51,0.1)' : 'rgba(255,255,255,0.05)',
                     fontFamily: 'var(--font-jakarta)',
                     fontWeight: category === cat.id ? 700 : 600,
                     fontSize: 14,
-                    color: category === cat.id ? '#3a5a00' : '#444',
+                    color: category === cat.id ? '#C6FF33' : 'rgba(255,255,255,0.7)',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
                     display: 'flex',
@@ -349,12 +351,12 @@ export default function OrderPage() {
                             position: 'relative',
                             padding: '14px 12px',
                             borderRadius: 12,
-                            border: `2px solid ${subService === sub ? '#C6FF33' : '#e0e0e0'}`,
-                            backgroundColor: subService === sub ? 'rgba(198,255,51,0.15)' : '#f9f9f9',
+                            border: `1px solid ${subService === sub ? '#C6FF33' : 'rgba(255,255,255,0.1)'}`,
+                            backgroundColor: subService === sub ? 'rgba(198,255,51,0.15)' : 'rgba(255,255,255,0.05)',
                             fontFamily: 'var(--font-general)',
                             fontWeight: subService === sub ? 600 : 400,
                             fontSize: 13,
-                            color: subService === sub ? '#3a5a00' : '#444',
+                            color: subService === sub ? '#C6FF33' : 'rgba(255,255,255,0.7)',
                             cursor: 'pointer',
                             transition: 'all 0.2s',
                             textAlign: 'center',
@@ -386,13 +388,13 @@ export default function OrderPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                style={{ backgroundColor: 'white', borderRadius: 20, padding: isMobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.05)', marginBottom: 20 }}
+                style={{ backgroundColor: 'rgba(25,25,25,0.6)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: isMobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.05)', marginBottom: 20 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
                   <div style={{ width: 32, height: 32, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: '#0D0D0D', letterSpacing: 1 }}>02</span>
                   </div>
-                  <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: '#0D0D0D', margin: 0 }}>Specs</h2>
+                  <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: '#ffffff', margin: 0 }}>Specs</h2>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -486,7 +488,7 @@ export default function OrderPage() {
                               type="number" min="0"
                               value={specs.apparelSizes[size as keyof typeof specs.apparelSizes]}
                               onChange={e => updateApparelSize(size, parseInt(e.target.value) || 0)}
-                              style={{ width: '100%', textAlign: 'center', backgroundColor: '#f5f5f5', border: '2px solid #e0e0e0', borderRadius: 8, color: '#0D0D0D', padding: '8px 4px', fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 16, outline: 'none' }}
+                              style={{ width: '100%', textAlign: 'center', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, color: '#ffffff', padding: '8px 4px', fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 16, outline: 'none' }}
                             />
                           </div>
                         ))}
@@ -506,13 +508,13 @@ export default function OrderPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                style={{ backgroundColor: 'white', borderRadius: 20, padding: isMobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.05)', marginBottom: 20 }}
+                style={{ backgroundColor: 'rgba(25,25,25,0.6)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: isMobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.05)', marginBottom: 20 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
                   <div style={{ width: 32, height: 32, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: '#0D0D0D', letterSpacing: 1 }}>03</span>
                   </div>
-                  <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: '#0D0D0D', margin: 0 }}>Details</h2>
+                  <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: '#ffffff', margin: 0 }}>Details</h2>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
@@ -523,7 +525,7 @@ export default function OrderPage() {
                       value={specs.deadline}
                       onChange={e => updateSpec('deadline', e.target.value)}
                       min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
-                      style={{ width: '100%', padding: '12px 14px', backgroundColor: '#f5f5f5', border: '2px solid #e0e0e0', borderRadius: 10, color: '#0D0D0D', fontFamily: 'var(--font-general)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '12px 14px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10, color: '#ffffff', fontFamily: 'var(--font-general)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                     />
                   </div>
                   <div>
@@ -533,7 +535,7 @@ export default function OrderPage() {
                       value={specs.description}
                       onChange={e => updateSpec('description', e.target.value)}
                       placeholder="Tell us what this is for, colours, anything important."
-                      style={{ width: '100%', padding: '12px 14px', backgroundColor: '#f5f5f5', border: '2px solid #e0e0e0', borderRadius: 10, color: '#0D0D0D', fontFamily: 'var(--font-general)', fontSize: 14, resize: 'vertical', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
+                      style={{ width: '100%', padding: '12px 14px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10, color: '#ffffff', fontFamily: 'var(--font-general)', fontSize: 14, resize: 'vertical', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
                     />
                   </div>
                 </div>
@@ -548,13 +550,13 @@ export default function OrderPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                style={{ backgroundColor: 'white', borderRadius: 20, padding: isMobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.05)' }}
+                style={{ backgroundColor: 'rgba(25,25,25,0.6)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: isMobile ? 20 : 28, boxShadow: '0 4px 16px rgba(0,0,0,0.05)' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
                   <div style={{ width: 32, height: 32, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: '#0D0D0D', letterSpacing: 1 }}>04</span>
                   </div>
-                  <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: '#0D0D0D', margin: 0 }}>Your Info</h2>
+                  <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: '#ffffff', margin: 0 }}>Your Info</h2>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -569,7 +571,7 @@ export default function OrderPage() {
                     <select
                       value={contact.source}
                       onChange={e => setContact(c => ({ ...c, source: e.target.value }))}
-                      style={{ width: '100%', padding: '12px 14px', backgroundColor: '#f5f5f5', border: '2px solid #e0e0e0', borderRadius: 10, color: contact.source ? '#0D0D0D' : '#999', fontFamily: 'var(--font-general)', fontSize: 14, outline: 'none' }}
+                      style={{ width: '100%', padding: '12px 14px', backgroundColor: '#f5f5f5', border: '2px solid #e0e0e0', borderRadius: 10, color: contact.source ? '#ffffff' : '#999', fontFamily: 'var(--font-general)', fontSize: 14, outline: 'none' }}
                     >
                       <option value="">Select...</option>
                       {['Instagram', 'TikTok', 'WhatsApp', 'Referral', 'Google', 'Other'].map(s => <option key={s} value={s}>{s}</option>)}
@@ -654,7 +656,8 @@ export default function OrderPage() {
                     left: 0,
                     right: 0,
                     zIndex: 56,
-                    backgroundColor: 'white',
+                    backgroundColor: '#111111',
+                    borderTop: '1px solid rgba(255,255,255,0.1)',
                     borderRadius: '20px 20px 0 0',
                     padding: 24,
                     maxHeight: '85vh',
@@ -692,7 +695,7 @@ export default function OrderPage() {
                       <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: '#aaa', margin: 0 }}>Service</p>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
                         <span style={{ fontSize: 20 }}>{SERVICE_ICONS[subService] || '✨'}</span>
-                        <p style={{ fontFamily: 'var(--font-general)', fontSize: 15, fontWeight: 600, color: '#0D0D0D', margin: 0 }}>{subService}</p>
+                        <p style={{ fontFamily: 'var(--font-general)', fontSize: 15, fontWeight: 600, color: '#ffffff', margin: 0 }}>{subService}</p>
                       </div>
                     </div>
 
@@ -705,14 +708,19 @@ export default function OrderPage() {
                           </p>
                         </div>
 
-                        <div style={{ backgroundColor: '#f5f5f5', borderRadius: 12, padding: '16px', textAlign: 'center' }}>
+                        <div style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '16px', textAlign: 'center' }}>
                           <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', color: '#999', margin: 0 }}>Total</p>
-                          <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 28, color: '#0D0D0D', margin: '6px 0 0 0' }}>₦{total.toLocaleString()}</p>
+                          <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 28, color: '#ffffff', margin: '6px 0 0 0' }}>₦{total.toLocaleString()}</p>
                         </div>
 
-                        <div style={{ backgroundColor: '#C6FF33', borderRadius: 12, padding: '12px', textAlign: 'center' }}>
-                          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', color: '#0D0D0D', margin: 0 }}>Deposit (75%)</p>
-                          <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 900, fontSize: 24, color: '#0D0D0D', margin: '4px 0 0 0' }}>₦{deposit.toLocaleString()}</p>
+                        <div style={{ backgroundColor: payFull ? 'rgba(255,255,255,0.05)' : '#C6FF33', borderRadius: 12, padding: '12px', textAlign: 'center', border: payFull ? '1px solid rgba(255,255,255,0.1)' : 'none' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', color: payFull ? '#aaa' : '#0D0D0D', margin: 0 }}>Deposit (75%)</p>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', fontFamily: 'var(--font-general)', fontSize: 12, color: payFull ? '#aaa' : '#0D0D0D' }}>
+                              <input type="checkbox" checked={payFull} onChange={e => setPayFull(e.target.checked)} style={{ accentColor: payFull ? '#C6FF33' : '#000' }} /> Pay full
+                            </label>
+                          </div>
+                          <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 900, fontSize: 24, color: payFull ? 'rgba(255,255,255,0.3)' : '#0D0D0D', margin: 0, textDecoration: payFull ? 'line-through' : 'none', textAlign: 'left' }}>₦{deposit.toLocaleString()}</p>
                         </div>
                       </>
                     )}
@@ -731,7 +739,7 @@ export default function OrderPage() {
                               <polyline points="2 6 5 9 10 3" stroke="#0D0D0D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                           </div>
-                          <span style={{ fontFamily: 'var(--font-general)', fontSize: 13, color: '#555' }}>{line}</span>
+                          <span style={{ fontFamily: 'var(--font-general)', fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>{line}</span>
                         </div>
                       ))}
                     </div>
@@ -763,8 +771,8 @@ export default function OrderPage() {
                     )}
 
                     {(!contact.firstName || !contact.whatsapp) && (
-                      <div style={{ backgroundColor: '#fff3cd', borderRadius: 12, padding: '12px', textAlign: 'center' }}>
-                        <p style={{ fontFamily: 'var(--font-general)', fontSize: 12, color: '#856404', margin: 0 }}>Complete your info to submit</p>
+                      <div style={{ backgroundColor: 'rgba(255, 193, 7, 0.1)', borderRadius: 12, padding: '12px', textAlign: 'center' }}>
+                        <p style={{ fontFamily: 'var(--font-general)', fontSize: 12, color: '#ffc107', margin: 0 }}>Complete your info to submit</p>
                       </div>
                     )}
 
@@ -773,8 +781,8 @@ export default function OrderPage() {
                       style={{
                         width: '100%',
                         padding: '12px 24px',
-                        backgroundColor: '#f5f5f5',
-                        color: '#333',
+                        backgroundColor: 'rgba(255,255,255,0.05)',
+                        color: 'rgba(255,255,255,0.7)',
                         border: 'none',
                         borderRadius: 12,
                         fontFamily: 'var(--font-jakarta)',
@@ -800,13 +808,13 @@ export default function OrderPage() {
       {/* DESKTOP STICKY SUMMARY */}
       {!isMobile && subService && (
         <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, width: '100%', zIndex: 40, padding: '16px' }}>
-          <div style={{ backgroundColor: 'white', borderRadius: 20, padding: 24, boxShadow: '0 -4px 24px rgba(0,0,0,0.08)', maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ backgroundColor: 'rgba(25,25,25,0.6)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: 24, boxShadow: '0 -4px 24px rgba(0,0,0,0.08)', maxWidth: 1200, margin: '0 auto' }}>
             <div style={{ display: 'flex', gap: 24, alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
                 <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: '#aaa', margin: 0 }}>Service</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
                   <span style={{ fontSize: 20 }}>{SERVICE_ICONS[subService] || '✨'}</span>
-                  <p style={{ fontFamily: 'var(--font-general)', fontSize: 15, fontWeight: 600, color: '#0D0D0D', margin: 0 }}>{subService}</p>
+                  <p style={{ fontFamily: 'var(--font-general)', fontSize: 15, fontWeight: 600, color: '#ffffff', margin: 0 }}>{subService}</p>
                 </div>
               </div>
 
@@ -814,11 +822,16 @@ export default function OrderPage() {
                 <>
                   <div>
                     <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: '#aaa', margin: 0 }}>Total</p>
-                    <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 20, color: '#0D0D0D', margin: '6px 0 0 0' }}>₦{total.toLocaleString()}</p>
+                    <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 900, fontSize: 20, color: payFull ? '#C6FF33' : '#ffffff', margin: '6px 0 0 0' }}>₦{total.toLocaleString()}</p>
                   </div>
                   <div>
-                    <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: '#aaa', margin: 0 }}>Deposit (75%)</p>
-                    <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 900, fontSize: 20, color: '#0D0D0D', margin: '6px 0 0 0' }}>₦{deposit.toLocaleString()}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: '#aaa', margin: 0 }}>Deposit (75%)</p>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', fontFamily: 'var(--font-general)', fontSize: 12, color: '#aaa' }}>
+                        <input type="checkbox" checked={payFull} onChange={e => setPayFull(e.target.checked)} style={{ accentColor: '#C6FF33' }} /> Pay full
+                      </label>
+                    </div>
+                    <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 900, fontSize: 20, color: payFull ? '#aaa' : '#C6FF33', margin: '0', textDecoration: payFull ? 'line-through' : 'none' }}>₦{deposit.toLocaleString()}</p>
                   </div>
                 </>
               )}
@@ -878,9 +891,9 @@ function Pill({ label, isActive, onClick }: { label: string; isActive: boolean; 
       style={{
         padding: '10px 16px',
         borderRadius: 100,
-        border: `2px solid ${isActive ? '#C6FF33' : '#e0e0e0'}`,
-        backgroundColor: isActive ? 'rgba(198,255,51,0.12)' : '#f9f9f9',
-        color: isActive ? '#3a5a00' : '#444',
+        border: `1px solid ${isActive ? '#C6FF33' : 'rgba(255,255,255,0.15)'}`,
+        backgroundColor: isActive ? 'rgba(198,255,51,0.12)' : 'rgba(255,255,255,0.05)',
+        color: isActive ? '#C6FF33' : 'rgba(255,255,255,0.7)',
         fontFamily: 'var(--font-general)',
         fontSize: 13,
         fontWeight: isActive ? 600 : 400,
@@ -904,17 +917,17 @@ function QtyInput({ value, min, step, onChange, quickVals }: {
         <button
           type="button"
           onClick={() => onChange(Math.max(min, value - step))}
-          style={{ width: 38, height: 38, borderRadius: '8px 0 0 8px', border: '2px solid #e0e0e0', borderRight: 'none', backgroundColor: '#f9f9f9', cursor: 'pointer', fontFamily: 'var(--font-jakarta)', fontSize: 18, color: '#333' }}
+          style={{ width: 38, height: 38, borderRadius: '8px 0 0 8px', border: '1px solid rgba(255,255,255,0.15)', borderRight: 'none', backgroundColor: 'rgba(255,255,255,0.05)', cursor: 'pointer', fontFamily: 'var(--font-jakarta)', fontSize: 18, color: '#fff' }}
         >−</button>
         <input
           type="number" min={min} step={step} value={value}
           onChange={e => onChange(Math.max(min, parseInt(e.target.value) || min))}
-          style={{ width: 80, textAlign: 'center', padding: '8px 6px', border: '2px solid #e0e0e0', borderLeft: 'none', borderRight: 'none', backgroundColor: '#f9f9f9', color: '#0D0D0D', fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 15, outline: 'none' }}
+          style={{ width: 80, textAlign: 'center', padding: '8px 6px', border: '1px solid rgba(255,255,255,0.15)', borderLeft: 'none', borderRight: 'none', backgroundColor: 'rgba(255,255,255,0.05)', color: '#ffffff', fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 15, outline: 'none' }}
         />
         <button
           type="button"
           onClick={() => onChange(value + step)}
-          style={{ width: 38, height: 38, borderRadius: '0 8px 8px 0', border: '2px solid #e0e0e0', borderLeft: 'none', backgroundColor: '#f9f9f9', cursor: 'pointer', fontFamily: 'var(--font-jakarta)', fontSize: 18, color: '#333' }}
+          style={{ width: 38, height: 38, borderRadius: '0 8px 8px 0', border: '1px solid rgba(255,255,255,0.15)', borderLeft: 'none', backgroundColor: 'rgba(255,255,255,0.05)', cursor: 'pointer', fontFamily: 'var(--font-jakarta)', fontSize: 18, color: '#fff' }}
         >+</button>
       </div>
       {quickVals && (
@@ -922,7 +935,7 @@ function QtyInput({ value, min, step, onChange, quickVals }: {
           {quickVals.map(q => (
             <button
               key={q} type="button" onClick={() => onChange(q)}
-              style={{ padding: '6px 12px', borderRadius: 100, border: `2px solid ${value === q ? '#C6FF33' : '#e0e0e0'}`, backgroundColor: value === q ? 'rgba(198,255,51,0.12)' : '#f9f9f9', color: value === q ? '#3a5a00' : '#666', fontFamily: 'var(--font-general)', fontSize: 12, cursor: 'pointer', transition: 'all 0.15s' }}
+              style={{ padding: '6px 12px', borderRadius: 100, border: `1px solid ${value === q ? '#C6FF33' : 'rgba(255,255,255,0.15)'}`, backgroundColor: value === q ? 'rgba(198,255,51,0.12)' : 'rgba(255,255,255,0.05)', color: value === q ? '#C6FF33' : 'rgba(255,255,255,0.7)', fontFamily: 'var(--font-general)', fontSize: 12, cursor: 'pointer', transition: 'all 0.15s' }}
             >
               {q.toLocaleString()}
             </button>
@@ -944,10 +957,10 @@ function FormInput({ label, value, onChange, type = 'text', flex }: { label: str
         style={{
           width: '100%',
           padding: '12px 14px',
-          backgroundColor: '#f5f5f5',
-          border: '2px solid #e0e0e0',
+          backgroundColor: 'rgba(255,255,255,0.05)',
+          border: '1px solid rgba(255,255,255,0.15)',
           borderRadius: 10,
-          color: '#0D0D0D',
+          color: '#ffffff',
           fontFamily: 'var(--font-general)',
           fontSize: 14,
           outline: 'none',
@@ -955,7 +968,7 @@ function FormInput({ label, value, onChange, type = 'text', flex }: { label: str
           transition: 'border-color 0.2s',
         } as React.CSSProperties}
         onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#C6FF33'; }}
-        onBlur={e => { (e.currentTarget as HTMLInputElement).style.borderColor = '#e0e0e0'; }}
+        onBlur={e => { (e.currentTarget as HTMLInputElement).style.borderColor = 'rgba(255,255,255,0.15)'; }}
       />
     </div>
   );
