@@ -849,16 +849,18 @@ export default function HomePage() {
         }
 
         .service-inner {
-          width: 100%;
+          max-width: 1100px;
           margin: 0 auto;
           display: flex;
           align-items: center;
-          gap: 0;
+          justify-content: center;
+          gap: 60px;
+          padding: 0 var(--section-px);
         }
         .service-reverse { flex-direction: row-reverse; }
 
-        .service-text { flex: 1 1 340px; min-width: 0; padding: 0 calc(var(--section-px) / 2); max-width: 500px; margin: 0 auto; }
-        .service-image { flex: 1.5 1 300px; min-width: 0; }
+        .service-text { flex: 1 1 400px; min-width: 0; }
+        .service-image { flex: 1 1 500px; min-width: 0; }
         
         .service-image > a > div {
            border-radius: 36px !important;
