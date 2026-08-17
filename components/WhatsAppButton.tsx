@@ -9,11 +9,13 @@ export default function WhatsAppButton() {
       aria-label="Chat on WhatsApp"
       style={{
         position: 'fixed',
-        bottom: 28,
-        right: 28,
-        zIndex: 999,
-        width: 56,
-        height: 56,
+        // On mobile: sit above the bottom nav (80px) + some gap
+        // On desktop: just sit at bottom-right corner
+        bottom: 'calc(env(safe-area-inset-bottom, 0px) + 88px)',
+        right: 20,
+        zIndex: 9500, // always visible — above bottom nav (8000), below AI chat bubble (9999)
+        width: 52,
+        height: 52,
         borderRadius: '50%',
         backgroundColor: '#C6FF33',
         display: 'flex',

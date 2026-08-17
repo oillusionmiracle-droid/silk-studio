@@ -6,6 +6,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import LoadingScreen from "@/components/LoadingScreen";
+import CustomCursor from "@/components/CustomCursor";
+import MobileBottomNav from "@/components/MobileBottomNav";
+import GeminiAssistant from "@/components/GeminiAssistant";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -71,6 +74,9 @@ export default function RootLayout({
         {children}
         <Footer />
         <WhatsAppButton />
+        <CustomCursor />
+        <MobileBottomNav />
+        <GeminiAssistant />
 
         {/* 2. Mailchimp connection script from image_ff0061.png */}
         <Script

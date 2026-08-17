@@ -8,7 +8,8 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ScrollReveal from '@/components/ScrollReveal';
 import FinalCTA from '@/components/FinalCTA';
-import VideoAdSection from '@/components/VideoAdSection';
+import HeroOverlapCards from '@/components/HeroOverlapCards';
+
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -18,12 +19,7 @@ if (typeof window !== 'undefined') {
    DATA
 ───────────────────────────────────────── */
 
-const testimonials = [
-  { text: "Capturing a brand's essence in a single mark is no easy feat, but Silk Studio exceeded our expectations.", author: 'Brand client' },
-  { text: 'The print quality is exceptional. Vibrant, perfectly aligned, consistent every time.', author: 'Marketing client' },
-  { text: 'Quick turnaround on emergency edits. Real life savers. Silk Studio always stays on top 🙌', author: 'Event client' },
-  { text: 'We came with a vague concept and got a high-fidelity reality. Exceptional skill level.', author: 'Startup client' },
-];
+
 
 const categories = [
   { label: 'Logo & branding', img: '/images/categories/logo.jpg', emoji: '✦' },
@@ -121,24 +117,6 @@ function HeroSection({ loaded }: { loaded: boolean }) {
           }}
         />
 
-        {/* Curved edge — dips down at the center like the rim of a circle so the
-            background reads as spilling into the section below instead of cutting
-            off on a straight line. Fill must match the next section's bg (#0D0D0D). */}
-        <svg
-          viewBox="0 0 1440 140"
-          preserveAspectRatio="none"
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            width: '100%',
-            height: 'clamp(48px, 8vw, 140px)',
-            zIndex: 2,
-            display: 'block',
-          }}
-        >
-          <path d="M0,140 L0,70 C480,140 960,140 1440,70 L1440,140 Z" fill="#f5f5f3" />
-        </svg>
       </div>
 
       {/* Centered content */}
@@ -345,11 +323,11 @@ function CategoriesSection() {
   return (
     <section style={{
       backgroundColor: '#0D0D0D',
-      padding: 'clamp(80px, 14vw, 120px) var(--section-px)',
+      padding: 'clamp(80px, 14vw, 120px) 0',
       borderTop: '1px solid rgba(255,255,255,0.06)',
     }}>
-      <div style={{ maxWidth: 1140, margin: '0 auto' }}>
-        <div ref={headingRef} style={{ textAlign: 'center', marginBottom: 'clamp(48px, 8vw, 72px)' }}>
+      <div style={{ width: '100%', margin: '0 auto' }}>
+        <div ref={headingRef} style={{ textAlign: 'center', marginBottom: 'clamp(48px, 8vw, 72px)', padding: '0 var(--section-px)' }}>
           <p style={{
             fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 3,
             color: '#C6FF33', marginBottom: 16, textTransform: 'uppercase',
@@ -410,22 +388,24 @@ function ServiceImageBox({ image, dark }: { image: string; dark?: boolean }) {
   return (
     <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{
-        position: 'relative', borderRadius: 20, overflow: 'hidden',
-        aspectRatio: '4/3',
+        position: 'relative', borderRadius: 28, overflow: 'hidden',
+        aspectRatio: '5/4',
+        maxWidth: 560,
+        margin: '0 auto',
         background: imgFailed
           ? (dark ? 'linear-gradient(135deg, #181818, #242424)' : 'linear-gradient(135deg, #e0e0e0, #f0f0f0)')
           : (dark ? '#141414' : '#e8e8e8'),
-        boxShadow: hov ? '0 32px 80px rgba(0,0,0,0.3)' : '0 8px 32px rgba(0,0,0,0.12)',
-        transition: 'transform 0.5s cubic-bezier(0.25,1,0.5,1), box-shadow 0.5s ease',
-        transform: hov ? 'scale(1.02)' : 'scale(1)',
+        boxShadow: hov ? '0 40px 80px rgba(0,0,0,0.5)' : '0 12px 40px rgba(0,0,0,0.25)',
+        transition: 'transform 0.45s cubic-bezier(0.25,1,0.5,1), box-shadow 0.45s ease',
+        transform: hov ? 'translateY(-10px) scale(1.02)' : 'translateY(0) scale(1)',
         cursor: 'pointer',
       }}
     >
       {!imgFailed && (
         <img src={image} alt="" style={{
           width: '100%', height: '100%', objectFit: 'cover', display: 'block',
-          transition: 'transform 0.6s cubic-bezier(0.25,1,0.5,1)',
-          transform: hov ? 'scale(1.05)' : 'scale(1)',
+          transition: 'transform 0.55s cubic-bezier(0.25,1,0.5,1)',
+          transform: hov ? 'scale(1.06)' : 'scale(1)',
         }}
           onError={() => setImgFailed(true)} />
       )}
@@ -520,34 +500,7 @@ function ServiceFeatureBlock({ tag, headline, body, price, ctaHref, image, imgLe
   );
 }
 
-/* ─────────────────────────────────────────
-   SOCIAL PROOF
-───────────────────────────────────────── */
 
-function SocialProofStrip() {
-  return (
-    <section style={{
-      backgroundColor: '#0D0D0D',
-      borderTop: '1px solid rgba(255,255,255,0.06)',
-      borderBottom: '1px solid rgba(255,255,255,0.06)',
-      padding: '20px 0',
-      overflow: 'hidden',
-    }}>
-      <div className="marquee-outer">
-        <div className="marquee-track-slow">
-          {[...testimonials, ...testimonials].map((t, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 24, padding: '0 32px', flexShrink: 0, whiteSpace: 'nowrap' }}>
-              <p style={{ fontFamily: 'var(--font-general)', fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>
-                &ldquo;{t.text}&rdquo; <span style={{ color: 'rgba(255,255,255,0.35)' }}>— {t.author}</span>
-              </p>
-              <span style={{ color: '#C6FF33', fontSize: 16, flexShrink: 0 }}>✦</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* ─────────────────────────────────────────
    BAY WINDOW PORTFOLIO
@@ -556,6 +509,7 @@ function SocialProofStrip() {
 function BayWindowPortfolio() {
   const [center, setCenter] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
   const autoRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const headingRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -603,6 +557,25 @@ function BayWindowPortfolio() {
     return rel;
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart === null) return;
+    const touchEnd = e.changedTouches[0].clientX;
+    const diff = touchStart - touchEnd;
+
+    if (diff > 50) {
+      next();
+      resetAuto();
+    } else if (diff < -50) {
+      prev();
+      resetAuto();
+    }
+    setTouchStart(null);
+  };
+
   return (
     <section style={{
       backgroundColor: '#0D0D0D',
@@ -626,7 +599,11 @@ function BayWindowPortfolio() {
         </div>
       </div>
 
-      <div className="bay-stage">
+      <div 
+        className="bay-stage"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {portfolioItems.map((item, i) => {
           const rel = getRelPos(i);
           if (Math.abs(rel) > 1) return null;
@@ -694,33 +671,32 @@ function BayWindowPortfolio() {
 
 export default function HomePage() {
   const [heroActive, setHeroActive] = useState(false);
-  const leftCurtainRef = useRef<HTMLDivElement>(null);
-  const rightCurtainRef = useRef<HTMLDivElement>(null);
-  const curtainWrapperRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const tl = gsap.timeline({
       onComplete: () => {
-        if (curtainWrapperRef.current) curtainWrapperRef.current.style.display = 'none';
         setHeroActive(true);
+        if (mainRef.current) {
+          gsap.set(mainRef.current, { clearProps: 'clipPath' });
+        }
       }
     });
-    tl.to([leftCurtainRef.current, rightCurtainRef.current], {
-      xPercent: (i: number) => (i === 0 ? -100 : 100),
-      duration: 1.1, ease: 'power4.inOut', delay: 0.3,
+    
+    tl.to(mainRef.current, {
+      clipPath: 'circle(150% at 50% 50%)',
+      duration: 1.5,
+      ease: 'power3.inOut',
+      delay: 0.2,
     });
   }, []);
 
   return (
     <>
-      <div ref={curtainWrapperRef} style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9999, display: 'flex', pointerEvents: 'none' }}>
-        <div ref={leftCurtainRef} style={{ flex: 1, height: '100%', backgroundColor: '#000000', borderRight: '1px solid rgba(255,255,255,0.06)', pointerEvents: 'auto' }} />
-        <div ref={rightCurtainRef} style={{ flex: 1, height: '100%', backgroundColor: '#000000', borderLeft: '1px solid rgba(255,255,255,0.06)', pointerEvents: 'auto' }} />
-      </div>
-
-      <main style={{ backgroundColor: '#0D0D0D' }}>
+      <div style={{ position: 'fixed', inset: 0, backgroundColor: '#000000', zIndex: -1 }} />
+      <main ref={mainRef} style={{ backgroundColor: '#0D0D0D', minHeight: '100vh', clipPath: 'circle(0% at 50% 50%)' }}>
         <HeroSection loaded={heroActive} />
-        <VideoAdSection />
+        <HeroOverlapCards />
         <CategoriesSection />
 
         <ServiceFeatureBlock
@@ -728,7 +704,7 @@ export default function HomePage() {
           headline="Print Services"
           body="Fast. Flawless. Every time. Flyers, banners, billboards, jotters, ID cards — produced fast through our Lagos-wide production network. Zero compromise on quality."
           price="From ₦4,500" ctaHref="/order?service=print"
-          image="/images/services/print-bg.jpg" imgLeft={false} dark={false}
+          image="/images/services/print-bg.jpg" imgLeft={false} dark={true}
         />
         <ServiceFeatureBlock
           tag=""
@@ -738,7 +714,6 @@ export default function HomePage() {
           image="/images/services/web-bg.jpg" imgLeft={true} dark={true}
         />
 
-        <SocialProofStrip />
         <BayWindowPortfolio />
         <FinalCTA />
       </main>
@@ -832,16 +807,36 @@ export default function HomePage() {
         }
 
         @media (max-width: 640px) {
-          .categories-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+          .categories-grid {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            padding-bottom: 24px;
+            margin-left: -var(--section-px);
+            margin-right: -var(--section-px);
+            padding-left: var(--section-px);
+            padding-right: var(--section-px);
+            scrollbar-width: none;
+          }
+          .categories-grid::-webkit-scrollbar {
+            display: none;
+          }
+          .categories-grid > * {
+            flex: 0 0 65%;
+            min-width: 200px;
+            scroll-snap-align: center;
+          }
         }
 
         @media (max-width: 480px) {
-          .categories-grid { grid-template-columns: 1fr; gap: 12px; }
+          .categories-grid > * {
+            flex: 0 0 75%;
+          }
         }
 
         /* ── SERVICE BLOCKS ── */
         .service-section {
-          padding: var(--section-py) var(--section-px);
+          padding: var(--section-py) 0;
           border-top: 1px solid transparent;
         }
         .service-dark {
@@ -854,21 +849,24 @@ export default function HomePage() {
         }
 
         .service-inner {
-          max-width: 1140px;
+          width: 100%;
           margin: 0 auto;
           display: flex;
           align-items: center;
-          gap: 64px;
-          flex-wrap: wrap;
+          gap: 0;
         }
         .service-reverse { flex-direction: row-reverse; }
 
-        .service-text { flex: 1 1 340px; min-width: 0; }
-        .service-image { flex: 1 1 300px; min-width: 0; }
+        .service-text { flex: 1 1 340px; min-width: 0; padding: 0 calc(var(--section-px) / 2); max-width: 500px; margin: 0 auto; }
+        .service-image { flex: 1.5 1 300px; min-width: 0; }
+        
+        .service-image > a > div {
+           border-radius: 36px !important;
+        }
 
         @media (max-width: 768px) {
           .service-inner { gap: 32px; flex-direction: column !important; }
-          .service-text, .service-image { flex: 1 1 100%; }
+          .service-text, .service-image { flex: 1 1 100%; max-width: none; }
         }
 
         .service-tag {

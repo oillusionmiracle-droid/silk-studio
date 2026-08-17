@@ -19,12 +19,24 @@ import {
   CUSTOM_QUOTE_SERVICES,
 } from '@/lib/pricing';
 
+const PlaceholderIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+    <circle cx="8.5" cy="8.5" r="1.5" />
+    <polyline points="21 15 16 10 5 21" />
+  </svg>
+);
+
+/* 
+  Replace <PlaceholderIcon /> with your own custom SVGs or 
+  <img src="/icons/your-icon.svg" width={24} height={24} /> 
+*/
 const CATEGORIES = [
-  { id: 'Print', label: 'Print', icon: '📄' },
-  { id: 'Apparel', label: 'Apparel', icon: '👕' },
-  { id: 'Design', label: 'Design', icon: '✨' },
-  { id: 'Web', label: 'Web', icon: '🌐' },
-  { id: 'Bundle', label: 'Bundle', icon: '📦' },
+  { id: 'Print', label: 'Print', icon: <PlaceholderIcon /> },
+  { id: 'Apparel', label: 'Apparel', icon: <PlaceholderIcon /> },
+  { id: 'Design', label: 'Design', icon: <PlaceholderIcon /> },
+  { id: 'Web', label: 'Web', icon: <PlaceholderIcon /> },
+  { id: 'Bundle', label: 'Bundle', icon: <PlaceholderIcon /> },
 ];
 
 const SUB_SERVICES: Record<string, string[]> = {
@@ -35,31 +47,31 @@ const SUB_SERVICES: Record<string, string[]> = {
   Bundle: ['Event Package', 'Business Starter', 'Custom Bundle'],
 };
 
-const SERVICE_ICONS: Record<string, string> = {
-  'Flyers & Handbills': '📄',
-  'Banners': '🎯',
-  'Billboards & Flex': '📻',
-  'Jotters & Notepads': '📓',
-  'ID Cards': '🆔',
-  'Business Cards': '💳',
-  'Letterheads': '📧',
-  'Custom T-Shirts': '👕',
-  'Sweatshirts': '🧥',
-  'Grey Joggers': '👖',
-  'Hoodies': '🧢',
-  'Event Merch Set': '🎁',
-  'Corporate Uniforms': '👔',
-  'Logo & Brand Identity': '✨',
-  'Event Branding Kit': '🎨',
-  'Social Media Templates': '📱',
-  'Print-Ready Artwork': '🖼️',
-  'Landing Page': '🌐',
-  'Business Website': '🏢',
-  'E-commerce': '🛍️',
-  'Event Page': '🎪',
-  'Event Package': '📦',
-  'Business Starter': '🚀',
-  'Custom Bundle': '🎯',
+const SERVICE_ICONS: Record<string, React.ReactNode> = {
+  'Flyers & Handbills': <PlaceholderIcon />,
+  'Banners': <PlaceholderIcon />,
+  'Billboards & Flex': <PlaceholderIcon />,
+  'Jotters & Notepads': <PlaceholderIcon />,
+  'ID Cards': <PlaceholderIcon />,
+  'Business Cards': <PlaceholderIcon />,
+  'Letterheads': <PlaceholderIcon />,
+  'Custom T-Shirts': <PlaceholderIcon />,
+  'Sweatshirts': <PlaceholderIcon />,
+  'Grey Joggers': <PlaceholderIcon />,
+  'Hoodies': <PlaceholderIcon />,
+  'Event Merch Set': <PlaceholderIcon />,
+  'Corporate Uniforms': <PlaceholderIcon />,
+  'Logo & Brand Identity': <PlaceholderIcon />,
+  'Event Branding Kit': <PlaceholderIcon />,
+  'Social Media Templates': <PlaceholderIcon />,
+  'Print-Ready Artwork': <PlaceholderIcon />,
+  'Landing Page': <PlaceholderIcon />,
+  'Business Website': <PlaceholderIcon />,
+  'E-commerce': <PlaceholderIcon />,
+  'Event Page': <PlaceholderIcon />,
+  'Event Package': <PlaceholderIcon />,
+  'Business Starter': <PlaceholderIcon />,
+  'Custom Bundle': <PlaceholderIcon />,
 };
 
 export default function OrderPage() {
@@ -766,7 +778,7 @@ export default function OrderPage() {
                         onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.9'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
                       >
-                        {isCustomQuote ? 'Submit Brief →' : 'Pay Deposit →'}
+                        {isCustomQuote ? 'Submit Brief →' : (payFull ? 'Pay Full Amount →' : 'Pay Deposit →')}
                       </motion.button>
                     )}
 
@@ -860,7 +872,7 @@ export default function OrderPage() {
                   onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.9'; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
                 >
-                  {isCustomQuote ? 'Submit Brief →' : 'Pay Deposit →'}
+                  {isCustomQuote ? 'Submit Brief →' : (payFull ? 'Pay Full Amount →' : 'Pay Deposit →')}
                 </button>
               )}
             </div>
