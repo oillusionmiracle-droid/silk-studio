@@ -1,6 +1,15 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
+
 export default function WhatsAppButton() {
+  const pathname = usePathname();
+
+  // Hide on apparel section per user request
+  if (pathname?.startsWith('/apparel')) {
+    return null;
+  }
+
   return (
     <a
       href="https://wa.me/2347064829776?text=Hi+Silk+Studio%2C+I%27d+like+to+place+an+order"

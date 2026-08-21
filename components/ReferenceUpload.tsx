@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { CldUploadWidget } from 'next-cloudinary';
+import { UploadCloud, X, FileText } from 'lucide-react';
 
 interface ReferenceUploadProps {
   onUpload: (url: string) => void;
@@ -52,11 +53,7 @@ export default function ReferenceUpload({ onUpload }: ReferenceUploadProps) {
             }}
           >
             <div style={{ width: 48, height: 48, borderRadius: 12, backgroundColor: 'rgba(198,255,51,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5a7a00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="17 8 12 3 7 8" />
-                <line x1="12" y1="3" x2="12" y2="15" />
-              </svg>
+              <UploadCloud size={24} color="#5a7a00" strokeWidth={2} />
             </div>
             <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 600, fontSize: 16, color: '#333', marginBottom: 6 }}>Drop files here or click to browse</p>
             <p style={{ fontFamily: 'var(--font-general)', fontSize: 13, color: '#999' }}>JPG, PNG, PDF, AI, PSD, CDR — Max 20MB</p>
@@ -80,12 +77,15 @@ export default function ReferenceUpload({ onUpload }: ReferenceUploadProps) {
                 alignItems: 'center',
               }}
             >
-              <span style={{ fontFamily: 'var(--font-general)', fontSize: 14, color: '#333' }}>{file.name}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <FileText size={16} color="#666" />
+                <span style={{ fontFamily: 'var(--font-general)', fontSize: 14, color: '#333' }}>{file.name}</span>
+              </div>
               <button
                 onClick={() => removeFile(i)}
-                style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', fontSize: 18, lineHeight: 1 }}
+                style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
-                ×
+                <X size={16} />
               </button>
             </div>
           ))}

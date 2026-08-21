@@ -2,11 +2,14 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
+import { MessageSquare, Sparkles, Send, X } from 'lucide-react';
 
 type Message = { role: 'user' | 'model'; content: string };
 
 export default function GeminiAssistant() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { role: 'model', content: "Hi there! I'm the Silk Studio AI assistant. How can I help you today?" }
@@ -24,6 +27,11 @@ export default function GeminiAssistant() {
     window.addEventListener('open-gemini-chat', handleOpen);
     return () => window.removeEventListener('open-gemini-chat', handleOpen);
   }, []);
+
+  // Hide on apparel section per user request
+  if (pathname?.startsWith('/apparel')) {
+    return null;
+  }
 
   const sendMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -73,6 +81,7 @@ export default function GeminiAssistant() {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             onClick={() => setIsOpen(true)}
+            aria-label="Open AI Assistant"
             style={{
               position: 'fixed',
               bottom: 'calc(env(safe-area-inset-bottom, 0px) + 152px)', // above WhatsApp (88px) + WhatsApp height (52px) + gap
@@ -85,10 +94,7 @@ export default function GeminiAssistant() {
               cursor: 'pointer',
             }}
           >
-            {/* Placeholder icon. Replace <svg> with <img src="/path/to/your-icon.svg" width={24} height={24} /> */}
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
+            <MessageSquare size={22} color="#111" strokeWidth={2} />
           </motion.button>
         )}
       </AnimatePresence>
@@ -110,10 +116,12 @@ export default function GeminiAssistant() {
           >
             <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#C6FF33', boxShadow: '0 0 12px #C6FF33' }} />
+                <Sparkles size={16} color="#C6FF33" />
                 <h3 style={{ fontFamily: 'var(--font-jakarta)', fontSize: 16, fontWeight: 700, margin: 0, color: '#fff' }}>Silk Assistant</h3>
               </div>
-              <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', color: '#888', fontSize: 20, cursor: 'pointer' }}>✕</button>
+              <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <X size={20} />
+              </button>
             </div>
 
             <div style={{ flex: 1, overflowY: 'auto', padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -167,7 +175,7 @@ export default function GeminiAssistant() {
                   transition: 'background 0.2s',
                 }}
               >
-                ↑
+                <Send size={18} />
               </button>
             </form>
           </motion.div>

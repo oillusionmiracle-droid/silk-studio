@@ -351,16 +351,16 @@ function SizeGuidePanel({ isOpen, onClose, category }: { isOpen: boolean; onClos
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onClose}
-            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 1000 }}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 10005, backdropFilter: 'blur(4px)' }}
           />
           <motion.div
             initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
             transition={{ ...springTransition, stiffness: 300 }}
             style={{
-              position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1001,
+              position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 10006,
               background: T.white, borderRadius: '24px 24px 0 0',
-              padding: '32px 24px', maxHeight: '70vh', overflowY: 'auto',
-              boxShadow: '0 -8px 40px rgba(0,0,0,0.15)',
+              padding: '32px 24px', maxHeight: '75vh', overflowY: 'auto',
+              boxShadow: '0 -8px 40px rgba(0,0,0,0.25)',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
@@ -548,7 +548,7 @@ function ProductDetail({ product, onClose }: { product: Product; onClose: () => 
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 100, backdropFilter: 'blur(4px)' }}
+        style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 10000, backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}
       />
       <motion.div
         initial={{ opacity: 0, y: 40 }}
@@ -556,25 +556,27 @@ function ProductDetail({ product, onClose }: { product: Product; onClose: () => 
         exit={{ opacity: 0, y: 40 }}
         transition={{ duration: 0.4, ease: EASE }}
         style={{
-          position: 'fixed', inset: 0, zIndex: 101,
+          position: 'fixed', inset: 0, zIndex: 10001,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: 16, pointerEvents: 'none',
+          padding: 'clamp(8px, 2.5vw, 24px)', pointerEvents: 'none',
         }}
       >
         <div
           onClick={e => e.stopPropagation()}
+          className="product-detail-card"
           style={{
             pointerEvents: 'auto',
-            width: '100%', maxWidth: 900, maxHeight: '90vh', overflowY: 'auto',
-            background: T.white, borderRadius: 28,
-            boxShadow: '0 32px 80px rgba(0,0,0,0.2)',
+            width: '100%', maxWidth: 860, maxHeight: '90vh', overflowY: 'auto',
+            background: T.white, borderRadius: 24,
+            boxShadow: '0 24px 70px rgba(0,0,0,0.3)',
             display: 'flex', flexWrap: 'wrap',
+            position: 'relative',
           }}
         >
           {/* Images */}
-          <div style={{ flex: '1 1 340px', minWidth: 280, position: 'relative', aspectRatio: '3/4', overflow: 'hidden', borderRadius: '28px 0 0 28px', background: '#f5f5f5' }}>
-            <button onClick={onClose} style={{ position: 'absolute', top: 16, right: 16, zIndex: 5, width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(8px)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <X size={18} color={T.text} />
+          <div style={{ flex: '1 1 320px', minWidth: 260, position: 'relative', aspectRatio: '3/4', minHeight: 340, overflow: 'hidden', borderRadius: '24px 24px 0 0', background: '#f5f5f5' }}>
+            <button onClick={onClose} aria-label="Close modal" style={{ position: 'absolute', top: 16, right: 16, zIndex: 10, width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+              <X size={20} color={T.text} />
             </button>
             {product.image_1_url && (
               <img src={product.image_1_url} alt={product.name} style={{
@@ -602,7 +604,7 @@ function ProductDetail({ product, onClose }: { product: Product; onClose: () => 
           </div>
 
           {/* Details */}
-          <div style={{ flex: '1 1 300px', padding: 'clamp(20px, 4vw, 32px)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: '1 1 320px', minWidth: 260, padding: 'clamp(20px, 4vw, 32px)', display: 'flex', flexDirection: 'column' }}>
             <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 'clamp(22px, 3vw, 28px)', color: T.text, marginBottom: 8 }}>
               {product.name}
             </h2>
@@ -791,7 +793,7 @@ function CartDrawer() {
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={() => setIsOpen(false)}
-            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 200, backdropFilter: 'blur(2px)' }}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 10005, backdropFilter: 'blur(4px)' }}
           />
           <motion.div
             initial={{ x: '100%' }}
@@ -799,10 +801,10 @@ function CartDrawer() {
             exit={{ x: '100%' }}
             transition={{ ...springTransition, stiffness: 300 }}
             style={{
-              position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 201,
+              position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 10006,
               width: '100%', maxWidth: 420,
               background: T.white,
-              boxShadow: '-8px 0 40px rgba(0,0,0,0.15)',
+              boxShadow: '-8px 0 40px rgba(0,0,0,0.25)',
               display: 'flex', flexDirection: 'column',
             }}
           >

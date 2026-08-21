@@ -4,55 +4,13 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-/* 
-  Placeholder SVG icons — swap these with your own.
-  Replace <svg>...</svg> with <img src="/icons/your-icon.svg" width={22} height={22} />
-*/
-function HomeIcon({ active }: { active: boolean }) {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#C6FF33' : 'rgba(255,255,255,0.5)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-      <polyline points="9 22 9 12 15 12 15 22" />
-    </svg>
-  );
-}
-
-function ServicesIcon({ active }: { active: boolean }) {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#C6FF33' : 'rgba(255,255,255,0.5)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="7" height="7" />
-      <rect x="14" y="3" width="7" height="7" />
-      <rect x="3" y="14" width="7" height="7" />
-      <rect x="14" y="14" width="7" height="7" />
-    </svg>
-  );
-}
-
-function OrderIcon({ active }: { active: boolean }) {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#C6FF33' : 'rgba(255,255,255,0.5)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <path d="M16 10a4 4 0 0 1-8 0" />
-    </svg>
-  );
-}
-
-function PortfolioIcon({ active }: { active: boolean }) {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#C6FF33' : 'rgba(255,255,255,0.5)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-      <line x1="8" y1="21" x2="16" y2="21" />
-      <line x1="12" y1="17" x2="12" y2="21" />
-    </svg>
-  );
-}
+import { Home, LayoutGrid, ShoppingBag, Layers } from 'lucide-react';
 
 const navItems = [
-  { label: 'Home', href: '/', Icon: HomeIcon },
-  { label: 'Services', href: '/services', Icon: ServicesIcon },
-  { label: 'Order', href: '/order', Icon: OrderIcon },
-  { label: 'Portfolio', href: '/portfolio', Icon: PortfolioIcon },
+  { label: 'Home', href: '/', Icon: Home },
+  { label: 'Services', href: '/services', Icon: LayoutGrid },
+  { label: 'Order', href: '/order', Icon: ShoppingBag },
+  { label: 'Portfolio', href: '/portfolio', Icon: Layers },
 ];
 
 export default function MobileBottomNav() {
@@ -120,7 +78,7 @@ export default function MobileBottomNav() {
               gap: 4,
             }}
           >
-            <Icon active={isActive} />
+            <Icon size={20} color={isActive ? '#C6FF33' : 'rgba(255,255,255,0.5)'} strokeWidth={isActive ? 2.5 : 1.8} />
             <span style={{
               fontFamily: 'var(--font-jakarta)',
               fontSize: 10,
