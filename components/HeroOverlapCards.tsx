@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Volume2, VolumeX } from 'lucide-react';
 
 /* 
   Placeholder items — swap src with your own image or video paths.
@@ -13,21 +15,139 @@ const placeholders = [
   { id: 3, type: 'image' as const, src: '/images/portfolio/work-5.jpg', label: 'PROJECT THREE' },
 ];
 
-function MediaCard({ item, isCenter, onInteract }: { item: typeof placeholders[0]; isCenter: boolean; onInteract: () => void }) {
+/* ─────────────────────────────────────────
+   VIDEO FULLSCREEN MODAL
+───────────────────────────────────────── */
+function VideoModal({ src, onClose }: { src: string; onClose: () => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+
+  useEffect(() => {
+    // Play unmuted when modal opens
+    if (videoRef.current) {
+      videoRef.current.muted = false;
+      videoRef.current.currentTime = 0;
+      videoRef.current.play().catch(() => {
+        // Autoplay with sound may be blocked — fall back to muted
+        if (videoRef.current) {
+          videoRef.current.muted = true;
+          setIsMuted(true);
+          videoRef.current.play().catch(() => {});
+        }
+      });
+    }
+    // Lock body scroll
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    videoRef.current.muted = !videoRef.current.muted;
+    setIsMuted(videoRef.current.muted);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: 'rgba(0,0,0,0.92)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        cursor: 'pointer',
+      }}
+    >
+      {/* Close button */}
+      <button
+        onClick={onClose}
+        style={{
+          position: 'absolute', top: 20, right: 20, zIndex: 10,
+          width: 44, height: 44, borderRadius: '50%',
+          background: 'rgba(255,255,255,0.15)',
+          backdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'background 0.2s',
+        }}
+      >
+        <X size={20} color="#ffffff" />
+      </button>
+
+      {/* Mute/Unmute button */}
+      <button
+        onClick={toggleMute}
+        style={{
+          position: 'absolute', bottom: 20, right: 20, zIndex: 10,
+          display: 'flex', alignItems: 'center', gap: 6,
+          padding: '8px 16px', borderRadius: 100,
+          background: 'rgba(255,255,255,0.15)',
+          backdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          color: '#ffffff',
+          fontFamily: 'var(--font-jakarta)',
+          fontSize: 12, fontWeight: 600,
+          cursor: 'pointer',
+          transition: 'background 0.2s',
+        }}
+      >
+        {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+        {isMuted ? 'Unmute' : 'Sound On'}
+      </button>
+
+      {/* Video */}
+      <motion.video
+        ref={videoRef}
+        src={src}
+        loop
+        playsInline
+        controls={false}
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        onClick={e => e.stopPropagation()}
+        style={{
+          maxWidth: '92vw', maxHeight: '85vh',
+          borderRadius: 16,
+          boxShadow: '0 32px 80px rgba(0,0,0,0.6)',
+          objectFit: 'contain',
+          cursor: 'default',
+        }}
+      />
+    </motion.div>
+  );
+}
+
+/* ─────────────────────────────────────────
+   MEDIA CARD
+───────────────────────────────────────── */
+function MediaCard({ item, isCenter, onInteract, onVideoFullscreen }: {
+  item: typeof placeholders[0];
+  isCenter: boolean;
+  onInteract: () => void;
+  onVideoFullscreen: (src: string) => void;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Always autoplay muted — not just when center
+  useEffect(() => {
+    if (item.type === 'video' && videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [item.type]);
 
   const handleClick = () => {
     onInteract();
     if (item.type === 'video') {
-      if (!videoRef.current) return;
-      if (videoRef.current.paused) {
-        videoRef.current.play();
-        setPlaying(true);
-      } else {
-        videoRef.current.pause();
-        setPlaying(false);
-      }
+      // Open fullscreen modal with sound on click
+      onVideoFullscreen(item.src);
     }
   };
 
@@ -47,32 +167,31 @@ function MediaCard({ item, isCenter, onInteract }: { item: typeof placeholders[0
         <>
           <video
             ref={videoRef}
-            autoPlay={isCenter}
+            autoPlay
             muted
             loop
             playsInline
             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-            onPlay={() => setPlaying(true)}
-            onPause={() => setPlaying(false)}
           >
             <source src={item.src} />
           </video>
-          {/* Play/Pause overlay */}
+          {/* Tap to watch overlay hint */}
           <div style={{
             position: 'absolute', inset: 0, display: 'flex',
-            alignItems: 'center', justifyContent: 'center',
-            background: 'rgba(0,0,0,0.15)',
-            opacity: playing ? 0 : 1,
-            transition: 'opacity 0.3s',
+            alignItems: 'flex-end', justifyContent: 'center',
+            background: 'linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 40%)',
+            padding: 16, pointerEvents: 'none',
           }}>
-            <div style={{
-              width: 56, height: 56, borderRadius: '50%',
-              background: 'rgba(255,255,255,0.15)',
+            <span style={{
+              fontFamily: 'var(--font-jakarta)', fontSize: 11, fontWeight: 600,
+              color: 'rgba(255,255,255,0.8)', letterSpacing: '0.5px',
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '6px 12px', borderRadius: 100,
+              background: 'rgba(255,255,255,0.12)',
               backdropFilter: 'blur(8px)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            </div>
+              <Volume2 size={12} /> Tap to watch with sound
+            </span>
           </div>
         </>
       )}
@@ -89,6 +208,7 @@ function MediaCard({ item, isCenter, onInteract }: { item: typeof placeholders[0
 export default function HeroOverlapCards() {
   const [order, setOrder] = useState([0, 1, 2]); // [left, center, right]
   const [isPaused, setIsPaused] = useState(false);
+  const [fullscreenVideo, setFullscreenVideo] = useState<string | null>(null);
 
   useEffect(() => {
     if (isPaused) return;
@@ -195,13 +315,13 @@ export default function HeroOverlapCards() {
         {/* Desktop */}
         <div className="hero-cards-desktop">
           <div className="hc-left">
-            <MediaCard item={placeholders[order[0]]} isCenter={false} onInteract={() => setIsPaused(true)} />
+            <MediaCard item={placeholders[order[0]]} isCenter={false} onInteract={() => setIsPaused(true)} onVideoFullscreen={setFullscreenVideo} />
           </div>
           <div className="hc-center">
-            <MediaCard item={placeholders[order[1]]} isCenter={true} onInteract={() => setIsPaused(true)} />
+            <MediaCard item={placeholders[order[1]]} isCenter={true} onInteract={() => setIsPaused(true)} onVideoFullscreen={setFullscreenVideo} />
           </div>
           <div className="hc-right">
-            <MediaCard item={placeholders[order[2]]} isCenter={false} onInteract={() => setIsPaused(true)} />
+            <MediaCard item={placeholders[order[2]]} isCenter={false} onInteract={() => setIsPaused(true)} onVideoFullscreen={setFullscreenVideo} />
           </div>
         </div>
 
@@ -209,11 +329,18 @@ export default function HeroOverlapCards() {
         <div className="hero-cards-mobile">
           {placeholders.map((item) => (
             <div key={item.id} className="hc-mobile-card">
-              <MediaCard item={item} isCenter={false} onInteract={() => setIsPaused(true)} />
+              <MediaCard item={item} isCenter={false} onInteract={() => setIsPaused(true)} onVideoFullscreen={setFullscreenVideo} />
             </div>
           ))}
         </div>
       </div>
+
+      {/* Fullscreen video modal */}
+      <AnimatePresence>
+        {fullscreenVideo && (
+          <VideoModal src={fullscreenVideo} onClose={() => setFullscreenVideo(null)} />
+        )}
+      </AnimatePresence>
     </>
   );
 }

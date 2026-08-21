@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, DM_Mono } from "next/font/google";
-import Script from "next/script"; // 1. Imported Next.js Script handler
 import "@/app/globals.css";
+import { CartProvider } from '@/lib/CartContext';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -71,24 +71,15 @@ export default function RootLayout({
       <body>
         <LoadingScreen />
         <Navbar />
-        {children}
+        <CartProvider>
+          {children}
+        </CartProvider>
         <Footer />
         <WhatsAppButton />
         <CustomCursor />
         <MobileBottomNav />
         <GeminiAssistant />
 
-        {/* 2. Mailchimp connection script from image_ff0061.png */}
-        <Script
-          id="mailchimp-connect"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              !function(c,h,i,m,p){m=c.createElement(h),p=c.getElementsByTagName(h)[0],m.async=1,m.src=i,p.parentNode.insertBefore(m,p)}
-              (document,"script","https://chimpstatic.com/mcjs-connected/js/users/66981331441b2dfe239430d16/6e0ab92c7cedbd4c5a32591eb.js");
-            `,
-          }}
-        />
       </body>
     </html>
   );

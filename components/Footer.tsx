@@ -42,7 +42,7 @@ const legalLinks = [
   { label: 'Privacy', href: '/privacy' },
 ];
 
-const NEWSLETTER_ENDPOINT = '/api/subscribe';
+const NEWSLETTER_ENDPOINT = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/subscribe-newsletter`;
 
 async function subscribeEmail(email: string): Promise<{ ok: boolean; message: string }> {
   try {
@@ -51,8 +51,9 @@ async function subscribeEmail(email: string): Promise<{ ok: boolean; message: st
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
     });
-    if (!res.ok) throw new Error('Request failed');
-    return { ok: true, message: "You're on the list! 🎉" };
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    return { ok: true, message: data.message || "You're on the list!" };
   } catch {
     return { ok: false, message: 'Something went wrong. Try again.' };
   }
