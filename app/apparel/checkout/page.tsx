@@ -197,18 +197,60 @@ export default function CheckoutPage() {
 
     const customerEmail = email.trim() || `${phone.replace(/\D/g, '') || Date.now()}@orders.silkstudio.ng`;
 
+    const verifyPayment = async (paymentRef: string) => {
+      setStatus('processing');
+
+      try {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        if (supabaseUrl) {
+          const res = await fetch(`${supabaseUrl}/functions/v1/verify-order`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              paystack_ref: paymentRef,
+              customer_name: name,
+              phone,
+              email: email || null,
+              address,
+              area,
+              subtotal: totalPrice,
+              delivery_fee: deliveryFee,
+              total: grandTotal,
+              items: items.map((item: any) => ({
+                variant_id: item.variantId,
+                quantity: item.quantity,
+                price_at_purchase: item.price,
+              })),
+            }),
+          });
+
+          if (res.ok) {
+            setStatus('success');
+            clearCart();
+            return;
+          }
+        }
+
+        setStatus('success');
+        clearCart();
+      } catch (verifyErr) {
+        console.warn('Verify warning:', verifyErr);
+        setStatus('success');
+        clearCart();
+      }
+    };
+
     try {
       const paystackPop = (window as any).PaystackPop;
       if (!paystackPop) {
         throw new Error('Paystack is unavailable');
       }
 
-      // Check if setup method exists (V1 inline)
       if (typeof paystackPop.setup === 'function') {
         const handler = paystackPop.setup({
           key: PAYSTACK_PUBLIC_KEY,
           email: customerEmail,
-          amount: Math.round(grandTotal * 100), // kobo
+          amount: Math.round(grandTotal * 100),
           currency: 'NGN',
           ref,
           metadata: {
@@ -219,80 +261,42 @@ export default function CheckoutPage() {
               { display_name: 'Area', variable_name: 'area', value: area },
             ],
           },
-          onClose: () => {
+          onClose: function () {
             setIsInitializing(false);
           },
-          callback: async (response: { reference: string; status: string }) => {
+          callback: function (response: { reference?: string; status?: string }) {
             setIsInitializing(false);
-            if (response.status === 'success' || response.reference) {
-              setStatus('processing');
 
-              try {
-                const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-                if (supabaseUrl) {
-                  const res = await fetch(`${supabaseUrl}/functions/v1/verify-order`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      paystack_ref: response.reference || ref,
-                      customer_name: name,
-                      phone,
-                      email: email || null,
-                      address,
-                      area,
-                      subtotal: totalPrice,
-                      delivery_fee: deliveryFee,
-                      total: grandTotal,
-                      items: items.map(item => ({
-                        variant_id: item.variantId,
-                        quantity: item.quantity,
-                        price_at_purchase: item.price,
-                      })),
-                    }),
-                  });
-
-                  if (res.ok) {
-                    setStatus('success');
-                    clearCart();
-                    return;
-                  }
-                }
-                
-                // Fallback success if edge function is unreachable or not yet configured
-                setStatus('success');
-                clearCart();
-              } catch (verifyErr) {
-                console.warn('Verify warning:', verifyErr);
-                setStatus('success');
-                clearCart();
-              }
-            } else {
-              setErrorMessage('Payment was not completed. Please try again.');
-              setStatus('error');
+            if (response?.status === 'success' || response?.reference) {
+              void verifyPayment(response.reference || ref);
+              return;
             }
+
+            setErrorMessage('Payment was not completed. Please try again.');
+            setStatus('error');
           },
         });
 
         handler.openIframe();
-      } else {
-        // Fallback for V2 class instantiation
-        const paystackInstance = new paystackPop();
-        paystackInstance.newTransaction({
-          key: PAYSTACK_PUBLIC_KEY,
-          email: customerEmail,
-          amount: Math.round(grandTotal * 100),
-          currency: 'NGN',
-          reference: ref,
-          onSuccess: async (transaction: any) => {
-            setIsInitializing(false);
-            setStatus('success');
-            clearCart();
-          },
-          onCancel: () => {
-            setIsInitializing(false);
-          }
-        });
+        return;
       }
+
+      const paystackInstance = new paystackPop();
+      paystackInstance.newTransaction({
+        key: PAYSTACK_PUBLIC_KEY,
+        email: customerEmail,
+        amount: Math.round(grandTotal * 100),
+        currency: 'NGN',
+        reference: ref,
+        onSuccess: async (transaction: any) => {
+          setIsInitializing(false);
+          setStatus('success');
+          clearCart();
+        },
+        onCancel: () => {
+          setIsInitializing(false);
+        },
+      });
     } catch (err: any) {
       console.error('Paystack initialization error:', err);
       setIsInitializing(false);
