@@ -4,13 +4,11 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { Home, LayoutGrid, ShoppingBag, Layers } from 'lucide-react';
-
 const navItems = [
-  { label: 'Home', href: '/', Icon: Home },
-  { label: 'Services', href: '/services', Icon: LayoutGrid },
-  { label: 'Order', href: '/order', Icon: ShoppingBag },
-  { label: 'Portfolio', href: '/portfolio', Icon: Layers },
+  { label: 'Home', href: '/', icon: '/icons/home.png' },
+  { label: 'Services', href: '/services', icon: '/icons/services.png' },
+  { label: 'Order', href: '/order', icon: '/icons/order.png' },
+  { label: 'Portfolio', href: '/portfolio', icon: '/icons/portfolio.png' },
 ];
 
 export default function MobileBottomNav() {
@@ -18,6 +16,9 @@ export default function MobileBottomNav() {
   const [visible, setVisible] = useState(true);
   const lastScrollY = useRef(0);
   const pathname = usePathname();
+  
+  // Detect if on apparel page for light mode
+  const isApparelPage = pathname.includes('/apparel');
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -46,24 +47,28 @@ export default function MobileBottomNav() {
 
   if (!isMobile) return null;
 
+  const bgColor = isApparelPage ? 'rgba(255, 255, 255, 0.8)' : 'rgba(13, 13, 13, 0.7)';
+  const borderColor = isApparelPage ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255,255,255,0.15)';
+
   return (
     <div style={{
       position: 'fixed',
       bottom: 0,
       left: 0,
       width: '100%',
-      backgroundColor: 'rgba(13, 13, 13, 0.95)',
-      backdropFilter: 'blur(16px)',
-      borderTop: '1px solid rgba(255,255,255,0.08)',
+      backgroundColor: bgColor,
+      backdropFilter: 'blur(30px)',
+      WebkitBackdropFilter: 'blur(30px)',
+      borderTop: `1px solid ${borderColor}`,
       display: 'flex',
       justifyContent: 'space-around',
       alignItems: 'center',
-      padding: '10px 0 calc(10px + env(safe-area-inset-bottom, 0px))',
-      zIndex: 8000, // Below WhatsApp (9000) and AI chat (9999)
+      padding: '12px 0 calc(12px + env(safe-area-inset-bottom, 0px))',
+      zIndex: 8000,
       transform: visible ? 'translateY(0)' : 'translateY(100%)',
       transition: 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
     }}>
-      {navItems.map(({ label, href, Icon }) => {
+      {navItems.map(({ label, href, icon }) => {
         const isActive = pathname === href;
         return (
           <Link
@@ -72,21 +77,21 @@ export default function MobileBottomNav() {
             style={{
               textDecoration: 'none',
               display: 'flex',
-              flexDirection: 'column',
               alignItems: 'center',
-              padding: '4px 16px',
-              gap: 4,
+              justifyContent: 'center',
+              transition: 'all 0.25s ease',
             }}
           >
-            <Icon size={20} color={isActive ? '#C6FF33' : 'rgba(255,255,255,0.5)'} strokeWidth={isActive ? 2.5 : 1.8} />
-            <span style={{
-              fontFamily: 'var(--font-jakarta)',
-              fontSize: 10,
-              fontWeight: isActive ? 700 : 500,
-              color: isActive ? '#C6FF33' : 'rgba(255,255,255,0.5)',
-            }}>
-              {label}
-            </span>
+            <img
+              src={icon}
+              alt={label}
+              style={{
+                width: 48,
+                height: 48,
+                opacity: isActive ? 1 : 0.6,
+                transition: 'opacity 0.2s ease',
+              }}
+            />
           </Link>
         );
       })}

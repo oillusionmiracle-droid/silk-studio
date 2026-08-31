@@ -70,6 +70,7 @@ serve(async (req) => {
       .from('orders')
       .insert({
         customer_name,
+        email: email || null,
         phone,
         address,
         area,

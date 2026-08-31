@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
-import { MessageSquare, Sparkles, Send, X } from 'lucide-react';
+import { Sparkles, Send, X } from 'lucide-react';
 
 type Message = { role: 'user' | 'model'; content: string };
 
@@ -84,17 +84,17 @@ export default function GeminiAssistant() {
             aria-label="Open AI Assistant"
             style={{
               position: 'fixed',
-              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 152px)', // above WhatsApp (88px) + WhatsApp height (52px) + gap
+              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 152px)',
               right: 20,
               zIndex: 9999,
-              width: 52, height: 52, borderRadius: '50%',
-              background: 'linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%)', border: 'none',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+              background: 'none',
+              border: 'none',
+              padding: 0,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer',
             }}
           >
-            <MessageSquare size={22} color="#111" strokeWidth={2} />
+            <img src="/icons/chat.png" alt="AI Assistant" width={52} height={52} style={{ objectFit: 'contain' }} />
           </motion.button>
         )}
       </AnimatePresence>
