@@ -221,7 +221,7 @@ export default function AboutPage() {
       </section>
 
       {/* BOTTOM CTA */}
-      <FinalCTA title="Work with us." />
+      <FinalCTA />
 
     </div>
   );

@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import '@/app/apparel/apparel.css';
+import ApparelNavbar from '@/components/apparel/ApparelNavbar';
+import ApparelFooter from '@/components/apparel/ApparelFooter';
 
 export const metadata: Metadata = {
   title: 'Apparel — Silk Studio',
@@ -10,5 +13,11 @@ export default function ApparelLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <div className="apparel-root" style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
+      <ApparelNavbar />
+      <main>{children}</main>
+      <ApparelFooter />
+    </div>
+  );
 }

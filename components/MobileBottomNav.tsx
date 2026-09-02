@@ -45,6 +45,9 @@ export default function MobileBottomNav() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Hide entirely on apparel routes — apparel has its own navbar
+  if (isApparelPage) return null;
+
   if (!isMobile) return null;
 
   const bgColor = isApparelPage ? 'rgba(255, 255, 255, 0.8)' : 'rgba(13, 13, 13, 0.7)';

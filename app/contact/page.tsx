@@ -292,7 +292,7 @@ export default function ContactPage() {
       </section>
 
       {/* BOTTOM CTA */}
-      <FinalCTA title="Work with us." />
+      <FinalCTA />
 
       </div>{/* end content wrapper */}
     </div>

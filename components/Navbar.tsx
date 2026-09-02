@@ -30,6 +30,9 @@ export default function Navbar() {
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
 
+  // Hide main navbar on apparel routes — apparel has its own navbar
+  if (pathname?.startsWith('/apparel')) return null;
+
   return (
     <>
       <nav

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 /* ─────────────────────────────────────────
     FOOTER DATA
@@ -60,6 +61,7 @@ async function subscribeEmail(email: string): Promise<{ ok: boolean; message: st
 }
 
 export default function Footer() {
+  const pathname = usePathname();
   const colsRef = useRef<HTMLDivElement>(null);
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -86,6 +88,9 @@ export default function Footer() {
     load();
     return () => ctx?.revert();
   }, []);
+
+  // Hide main footer on apparel routes — apparel has its own footer
+  if (pathname?.startsWith('/apparel')) return null;
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();

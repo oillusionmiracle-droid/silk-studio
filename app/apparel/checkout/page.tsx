@@ -6,23 +6,21 @@ import Link from 'next/link';
 import { useCart } from '@/lib/CartContext';
 import {
   ArrowLeft, CheckCircle2, AlertCircle, ShoppingCart,
-  Truck, MapPin, Phone, User, Loader2, Mail, Lock,
+  Truck, MapPin, Phone, User, Loader2, Mail, Lock, Check,
 } from 'lucide-react';
 
 /* ─────────────────────────────────────────
-   DESIGN TOKENS (matching apparel page)
+   DESIGN TOKENS — Ashluxe Minimalist Clean
 ───────────────────────────────────────── */
 const T = {
-  bg: '#F8F5F1',
-  accent: '#E85D8C',
-  text: '#1A1A2E',
-  textMuted: '#6B7280',
-  white: '#FFFFFF',
-  glass: 'rgba(255, 255, 255, 0.55)',
-  glassBorder: 'rgba(255, 255, 255, 0.7)',
-  shadow: '0 8px 32px rgba(0,0,0,0.08)',
-  inputBg: '#FFFFFF',
-  inputBorder: 'rgba(0,0,0,0.1)',
+  bg: '#FAFAF8',
+  cardBg: '#FFFFFF',
+  border: '#E5E5E5',
+  borderDark: '#000000',
+  text: '#000000',
+  textSecondary: '#666666',
+  textMuted: '#999999',
+  accent: '#000000',
   error: '#EF4444',
   success: '#10B981',
 };
@@ -36,18 +34,18 @@ const LAGOS_AREAS = [
   'Badagry', 'Epe', 'Eti-Osa', 'Ibeju-Lekki', 'Ifako-Ijaiye',
   'Ikeja', 'Ikorodu', 'Kosofe', 'Lagos Island', 'Lagos Mainland',
   'Mushin', 'Ojo', 'Oshodi-Isolo', 'Shomolu', 'Surulere',
-  'Lekki', 'Victoria Island', 'Yaba', 'Ajah', 'Gbagada',
-  'Maryland', 'Ogba', 'Ogudu', 'Ojodu', 'Sangotedo',
+  'Lekki Phase 1', 'Lekki Phase 2', 'Victoria Island', 'Ikoyi', 'Yaba', 'Ajah', 'Gbagada',
+  'Maryland', 'Ogba', 'Ogudu', 'Ojodu', 'Sangotedo', 'Chevron', 'Oniru',
 ];
 
 /* ─────────────────────────────────────────
-   FORM INPUT
+   FORM INPUT (Ashluxe Clean Box)
 ───────────────────────────────────────── */
 function FormField({
   label, icon: Icon, type = 'text', value, onChange, placeholder, required, error,
 }: {
   label: string;
-  icon: React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>;
+  icon: React.ComponentType<any>;
   type?: string;
   value: string;
   onChange: (v: string) => void;
@@ -56,31 +54,62 @@ function FormField({
   error?: string;
 }) {
   return (
-    <div style={{ marginBottom: 16 }}>
-      <label style={{ display: 'block', fontFamily: 'var(--font-jakarta)', fontWeight: 600, fontSize: 14, color: T.text, marginBottom: 6 }}>
-        {label} {required && <span style={{ color: T.accent }}>*</span>}
+    <div style={{ marginBottom: 18 }}>
+      <label
+        style={{
+          display: 'block',
+          fontFamily: 'var(--font-apparel)',
+          fontWeight: 600,
+          fontSize: 12,
+          letterSpacing: '0.8px',
+          textTransform: 'uppercase',
+          color: '#000000',
+          marginBottom: 6,
+        }}
+      >
+        {label} {required && <span style={{ color: '#000000' }}>*</span>}
       </label>
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 10,
-        padding: '12px 14px', borderRadius: 14,
-        background: T.inputBg, border: `1px solid ${error ? T.error : T.inputBorder}`,
-        transition: 'border-color 0.2s',
-      }}>
-        <Icon size={18} color={T.textMuted} strokeWidth={2} />
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          padding: '12px 14px',
+          backgroundColor: '#FFFFFF',
+          border: `1px solid ${error ? T.error : '#D4D4D4'}`,
+          transition: 'border-color 0.2s ease',
+        }}
+      >
+        <Icon size={16} color="#777777" strokeWidth={1.75} />
         <input
           type={type}
           value={value}
-          onChange={e => onChange(e.target.value)}
+          onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           required={required}
           style={{
-            flex: 1, border: 'none', outline: 'none', background: 'transparent',
-            fontFamily: 'var(--font-general)', fontSize: 15, color: T.text,
+            flex: 1,
+            border: 'none',
+            outline: 'none',
+            background: 'transparent',
+            fontFamily: 'var(--font-apparel)',
+            fontSize: 14,
+            color: '#000000',
           }}
         />
       </div>
       {error && (
-        <p style={{ fontFamily: 'var(--font-general)', fontSize: 12, color: T.error, marginTop: 4 }}>{error}</p>
+        <p
+          style={{
+            fontFamily: 'var(--font-apparel)',
+            fontSize: 11,
+            color: T.error,
+            marginTop: 4,
+            margin: '4px 0 0',
+          }}
+        >
+          {error}
+        </p>
       )}
     </div>
   );
@@ -92,7 +121,7 @@ function FormField({
 export default function CheckoutPage() {
   const { items, totalItems, totalPrice, clearCart } = useCart();
 
-  // Delivery fee: free if 10+ items, otherwise placeholder fee
+  // Delivery fee: free if 10+ items, otherwise ₦2,500
   const deliveryFee = totalItems >= 10 ? 0 : 2500;
   const grandTotal = totalPrice + deliveryFee;
 
@@ -113,29 +142,66 @@ export default function CheckoutPage() {
   // Empty cart guard
   if (items.length === 0 && status !== 'success') {
     return (
-      <div style={{ minHeight: '100vh', background: T.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#FFFFFF',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 24,
+          fontFamily: 'var(--font-apparel)',
+        }}
+      >
         <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          style={{ textAlign: 'center', maxWidth: 400 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{ textAlign: 'center', maxWidth: 440 }}
         >
-          <ShoppingCart size={56} color="#e0e0e0" strokeWidth={1.5} />
-          <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 24, color: T.text, marginTop: 20, marginBottom: 8 }}>
+          <ShoppingCart size={48} color="#cccccc" strokeWidth={1.5} style={{ margin: '0 auto' }} />
+          <h2
+            style={{
+              fontFamily: 'var(--font-apparel)',
+              fontWeight: 400,
+              fontSize: 24,
+              color: '#000000',
+              marginTop: 20,
+              marginBottom: 8,
+              letterSpacing: '-0.3px',
+              textTransform: 'uppercase',
+            }}
+          >
             Your bag is empty
           </h2>
-          <p style={{ fontFamily: 'var(--font-general)', fontSize: 15, color: T.textMuted, marginBottom: 24 }}>
-            Add some items to your bag before checking out.
+          <p
+            style={{
+              fontFamily: 'var(--font-apparel)',
+              fontSize: 14,
+              color: '#777777',
+              marginBottom: 28,
+              lineHeight: 1.6,
+            }}
+          >
+            Please add items from the Silk Studio collection before proceeding to checkout.
           </p>
           <Link
             href="/apparel"
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              padding: '14px 28px', borderRadius: 100,
-              background: T.accent, color: T.white,
-              fontFamily: 'var(--font-jakarta)', fontWeight: 600, fontSize: 15,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '14px 32px',
+              backgroundColor: '#000000',
+              color: '#FFFFFF',
+              fontFamily: 'var(--font-apparel)',
+              fontWeight: 600,
+              fontSize: 12,
+              letterSpacing: '1.5px',
+              textTransform: 'uppercase',
               textDecoration: 'none',
             }}
           >
-            <ArrowLeft size={16} /> Browse Shop
+            <ArrowLeft size={16} /> Explore Collection
           </Link>
         </motion.div>
       </div>
@@ -159,7 +225,6 @@ export default function CheckoutPage() {
     if (typeof window === 'undefined') return reject(new Error('Window is undefined.'));
     if ((window as any).PaystackPop) return resolve();
     
-    // Check if script element already exists
     const existing = document.querySelector('script[src*="paystack"]');
     if (existing) {
       existing.addEventListener('load', () => resolve());
@@ -305,48 +370,111 @@ export default function CheckoutPage() {
     }
   };
 
-  /* ── SUCCESS STATE ─────────────────────── */
+  /* ── SUCCESS STATE (Ashluxe Monochrome Clean) ─────────────────────── */
   if (status === 'success') {
     return (
-      <div style={{ minHeight: '100vh', background: T.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#FFFFFF',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 24,
+          fontFamily: 'var(--font-apparel)',
+        }}
+      >
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, ease: EASE }}
-          style={{ textAlign: 'center', maxWidth: 440 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4, ease: EASE }}
+          style={{ textAlign: 'center', maxWidth: 480 }}
         >
           <motion.div
-            initial={{ scale: 0 }} animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 300, damping: 20 }}
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.1, type: 'spring', stiffness: 300, damping: 20 }}
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: '50%',
+              backgroundColor: '#000000',
+              color: '#FFFFFF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 24px',
+            }}
           >
-            <CheckCircle2 size={72} color={T.success} strokeWidth={1.5} />
+            <Check size={32} strokeWidth={2.5} />
           </motion.div>
-          <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 28, color: T.text, marginTop: 24, marginBottom: 8 }}>
-            Order Confirmed!
+          <h2
+            style={{
+              fontFamily: 'var(--font-apparel)',
+              fontWeight: 400,
+              fontSize: 28,
+              letterSpacing: '-0.5px',
+              color: '#000000',
+              textTransform: 'uppercase',
+              marginBottom: 10,
+            }}
+          >
+            Order Confirmed
           </h2>
-          <p style={{ fontFamily: 'var(--font-general)', fontSize: 16, color: T.textMuted, marginBottom: 8, lineHeight: 1.6 }}>
-            Your order reference is:
+          <p
+            style={{
+              fontFamily: 'var(--font-apparel)',
+              fontSize: 14,
+              color: '#666666',
+              marginBottom: 8,
+              lineHeight: 1.6,
+            }}
+          >
+            Thank you for your order. Your studio reference is:
           </p>
-          <p style={{
-            fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 600, color: T.accent,
-            padding: '10px 20px', borderRadius: 12, background: 'rgba(232,93,140,0.08)',
-            display: 'inline-block', marginBottom: 16,
-          }}>
+          <p
+            style={{
+              fontFamily: 'var(--font-apparel)',
+              fontSize: 16,
+              fontWeight: 700,
+              letterSpacing: '1px',
+              color: '#000000',
+              padding: '12px 20px',
+              backgroundColor: '#FAFAF8',
+              border: '1px solid #e5e5e5',
+              display: 'inline-block',
+              marginBottom: 20,
+            }}
+          >
             {orderRef}
           </p>
-          <p style={{ fontFamily: 'var(--font-general)', fontSize: 15, color: T.textMuted, marginBottom: 32, lineHeight: 1.6 }}>
-            A confirmation email has been sent. We will reach out on WhatsApp with delivery updates.
+          <p
+            style={{
+              fontFamily: 'var(--font-apparel)',
+              fontSize: 13,
+              color: '#777777',
+              marginBottom: 32,
+              lineHeight: 1.6,
+            }}
+          >
+            Our dispatch team will prepare your pieces for delivery and provide dispatch updates via WhatsApp & Email.
           </p>
           <Link
             href="/apparel"
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              padding: '14px 28px', borderRadius: 100,
-              background: T.accent, color: T.white,
-              fontFamily: 'var(--font-jakarta)', fontWeight: 600, fontSize: 15,
+              display: 'inline-block',
+              padding: '14px 36px',
+              backgroundColor: '#000000',
+              color: '#FFFFFF',
+              fontFamily: 'var(--font-apparel)',
+              fontWeight: 600,
+              fontSize: 12,
+              letterSpacing: '1.5px',
+              textTransform: 'uppercase',
               textDecoration: 'none',
             }}
           >
-            Continue Shopping
+            Return to Collection
           </Link>
         </motion.div>
       </div>
@@ -356,30 +484,74 @@ export default function CheckoutPage() {
   /* ── ERROR STATE ─────────────────────── */
   if (status === 'error') {
     return (
-      <div style={{ minHeight: '100vh', background: T.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#FFFFFF',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 24,
+          fontFamily: 'var(--font-apparel)',
+        }}
+      >
         <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           style={{ textAlign: 'center', maxWidth: 440 }}
         >
-          <AlertCircle size={56} color={T.error} strokeWidth={1.5} />
-          <h2 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 24, color: T.text, marginTop: 20, marginBottom: 12 }}>
-            Something went wrong
+          <AlertCircle size={48} color={T.error} strokeWidth={1.5} style={{ margin: '0 auto' }} />
+          <h2
+            style={{
+              fontFamily: 'var(--font-apparel)',
+              fontWeight: 600,
+              fontSize: 22,
+              color: '#000000',
+              marginTop: 20,
+              marginBottom: 12,
+              textTransform: 'uppercase',
+            }}
+          >
+            Payment Incomplete
           </h2>
-          <p style={{ fontFamily: 'var(--font-general)', fontSize: 15, color: T.textMuted, marginBottom: 24, lineHeight: 1.6 }}>
+          <p
+            style={{
+              fontFamily: 'var(--font-apparel)',
+              fontSize: 14,
+              color: '#666666',
+              marginBottom: 24,
+              lineHeight: 1.6,
+            }}
+          >
             {errorMessage}
           </p>
           {orderRef && (
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: T.textMuted, marginBottom: 16 }}>
-              Reference: {orderRef}
+            <p
+              style={{
+                fontFamily: 'var(--font-apparel)',
+                fontSize: 12,
+                color: '#999999',
+                marginBottom: 20,
+              }}
+            >
+              Ref: {orderRef}
             </p>
           )}
           <button
-            onClick={() => { setStatus('form'); setErrorMessage(''); }}
+            onClick={() => {
+              setStatus('form');
+              setErrorMessage('');
+            }}
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              padding: '14px 28px', borderRadius: 100,
-              background: T.accent, color: T.white, border: 'none',
-              fontFamily: 'var(--font-jakarta)', fontWeight: 600, fontSize: 15,
+              padding: '14px 32px',
+              backgroundColor: '#000000',
+              color: '#FFFFFF',
+              border: 'none',
+              fontFamily: 'var(--font-apparel)',
+              fontWeight: 600,
+              fontSize: 12,
+              letterSpacing: '1.5px',
+              textTransform: 'uppercase',
               cursor: 'pointer',
             }}
           >
@@ -393,186 +565,472 @@ export default function CheckoutPage() {
   /* ── PROCESSING STATE ─────────────────────── */
   if (status === 'processing') {
     return (
-      <div style={{ minHeight: '100vh', background: T.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#FFFFFF',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 24,
+          fontFamily: 'var(--font-apparel)',
+        }}
+      >
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center' }}>
           <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
-            <Loader2 size={48} color={T.accent} strokeWidth={2} />
+            <Loader2 size={44} color="#000000" strokeWidth={2} style={{ margin: '0 auto' }} />
           </motion.div>
-          <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 600, fontSize: 18, color: T.text, marginTop: 20 }}>
-            Verifying your payment...
+          <p
+            style={{
+              fontFamily: 'var(--font-apparel)',
+              fontWeight: 600,
+              fontSize: 15,
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+              color: '#000000',
+              marginTop: 20,
+            }}
+          >
+            Verifying Transaction...
           </p>
         </motion.div>
       </div>
     );
   }
 
-  /* ── FORM STATE ─────────────────────── */
+  /* ── FORM STATE (Ashluxe 2-Column Checkout) ─────────────────────── */
   return (
-    <div style={{ minHeight: '100vh', background: T.bg, paddingTop: 100, paddingBottom: 60 }}>
-      <div style={{ maxWidth: 640, margin: '0 auto', padding: '0 24px' }}>
-
-        {/* Back link */}
-        <Link
-          href="/apparel"
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundColor: '#FAFAF8',
+        paddingTop: 36,
+        paddingBottom: 80,
+        fontFamily: 'var(--font-apparel)',
+      }}
+    >
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 20px' }}>
+        {/* Top Header Navigation */}
+        <div
           style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            fontFamily: 'var(--font-jakarta)', fontWeight: 600, fontSize: 14,
-            color: T.textMuted, textDecoration: 'none', marginBottom: 32,
-            transition: 'color 0.2s',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 32,
+            paddingBottom: 16,
+            borderBottom: '1px solid #e5e5e5',
           }}
         >
-          <ArrowLeft size={16} /> Back to Shop
-        </Link>
+          <Link
+            href="/apparel"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              fontFamily: 'var(--font-apparel)',
+              fontWeight: 600,
+              fontSize: 12,
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+              color: '#000000',
+              textDecoration: 'none',
+            }}
+          >
+            <ArrowLeft size={16} /> Back to Shop
+          </Link>
 
-        <h1 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 800, fontSize: 'clamp(28px, 5vw, 36px)', color: T.text, marginBottom: 32 }}>
-          Checkout
-        </h1>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/apparel-logo.svg"
+            alt="Silk Studio"
+            style={{ height: 24, width: 'auto' }}
+          />
 
-        {/* Order Summary */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: EASE }}
-          style={{
-            background: T.white, borderRadius: 20, padding: 24,
-            boxShadow: T.shadow, marginBottom: 24,
-          }}
-        >
-          <h3 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: T.text, marginBottom: 16 }}>
-            Order Summary
-          </h3>
-          {items.map(item => (
-            <div key={item.variantId} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f5f5f5' }}>
-              <div>
-                <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 600, fontSize: 14, color: T.text, margin: 0 }}>
-                  {item.productName}
-                </p>
-                <p style={{ fontFamily: 'var(--font-general)', fontSize: 13, color: T.textMuted, margin: 0 }}>
-                  Size: {item.size} &middot; Qty: {item.quantity}
-                </p>
-              </div>
-              <p style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 600, fontSize: 14, color: T.text, margin: 0 }}>
-                {formatPrice(item.price * item.quantity)}
-              </p>
-            </div>
-          ))}
-          <div style={{ marginTop: 16 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-              <span style={{ fontFamily: 'var(--font-general)', fontSize: 14, color: T.textMuted }}>Subtotal</span>
-              <span style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 600, fontSize: 14, color: T.text }}>{formatPrice(totalPrice)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <span style={{ fontFamily: 'var(--font-general)', fontSize: 14, color: T.textMuted, display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Truck size={14} /> Delivery (Lagos)
-              </span>
-              <span style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 600, fontSize: 14, color: deliveryFee === 0 ? T.success : T.text }}>
-                {deliveryFee === 0 ? 'FREE' : formatPrice(deliveryFee)}
-              </span>
-            </div>
-            <div style={{ borderTop: `2px solid ${T.text}`, paddingTop: 12, display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: T.text }}>Total</span>
-              <span style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 800, fontSize: 20, color: T.accent }}>{formatPrice(grandTotal)}</span>
-            </div>
-          </div>
-        </motion.div>
+          <div style={{ width: 90 }} />
+        </div>
 
-        {/* Delivery Form */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1, ease: EASE }}
-          style={{
-            background: T.white, borderRadius: 20, padding: 24,
-            boxShadow: T.shadow, marginBottom: 24,
-          }}
-        >
-          <h3 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 18, color: T.text, marginBottom: 20 }}>
-            Delivery Details
-          </h3>
-          <p style={{ fontFamily: 'var(--font-general)', fontSize: 13, color: T.textMuted, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <MapPin size={14} /> Lagos delivery only
+        {/* Page Title */}
+        <div style={{ marginBottom: 32 }}>
+          <h1
+            style={{
+              fontFamily: 'var(--font-apparel)',
+              fontWeight: 400,
+              fontSize: 'clamp(24px, 4vw, 32px)',
+              letterSpacing: '-0.5px',
+              textTransform: 'uppercase',
+              color: '#000000',
+              margin: '0 0 6px',
+            }}
+          >
+            Checkout
+          </h1>
+          <p style={{ margin: 0, fontSize: 13, color: '#666666' }}>
+            Complete your shipping details to receive your Silk Studio pieces.
           </p>
+        </div>
 
-          <FormField label="Full Name" icon={User} value={name} onChange={setName} placeholder="Your full name" required error={formErrors.name} />
-          <FormField label="Phone Number" icon={Phone} type="tel" value={phone} onChange={setPhone} placeholder="+234 8012345678" required error={formErrors.phone} />
-          <FormField label="Email (for receipt)" icon={Mail} type="email" value={email} onChange={setEmail} placeholder="your@email.com" />
-          <FormField label="Delivery Address" icon={MapPin} value={address} onChange={setAddress} placeholder="Full street address" required error={formErrors.address} />
-
-          {/* Area selector */}
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontFamily: 'var(--font-jakarta)', fontWeight: 600, fontSize: 14, color: T.text, marginBottom: 6 }}>
-              Area / LGA <span style={{ color: T.accent }}>*</span>
-            </label>
-            <select
-              value={area}
-              onChange={e => setArea(e.target.value)}
+        {/* 2-Column Responsive Layout */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap: 32,
+            alignItems: 'start',
+          }}
+        >
+          {/* Left Column: Delivery Form */}
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #e5e5e5',
+              padding: 'clamp(20px, 3vw, 32px)',
+            }}
+          >
+            <h2
               style={{
-                width: '100%', padding: '14px 14px', borderRadius: 14,
-                background: T.inputBg,
-                border: `1px solid ${formErrors.area ? T.error : T.inputBorder}`,
-                fontFamily: 'var(--font-general)', fontSize: 15, color: area ? T.text : T.textMuted,
-                outline: 'none', cursor: 'pointer', appearance: 'none',
-                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'right 14px center',
+                fontFamily: 'var(--font-apparel)',
+                fontWeight: 600,
+                fontSize: 14,
+                letterSpacing: '1.5px',
+                textTransform: 'uppercase',
+                color: '#000000',
+                margin: '0 0 20px',
+                paddingBottom: 12,
+                borderBottom: '1px solid #f0f0f0',
               }}
             >
-              <option value="">Select your area</option>
-              {LAGOS_AREAS.sort().map(a => (
-                <option key={a} value={a}>{a}</option>
-              ))}
-            </select>
-            {formErrors.area && (
-              <p style={{ fontFamily: 'var(--font-general)', fontSize: 12, color: T.error, marginTop: 4 }}>{formErrors.area}</p>
+              Delivery Information
+            </h2>
+
+            <FormField
+              label="Full Name"
+              icon={User}
+              value={name}
+              onChange={setName}
+              placeholder="e.g. Tunde Balogun"
+              required
+              error={formErrors.name}
+            />
+
+            <FormField
+              label="Phone Number (WhatsApp updates)"
+              icon={Phone}
+              type="tel"
+              value={phone}
+              onChange={setPhone}
+              placeholder="+234 801 234 5678"
+              required
+              error={formErrors.phone}
+            />
+
+            <FormField
+              label="Email Address (Receipt & tracking)"
+              icon={Mail}
+              type="email"
+              value={email}
+              onChange={setEmail}
+              placeholder="tunde@example.com"
+            />
+
+            <FormField
+              label="Street Address"
+              icon={MapPin}
+              value={address}
+              onChange={setAddress}
+              placeholder="House number, street name, apartment/unit"
+              required
+              error={formErrors.address}
+            />
+
+            {/* Area Selector */}
+            <div style={{ marginBottom: 18 }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontFamily: 'var(--font-apparel)',
+                  fontWeight: 600,
+                  fontSize: 12,
+                  letterSpacing: '0.8px',
+                  textTransform: 'uppercase',
+                  color: '#000000',
+                  marginBottom: 6,
+                }}
+              >
+                Area / LGA (Lagos) <span style={{ color: '#000000' }}>*</span>
+              </label>
+              <select
+                value={area}
+                onChange={(e) => setArea(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 14px',
+                  backgroundColor: '#FFFFFF',
+                  border: `1px solid ${formErrors.area ? T.error : '#D4D4D4'}`,
+                  fontFamily: 'var(--font-apparel)',
+                  fontSize: 14,
+                  color: area ? '#000000' : '#888888',
+                  outline: 'none',
+                  cursor: 'pointer',
+                  appearance: 'none',
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 14px center',
+                }}
+              >
+                <option value="">Select Delivery Area</option>
+                {LAGOS_AREAS.sort().map((a) => (
+                  <option key={a} value={a}>
+                    {a}
+                  </option>
+                ))}
+              </select>
+              {formErrors.area && (
+                <p
+                  style={{
+                    fontFamily: 'var(--font-apparel)',
+                    fontSize: 11,
+                    color: T.error,
+                    marginTop: 4,
+                    margin: '4px 0 0',
+                  }}
+                >
+                  {formErrors.area}
+                </p>
+              )}
+            </div>
+
+            {/* Validation Notice */}
+            {Object.keys(formErrors).length > 0 && (
+              <div
+                style={{
+                  padding: '12px 14px',
+                  backgroundColor: '#FEF2F2',
+                  border: '1px solid #FCA5A5',
+                  color: '#B91C1C',
+                  marginBottom: 16,
+                  fontFamily: 'var(--font-apparel)',
+                  fontSize: 12,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+              >
+                <AlertCircle size={15} />
+                <span>Please complete all required fields marked with *</span>
+              </div>
             )}
           </div>
-        </motion.div>
 
-        {/* Validation error notice */}
-        {Object.keys(formErrors).length > 0 && (
-          <div style={{
-            padding: '12px 16px', borderRadius: 14, background: '#FEF2F2',
-            border: '1px solid #FCA5A5', color: '#B91C1C', marginBottom: 16,
-            fontFamily: 'var(--font-general)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8,
-          }}>
-            <AlertCircle size={16} />
-            <span>Please fill in all required delivery details marked with *</span>
+          {/* Right Column: Order Summary & Pay CTA */}
+          <div>
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #e5e5e5',
+                padding: 'clamp(20px, 3vw, 28px)',
+                marginBottom: 20,
+              }}
+            >
+              <h2
+                style={{
+                  fontFamily: 'var(--font-apparel)',
+                  fontWeight: 600,
+                  fontSize: 14,
+                  letterSpacing: '1.5px',
+                  textTransform: 'uppercase',
+                  color: '#000000',
+                  margin: '0 0 16px',
+                  paddingBottom: 12,
+                  borderBottom: '1px solid #f0f0f0',
+                }}
+              >
+                Order Summary ({totalItems})
+              </h2>
+
+              {/* Items List */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 20 }}>
+                {items.map((item) => (
+                  <div
+                    key={item.variantId}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 12,
+                      paddingBottom: 12,
+                      borderBottom: '1px solid #f5f5f5',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+                      {item.image && (
+                        <div
+                          style={{
+                            width: 48,
+                            height: 60,
+                            backgroundColor: '#FAFAF8',
+                            overflow: 'hidden',
+                            flexShrink: 0,
+                          }}
+                        >
+                          <img
+                            src={item.image}
+                            alt={item.productName}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                        </div>
+                      )}
+                      <div style={{ minWidth: 0 }}>
+                        <p
+                          style={{
+                            fontFamily: 'var(--font-apparel)',
+                            fontWeight: 600,
+                            fontSize: 13,
+                            color: '#000000',
+                            margin: '0 0 2px',
+                            textTransform: 'uppercase',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {item.productName}
+                        </p>
+                        <p
+                          style={{
+                            fontFamily: 'var(--font-apparel)',
+                            fontSize: 12,
+                            color: '#777777',
+                            margin: 0,
+                          }}
+                        >
+                          Size: {item.size} &middot; Qty: {item.quantity}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        fontFamily: 'var(--font-apparel)',
+                        fontWeight: 600,
+                        fontSize: 13,
+                        color: '#000000',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {formatPrice(item.price * item.quantity)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Calculations */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#666666' }}>
+                  <span>Subtotal</span>
+                  <span style={{ fontWeight: 600, color: '#000000' }}>{formatPrice(totalPrice)}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13, color: '#666666' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Truck size={14} /> Lagos Express Delivery
+                  </span>
+                  <span style={{ fontWeight: 600, color: deliveryFee === 0 ? '#10B981' : '#000000' }}>
+                    {deliveryFee === 0 ? 'FREE' : formatPrice(deliveryFee)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Total Row */}
+              <div
+                style={{
+                  borderTop: '2px solid #000000',
+                  paddingTop: 16,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'baseline',
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: 'var(--font-apparel)',
+                    fontWeight: 700,
+                    fontSize: 14,
+                    letterSpacing: '1px',
+                    textTransform: 'uppercase',
+                    color: '#000000',
+                  }}
+                >
+                  Total
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-apparel)',
+                    fontWeight: 700,
+                    fontSize: 22,
+                    color: '#000000',
+                  }}
+                >
+                  {formatPrice(grandTotal)}
+                </span>
+              </div>
+            </div>
+
+            {/* Pay Button (Ashluxe Solid Black Block) */}
+            <motion.button
+              whileTap={!isInitializing ? { scale: 0.99 } : {}}
+              onClick={handleCheckout}
+              disabled={isInitializing}
+              style={{
+                width: '100%',
+                height: 54,
+                backgroundColor: isInitializing ? '#333333' : '#000000',
+                color: '#FFFFFF',
+                border: 'none',
+                fontFamily: 'var(--font-apparel)',
+                fontWeight: 600,
+                fontSize: 13,
+                letterSpacing: '2px',
+                textTransform: 'uppercase',
+                cursor: isInitializing ? 'wait' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 10,
+                transition: 'background-color 0.2s ease',
+              }}
+            >
+              {isInitializing ? (
+                <>
+                  <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
+                    <Loader2 size={18} />
+                  </motion.div>
+                  <span>Connecting to Paystack...</span>
+                </>
+              ) : (
+                <>
+                  <Lock size={16} />
+                  <span>Pay {formatPrice(grandTotal)}</span>
+                </>
+              )}
+            </motion.button>
+
+            <p
+              style={{
+                fontFamily: 'var(--font-apparel)',
+                fontSize: 11,
+                color: '#888888',
+                textAlign: 'center',
+                marginTop: 14,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6,
+              }}
+            >
+              <Lock size={12} />
+              <span>Encrypted 256-bit checkout via Paystack</span>
+            </p>
           </div>
-        )}
-
-        {/* Pay button */}
-        <motion.button
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2, ease: EASE }}
-          whileTap={!isInitializing ? { scale: 0.98 } : {}}
-          onClick={handleCheckout}
-          disabled={isInitializing}
-          style={{
-            width: '100%', padding: '18px 24px', borderRadius: 100, border: 'none',
-            background: isInitializing ? '#d885a5' : T.accent, color: T.white,
-            fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 17,
-            cursor: isInitializing ? 'wait' : 'pointer',
-            boxShadow: '0 8px 24px rgba(232,93,140,0.3)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            transition: 'background 0.2s',
-          }}
-        >
-          {isInitializing ? (
-            <>
-              <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
-                <Loader2 size={20} />
-              </motion.div>
-              <span>Connecting to Paystack...</span>
-            </>
-          ) : (
-            <>
-              <Lock size={18} />
-              <span>Pay {formatPrice(grandTotal)}</span>
-            </>
-          )}
-        </motion.button>
-
-        <p style={{ fontFamily: 'var(--font-general)', fontSize: 12, color: T.textMuted, textAlign: 'center', marginTop: 12 }}>
-          Secured by Paystack. Your payment information is encrypted.
-        </p>
+        </div>
       </div>
     </div>
   );

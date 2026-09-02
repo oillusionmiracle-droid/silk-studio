@@ -293,9 +293,13 @@ body {
 
 /* Section padding on mobile */
 @media (max-width: 767px) {
-  section {
+  section:not(.full-bleed):not(.no-pad) {
     padding-left: 20px !important;
     padding-right: 20px !important;
+  }
+  .full-bleed, section.full-bleed {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
 }
 
