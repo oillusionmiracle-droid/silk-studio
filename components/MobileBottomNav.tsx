@@ -3,12 +3,14 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { User } from 'lucide-react';
 
 const navItems = [
   { label: 'Home', href: '/', icon: '/icons/home.png' },
   { label: 'Services', href: '/services', icon: '/icons/services.png' },
   { label: 'Order', href: '/order', icon: '/icons/order.png' },
   { label: 'Portfolio', href: '/portfolio', icon: '/icons/portfolio.png' },
+  { label: 'Profile', href: '/account', icon: 'profile' },
 ];
 
 export default function MobileBottomNav() {
@@ -45,13 +47,17 @@ export default function MobileBottomNav() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Hide entirely on apparel routes — apparel has its own navbar
-  if (isApparelPage) return null;
+  const isAccountPage = pathname.startsWith('/account');
+  const isAdminPage = pathname.startsWith('/admin');
+
+  // Hide entirely on apparel and admin routes
+  if (isApparelPage || isAdminPage) return null;
 
   if (!isMobile) return null;
 
-  const bgColor = isApparelPage ? 'rgba(255, 255, 255, 0.8)' : 'rgba(13, 13, 13, 0.7)';
-  const borderColor = isApparelPage ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255,255,255,0.15)';
+  const isLightPage = isApparelPage || isAccountPage;
+  const bgColor = isLightPage ? 'rgba(255, 255, 255, 0.92)' : 'rgba(13, 13, 13, 0.85)';
+  const borderColor = isLightPage ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.15)';
 
   return (
     <div style={{
@@ -85,16 +91,33 @@ export default function MobileBottomNav() {
               transition: 'all 0.25s ease',
             }}
           >
-            <img
-              src={icon}
-              alt={label}
-              style={{
-                width: 48,
-                height: 48,
-                opacity: isActive ? 1 : 0.6,
-                transition: 'opacity 0.2s ease',
-              }}
-            />
+            {icon === 'profile' ? (
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  opacity: isActive ? 1 : 0.6,
+                  color: isLightPage ? '#111' : '#fff',
+                  transition: 'opacity 0.2s ease',
+                }}
+              >
+                <User size={24} strokeWidth={isActive ? 2.2 : 1.75} />
+              </div>
+            ) : (
+              <img
+                src={icon}
+                alt={label}
+                style={{
+                  width: 48,
+                  height: 48,
+                  opacity: isActive ? 1 : 0.6,
+                  transition: 'opacity 0.2s ease',
+                }}
+              />
+            )}
           </Link>
         );
       })}

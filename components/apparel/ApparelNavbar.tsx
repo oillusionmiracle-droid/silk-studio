@@ -6,6 +6,7 @@ import { Search, Heart, ShoppingBag, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/lib/CartContext';
 import { useWishlist } from '@/lib/WishlistContext';
+import AccountMenu from '@/components/auth/AccountMenu';
 
 /* ─────────────────────────────────────────
    Apparel-Only Navbar
@@ -98,14 +99,8 @@ export default function ApparelNavbar() {
         </div>
 
         {/* Right: Search (desktop), Wishlist, Cart */}
-        <div className="apparel-navbar__right">
-          <button
-            className="apparel-navbar__icon-btn apparel-navbar__search-desktop"
-            aria-label="Search products"
-            style={{ display: 'none' }}
-          >
-            <Search size={20} strokeWidth={1.5} />
-          </button>
+        <div className="apparel-navbar__right flex items-center gap-2">
+          <AccountMenu />
 
           <button
             className="apparel-navbar__icon-btn"

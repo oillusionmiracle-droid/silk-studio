@@ -1,6 +1,6 @@
-// Supabase Edge Function: verify-order
-// Verifies Paystack payment, inserts order + items, decrements stock, sends confirmation email.
-// Deploy: supabase functions deploy verify-order --no-verify-jwt
+// Supabase Edge Function: verify-order (Hardened)
+// Verifies Paystack transaction, checks amount against database order record,
+// updates order status to 'paid', decrements stock atomically, and notifies customer.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
@@ -11,26 +11,20 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
   try {
-    const {
-      paystack_ref,
-      customer_name,
-      phone,
-      email,
-      address,
-      area,
-      subtotal,
-      delivery_fee,
-      total,
-      items, // Array of { variant_id, quantity, price_at_purchase }
-    } = await req.json();
+    const { paystack_ref } = await req.json();
 
-    // ─── 1. Verify payment with Paystack ───────────────────
+    if (!paystack_ref) {
+      return new Response(
+        JSON.stringify({ error: 'Missing payment reference' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const paystackSecretKey = Deno.env.get('PAYSTACK_SECRET_KEY');
     if (!paystackSecretKey) {
       return new Response(
@@ -39,6 +33,33 @@ serve(async (req) => {
       );
     }
 
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // ─── 1. Find existing order in DB ───────────────────
+    const { data: order, error: orderFetchError } = await supabase
+      .from('orders')
+      .select('*, order_items(*)')
+      .eq('paystack_ref', paystack_ref)
+      .maybeSingle();
+
+    if (orderFetchError || !order) {
+      return new Response(
+        JSON.stringify({ error: 'Order record not found for this reference.' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // If already paid, return idempotent success
+    if (order.status === 'paid' || order.status === 'confirmed') {
+      return new Response(
+        JSON.stringify({ success: true, order_id: order.id, status: order.status, message: 'Already verified' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // ─── 2. Verify payment with Paystack API ───────────────────
     const verifyRes = await fetch(`https://api.paystack.co/transaction/verify/${paystack_ref}`, {
       headers: { Authorization: `Bearer ${paystackSecretKey}` },
     });
@@ -46,103 +67,80 @@ serve(async (req) => {
 
     if (!verifyData.status || verifyData.data?.status !== 'success') {
       return new Response(
-        JSON.stringify({ error: 'Payment verification failed. Transaction not successful.' }),
+        JSON.stringify({ error: 'Payment verification failed with provider.', details: verifyData.message }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Verify the amount matches (Paystack returns amount in kobo)
+    // Verify amount (Paystack returns in kobo)
     const paidAmountNaira = verifyData.data.amount / 100;
-    if (paidAmountNaira < total) {
+    const requiredAmount = Number(order.server_verified_amount || order.total);
+
+    if (paidAmountNaira < requiredAmount) {
       return new Response(
-        JSON.stringify({ error: 'Payment amount mismatch.' }),
+        JSON.stringify({
+          error: `Payment amount mismatch: received ₦${paidAmountNaira}, expected ₦${requiredAmount}`,
+        }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // ─── 2. Insert order using service_role key ───────────────────
-    // service_role bypasses RLS — this is the only way to write to orders/order_items
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    const { data: order, error: orderError } = await supabase
-      .from('orders')
-      .insert({
-        customer_name,
-        email: email || null,
-        phone,
-        address,
-        area,
-        subtotal,
-        delivery_fee,
-        total,
+    // ─── 3. Update order status to 'paid' ───────────────────
+    const history = Array.isArray(order.status_history) ? order.status_history : [];
+    const updatedHistory = [
+      ...history,
+      {
         status: 'paid',
-        paystack_ref,
+        timestamp: new Date().toISOString(),
+        note: `Paystack payment verified (₦${paidAmountNaira.toLocaleString()})`,
+        provider_ref: verifyData.data.id?.toString(),
+      },
+    ];
+
+    const { error: updateError } = await supabase
+      .from('orders')
+      .update({
+        status: 'paid',
+        status_history: updatedHistory,
+        updated_at: new Date().toISOString(),
       })
-      .select()
-      .single();
+      .eq('id', order.id);
 
-    if (orderError || !order) {
-      console.error('Order insert error:', orderError);
-      return new Response(
-        JSON.stringify({ error: 'Failed to create order record.' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    if (updateError) {
+      console.error('Failed to update order status:', updateError);
     }
 
-    // ─── 3. Insert order items ───────────────────
-    const orderItems = items.map((item: { variant_id: string; quantity: number; price_at_purchase: number }) => ({
-      order_id: order.id,
-      variant_id: item.variant_id,
-      quantity: item.quantity,
-      price_at_purchase: item.price_at_purchase,
-    }));
+    // ─── 4. Atomic stock decrement ───────────────────
+    if (Array.isArray(order.order_items)) {
+      for (const item of order.order_items) {
+        if (item.variant_id && item.quantity) {
+          const { error: stockErr } = await supabase.rpc('decrement_stock', {
+            p_variant_id: item.variant_id,
+            p_quantity: item.quantity,
+          });
 
-    const { error: itemsError } = await supabase
-      .from('order_items')
-      .insert(orderItems);
-
-    if (itemsError) {
-      console.error('Order items insert error:', itemsError);
-      // Don't fail the whole order — the order itself was created
-    }
-
-    // ─── 4. Decrement stock (server-side only) ───────────────────
-    for (const item of items) {
-      const { error: stockError } = await supabase.rpc('decrement_stock', {
-        p_variant_id: item.variant_id,
-        p_quantity: item.quantity,
-      });
-
-      // If the RPC doesn't exist yet, fall back to a direct update
-      if (stockError) {
-        await supabase
-          .from('variants')
-          .update({ stock: supabase.rpc ? undefined : 0 }) // fallback
-          .eq('id', item.variant_id);
-
-        // Direct SQL approach as fallback
-        await supabase.rpc('raw_sql', {
-          query: `UPDATE variants SET stock = GREATEST(stock - ${item.quantity}, 0) WHERE id = '${item.variant_id}'`
-        }).catch(() => {
-          // If raw_sql RPC also doesn't exist, do a read-then-write
-          // This is less safe but works without custom RPCs
-          console.warn('Stock decrement fallback for variant:', item.variant_id);
-        });
+          if (stockErr) {
+            console.warn('Fallback stock decrement for:', item.variant_id);
+            // Read-and-decrement fallback
+            const { data: v } = await supabase
+              .from('variants')
+              .select('stock')
+              .eq('id', item.variant_id)
+              .single();
+            if (v) {
+              await supabase
+                .from('variants')
+                .update({ stock: Math.max(0, (v.stock || 0) - item.quantity) })
+                .eq('id', item.variant_id);
+            }
+          }
+        }
       }
     }
 
-    // ─── 5. Send confirmation email via Resend ───────────────────
+    // ─── 5. Send confirmation email (optional Resend) ───────
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
-
-    if (resendApiKey && email) {
-      const itemsList = items
-        .map((item: { variant_id: string; quantity: number; price_at_purchase: number }, i: number) =>
-          `  ${i + 1}. Qty: ${item.quantity} x ₦${item.price_at_purchase.toLocaleString()}`
-        )
-        .join('\n');
-
+    if (resendApiKey && order.email) {
       try {
         await fetch('https://api.resend.com/emails', {
           method: 'POST',
@@ -151,65 +149,48 @@ serve(async (req) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            // TODO: Replace 'onboarding@resend.dev' with your verified custom domain sender
-            // address once you have one set up in Resend. The onboarding@resend.dev address
-            // is Resend's shared test domain — it works for testing but should be replaced
-            // for production use.
-            from: 'Silk Studio <onboarding@resend.dev>',
-            to: [email],
-            subject: `Order Confirmed — ${paystack_ref}`,
+            from: 'Silk Studio <orders@silkstudio.ng>',
+            to: [order.email],
+            subject: `Order Confirmed — ${order.paystack_ref}`,
             html: `
-              <div style="font-family: 'Plus Jakarta Sans', sans-serif; max-width: 600px; margin: 0 auto; padding: 32px 24px;">
-                <h1 style="font-size: 24px; color: #1A1A2E; margin-bottom: 8px;">Order Confirmed!</h1>
-                <p style="color: #6B7280; font-size: 15px; line-height: 1.6;">
-                  Thank you for your order, ${customer_name}. Here are your details:
+              <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px 24px; color: #111;">
+                <h1 style="font-size: 22px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 8px;">Order Confirmed</h1>
+                <p style="color: #666; font-size: 14px; line-height: 1.6;">
+                  Thank you for your order, ${order.customer_name}. We have received your payment and our studio team is preparing your package.
                 </p>
-                <div style="background: #F8F5F1; border-radius: 16px; padding: 20px; margin: 20px 0;">
-                  <p style="margin: 0 0 8px; font-weight: 600; color: #1A1A2E;">Reference: ${paystack_ref}</p>
-                  <p style="margin: 0 0 4px; color: #6B7280;">Total: ₦${total.toLocaleString()}</p>
-                  <p style="margin: 0 0 4px; color: #6B7280;">Delivery: ${address}, ${area}, Lagos</p>
-                  <p style="margin: 0; color: #6B7280;">Phone: ${phone}</p>
+                <div style="background: #F9F9FB; border: 1px solid #E5E5EA; border-radius: 12px; padding: 18px; margin: 24px 0;">
+                  <p style="margin: 0 0 6px; font-size: 13px; color: #8E8E93;">Order Reference</p>
+                  <p style="margin: 0 0 16px; font-size: 16px; font-weight: 700; color: #000; letter-spacing: 0.5px;">${order.paystack_ref}</p>
+                  <p style="margin: 0 0 6px; font-size: 13px; color: #8E8E93;">Amount Paid</p>
+                  <p style="margin: 0 0 16px; font-size: 16px; font-weight: 600; color: #000;">₦${Number(order.total).toLocaleString()}</p>
+                  <p style="margin: 0 0 6px; font-size: 13px; color: #8E8E93;">Delivery Address</p>
+                  <p style="margin: 0; font-size: 14px; color: #111;">${order.address}, ${order.area}, Lagos</p>
                 </div>
-                <p style="color: #6B7280; font-size: 14px; line-height: 1.6;">
-                  We will reach out via WhatsApp with delivery updates. If you have questions,
-                  contact us on WhatsApp at +234 706 482 9776.
+                <p style="color: #8E8E93; font-size: 12px; line-height: 1.6;">
+                  Track this order live on your Silk Studio account dashboard.
                 </p>
-                <p style="color: #E85D8C; font-weight: 600; margin-top: 24px;">— Silk Studio</p>
               </div>
             `,
           }),
         });
-      } catch (emailError) {
-        // Email failure should not fail the order
-        console.error('Email send error:', emailError);
+      } catch (emailErr) {
+        console.warn('Email dispatch failed:', emailErr);
       }
-
-      // NOTE: A "shipping update" email would reuse the same Resend fetch call above,
-      // just with a different subject line and HTML body. When implementing shipping
-      // notifications, extract the Resend call into a shared helper function like:
-      //
-      // async function sendEmail(to: string, subject: string, html: string) {
-      //   await fetch('https://api.resend.com/emails', {
-      //     method: 'POST',
-      //     headers: {
-      //       Authorization: `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
-      //       'Content-Type': 'application/json',
-      //     },
-      //     body: JSON.stringify({ from: 'Silk Studio <your-domain@yourdomain.com>', to: [to], subject, html }),
-      //   });
-      // }
     }
 
-    // ─── 6. Return success ───────────────────
     return new Response(
-      JSON.stringify({ success: true, order_id: order.id, reference: paystack_ref }),
+      JSON.stringify({
+        success: true,
+        order_id: order.id,
+        reference: paystack_ref,
+        status: 'paid',
+      }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-
-  } catch (err) {
-    console.error('Unexpected error:', err);
+  } catch (err: any) {
+    console.error('verify-order exception:', err);
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
+      JSON.stringify({ error: err?.message || 'Server error verifying payment.' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

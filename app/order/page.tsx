@@ -33,7 +33,7 @@ import {
   CreditCard,
   Mail,
   Gift,
-  Sparkles,
+  PenTool,
   Brush,
   Share2,
   Image as ImageIconLucide,
@@ -43,6 +43,8 @@ import {
   Rocket,
   HelpCircle,
 } from 'lucide-react';
+import { useAuth } from '@/lib/AuthContext';
+import { supabase } from '@/lib/supabase';
 
 const CATEGORIES = [
   { id: 'Print', label: 'Print', icon: <Printer size={22} /> },
@@ -74,7 +76,7 @@ const SERVICE_ICONS: Record<string, React.ReactNode> = {
   'Hoodies': <Shirt size={18} />,
   'Event Merch Set': <Gift size={18} />,
   'Corporate Uniforms': <Briefcase size={18} />,
-  'Logo & Brand Identity': <Sparkles size={18} />,
+  'Logo & Brand Identity': <PenTool size={18} />,
   'Event Branding Kit': <Brush size={18} />,
   'Social Media Templates': <Share2 size={18} />,
   'Print-Ready Artwork': <ImageIconLucide size={18} />,
@@ -89,7 +91,9 @@ const SERVICE_ICONS: Record<string, React.ReactNode> = {
 };
 
 export default function OrderPage() {
+  const { user, profile, openAuthModal } = useAuth();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submittedRef, setSubmittedRef] = useState('');
   const [category, setCategory] = useState<string | null>(null);
   const [subService, setSubService] = useState<string | null>(null);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
@@ -119,6 +123,22 @@ export default function OrderPage() {
   const [contact, setContact] = useState({
     firstName: '', lastName: '', whatsapp: '+234', email: '', source: '',
   });
+
+  // Autofill contact info from user profile
+  useEffect(() => {
+    if (profile) {
+      const parts = (profile.full_name || '').split(' ');
+      const fName = parts[0] || '';
+      const lName = parts.slice(1).join(' ') || '';
+      setContact((prev) => ({
+        ...prev,
+        firstName: prev.firstName || fName,
+        lastName: prev.lastName || lName,
+        whatsapp: prev.whatsapp === '+234' && profile.phone ? profile.phone : prev.whatsapp,
+        email: prev.email || user?.email || '',
+      }));
+    }
+  }, [profile, user]);
 
   const [total, setTotal] = useState(0);
   const [deposit, setDeposit] = useState(0);
@@ -235,7 +255,9 @@ export default function OrderPage() {
       alert('Please fill in your name, WhatsApp number, and select a service.');
       return;
     }
-    const orderRef = `SLK-${Math.floor(1000 + Math.random() * 9000)}`;
+    const orderRef = `SLK-CUST-${Math.floor(1000 + Math.random() * 9000)}`;
+    setSubmittedRef(orderRef);
+
     let specsText = 'Custom Specifications';
     if (subService === 'Flyers & Handbills') specsText = `${specs.size}, ${specs.sides}, ${specs.lamination} Lamination`;
     else if (subService === 'Banners') specsText = `${specs.width}ft × ${specs.height}ft, Eyelets: ${specs.eyelets}`;
@@ -246,6 +268,42 @@ export default function OrderPage() {
       const s = specs.apparelSizes;
       specsText = `S(${s.S}) M(${s.M}) L(${s.L}) XL(${s.XL}) XXL(${s.XXL})`;
     }
+
+    // Persist custom order into database
+    try {
+      await supabase.from('orders').insert({
+        user_id: user?.id || null,
+        type: 'custom',
+        customer_name: `${contact.firstName} ${contact.lastName}`.trim(),
+        phone: contact.whatsapp,
+        email: contact.email || null,
+        address: 'Custom Design Order',
+        area: 'Lagos',
+        subtotal: isCustomQuote ? 0 : total,
+        delivery_fee: 0,
+        total: isCustomQuote ? 0 : (payFull ? total : deposit),
+        status: isCustomQuote ? 'quote_requested' : 'pending',
+        paystack_ref: orderRef,
+        specs: {
+          service: subService,
+          specs: specsText,
+          quantity: ['Custom T-Shirts', 'Sweatshirts', 'Grey Joggers'].includes(subService) ? totalApparelQty : specs.quantity,
+          deadline: specs.deadline,
+          description: specs.description,
+        },
+        reference_files: referenceFileUrl ? [referenceFileUrl] : [],
+        status_history: [
+          {
+            status: isCustomQuote ? 'quote_requested' : 'pending',
+            timestamp: new Date().toISOString(),
+            note: isCustomQuote ? 'Quote requested via Studio Form' : 'Order initiated for deposit payment',
+          },
+        ],
+      });
+    } catch (dbErr) {
+      console.warn('Notice persisting custom order:', dbErr);
+    }
+
     const msg = `*NEW ORDER BRIEF [${orderRef}]*\n------------------------------\n*Service:* ${subService}\n*Specs:* ${specsText}\n*Quantity:* ${['Custom T-Shirts', 'Sweatshirts', 'Grey Joggers'].includes(subService) ? totalApparelQty : specs.quantity}\n*Deadline:* ${specs.deadline || 'Flexible'}\n\n*Description:*\n${specs.description || 'No description'}\n\n*Reference File:* ${referenceFileUrl || 'None'}\n\n*Customer:*\n- Name: ${contact.firstName} ${contact.lastName}\n- WhatsApp: ${contact.whatsapp}\n- Email: ${contact.email || 'N/A'}\n- Via: ${contact.source || 'N/A'}\n\n*Price:* ${isCustomQuote ? 'Quote Requested' : `Total: ₦${total.toLocaleString()} | Deposit: ₦${deposit.toLocaleString()}`}\n------------------------------`.trim();
 
     if (isCustomQuote) {
@@ -264,30 +322,46 @@ export default function OrderPage() {
 
   if (isSubmitted) {
     return (
-      <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg, #f0f4f8 0%, #e8f0fe 25%, #fce4ec 50%, #f3e5f5 75%, #f2ffdb 100%)' }}>
+      <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg, #0e0e10 0%, #17171c 50%, #0d0d0f 100%)' }}>
         <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          <div style={{ backgroundColor: 'rgba(25,25,25,0.6)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 24, padding: '60px 48px', textAlign: 'center', maxWidth: 520, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+          <div style={{ backgroundColor: 'rgba(25,25,25,0.7)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 28, padding: '48px 36px', textAlign: 'center', maxWidth: 480, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
             <motion.div
-              initial={{ scale: 0.5, opacity: 0 }}
+              initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-              style={{ width: 80, height: 80, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 32px' }}
+              transition={{ type: 'spring', stiffness: 350, damping: 22 }}
+              style={{ width: 68, height: 68, borderRadius: '50%', backgroundColor: '#C6FF33', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}
             >
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </motion.div>
-            <h1 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 900, fontSize: 48, color: '#ffffff', marginBottom: 16, lineHeight: 1.1 }}>
-              You&apos;re booked.
+            <h1 style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 800, fontSize: 32, color: '#ffffff', marginBottom: 12, lineHeight: 1.1 }}>
+              Brief Confirmed
             </h1>
-            <p style={{ fontFamily: 'var(--font-general)', fontSize: 18, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, marginBottom: 32 }}>
-              We&apos;ve received your brief. Expect a WhatsApp message within 2 hours to confirm details.
+            <p style={{ fontFamily: 'var(--font-general)', fontSize: 14, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, marginBottom: 16 }}>
+              We&apos;ve received your specifications. Your studio reference is:
             </p>
-            <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link href="/portfolio" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '14px 28px', textDecoration: 'none', fontFamily: 'var(--font-jakarta)', fontWeight: 600, fontSize: 15, color: '#fff' }}>
-                View Portfolio
-              </Link>
-              <Link href="/" style={{ backgroundColor: '#C6FF33', borderRadius: 12, padding: '14px 28px', textDecoration: 'none', fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 15, color: '#0D0D0D' }}>
+            <p style={{ fontFamily: 'var(--font-mono, monospace)', fontSize: 15, fontWeight: 700, color: '#C6FF33', letterSpacing: '0.8px', padding: '10px 18px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, display: 'inline-block', marginBottom: 28 }}>
+              {submittedRef}
+            </p>
+            <p style={{ fontFamily: 'var(--font-general)', fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: 28 }}>
+              Our design team is reviewing your project. You can inspect your live milestone timeline in your customer dashboard.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {user ? (
+                <Link href="/account/orders" style={{ backgroundColor: '#C6FF33', borderRadius: 12, padding: '14px 28px', textDecoration: 'none', fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 13, color: '#0D0D0D', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Track in Dashboard →
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => openAuthModal('sign_up')}
+                  style={{ backgroundColor: '#C6FF33', borderRadius: 12, padding: '14px 28px', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-jakarta)', fontWeight: 700, fontSize: 13, color: '#0D0D0D', textTransform: 'uppercase', letterSpacing: '0.5px' }}
+                >
+                  Create Silk Studio ID to Track →
+                </button>
+              )}
+              <Link href="/" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '12px 28px', textDecoration: 'none', fontFamily: 'var(--font-jakarta)', fontWeight: 600, fontSize: 13, color: '#fff' }}>
                 Back to Home
               </Link>
             </div>

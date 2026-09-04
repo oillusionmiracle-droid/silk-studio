@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import AccountMenu from '@/components/auth/AccountMenu';
 
 const navLinks = [
   { label: 'Home', href: '/' },
@@ -30,8 +31,14 @@ export default function Navbar() {
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
 
-  // Hide main navbar on apparel routes — apparel has its own navbar
-  if (pathname?.startsWith('/apparel')) return null;
+  // Hide main navbar on apparel, account, and admin routes (they have their own dedicated clean navigation)
+  if (
+    pathname?.startsWith('/apparel') ||
+    pathname?.startsWith('/account') ||
+    pathname?.startsWith('/admin')
+  ) {
+    return null;
+  }
 
   return (
     <>
@@ -107,7 +114,8 @@ export default function Navbar() {
         </div>
 
         {/* Right CTA */}
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <AccountMenu />
           <Link
             href="/order"
             className="hidden md:inline-flex"

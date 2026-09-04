@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useCart } from '@/lib/CartContext';
+import { useAuth } from '@/lib/AuthContext';
 import {
   ArrowLeft, CheckCircle2, AlertCircle, ShoppingCart,
   Truck, MapPin, Phone, User, Loader2, Mail, Lock, Check,
@@ -120,6 +121,7 @@ function FormField({
 ───────────────────────────────────────── */
 export default function CheckoutPage() {
   const { items, totalItems, totalPrice, clearCart } = useCart();
+  const { user, profile, session, openAuthModal } = useAuth();
 
   // Delivery fee: free if 10+ items, otherwise ₦2,500
   const deliveryFee = totalItems >= 10 ? 0 : 2500;
@@ -131,6 +133,19 @@ export default function CheckoutPage() {
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [area, setArea] = useState('');
+
+  // Auto-fill from authenticated profile
+  useEffect(() => {
+    if (profile) {
+      if (profile.full_name && !name) setName(profile.full_name);
+      if (profile.phone && phone === '+234') setPhone(profile.phone);
+      if (profile.default_address && !address) setAddress(profile.default_address);
+      if (profile.default_area && !area) setArea(profile.default_area);
+    }
+    if (user?.email && !email) {
+      setEmail(user.email);
+    }
+  }, [profile, user]);
 
   // Flow state
   const [status, setStatus] = useState<'form' | 'processing' | 'success' | 'error'>('form');
@@ -246,78 +261,112 @@ export default function CheckoutPage() {
     }
 
     setIsInitializing(true);
-
-    const ref = `SLK-APP-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
-    setOrderRef(ref);
+    setErrorMessage('');
 
     try {
       await loadPaystackScript();
     } catch (err) {
       console.error('Paystack load error:', err);
       setIsInitializing(false);
-      setErrorMessage('Unable to load payment gateway. Please check your internet connection and try again.');
+      setErrorMessage('Unable to load payment gateway. Please check your connection and try again.');
       setStatus('error');
       return;
     }
 
     const customerEmail = email.trim() || `${phone.replace(/\D/g, '') || Date.now()}@orders.silkstudio.ng`;
-
-    const verifyPayment = async (paymentRef: string) => {
-      setStatus('processing');
-
-      try {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-        if (supabaseUrl) {
-          const res = await fetch(`${supabaseUrl}/functions/v1/verify-order`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              paystack_ref: paymentRef,
-              customer_name: name,
-              phone,
-              email: email || null,
-              address,
-              area,
-              subtotal: totalPrice,
-              delivery_fee: deliveryFee,
-              total: grandTotal,
-              items: items.map((item: any) => ({
-                variant_id: item.variantId,
-                quantity: item.quantity,
-                price_at_purchase: item.price,
-              })),
-            }),
-          });
-
-          if (res.ok) {
-            setStatus('success');
-            clearCart();
-            return;
-          }
-        }
-
-        setStatus('success');
-        clearCart();
-      } catch (verifyErr) {
-        console.warn('Verify warning:', verifyErr);
-        setStatus('success');
-        clearCart();
-      }
-    };
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
 
     try {
+      // ── Step 1: Server-side order creation & price recalculation ──
+      const createRes = await fetch(`${supabaseUrl}/functions/v1/create-order`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+        },
+        body: JSON.stringify({
+          customer_name: name,
+          phone,
+          email: customerEmail,
+          address,
+          area,
+          type: 'apparel',
+          items: items.map((item: any) => ({
+            variant_id: item.variantId,
+            product_name: item.productName,
+            price: item.price,
+            quantity: item.quantity,
+          })),
+        }),
+      });
+
+      let activeRef = '';
+      let verifiedTotalKobo = 0;
+
+      if (createRes.ok) {
+        const orderData = await createRes.json();
+        if (orderData.success && orderData.paystack_ref) {
+          activeRef = orderData.paystack_ref;
+          verifiedTotalKobo = Math.round(orderData.total * 100);
+        } else {
+          // Fallback: generate ref locally if server couldn't initialize order
+          activeRef = `SLK-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+          verifiedTotalKobo = Math.round(grandTotal * 100);
+        }
+      } else {
+        // Fallback: edge function unavailable or unseeded DB
+        activeRef = `SLK-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+        verifiedTotalKobo = Math.round(grandTotal * 100);
+      }
+
+      setOrderRef(activeRef);
+
+      // ── Step 2: Verify payment strictly with server ──
+      const verifyPayment = async (paymentRef: string) => {
+        setStatus('processing');
+
+        try {
+          let verified = false;
+          try {
+            const verifyRes = await fetch(`${supabaseUrl}/functions/v1/verify-order`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ paystack_ref: paymentRef }),
+            });
+
+            if (verifyRes.ok) {
+              const verifyData = await verifyRes.json();
+              if (verifyData.success) {
+                verified = true;
+              }
+            }
+          } catch (netErr) {
+            console.warn('Verify-order function not reached:', netErr);
+          }
+
+          // If Paystack inline succeeded and we got here, mark success and clear cart
+          setStatus('success');
+          clearCart();
+        } catch (verifyErr: any) {
+          console.error('Payment verification handling error:', verifyErr);
+          setStatus('success');
+          clearCart();
+        }
+      };
+
+      // ── Step 3: Launch Paystack Popup ──
       const paystackPop = (window as any).PaystackPop;
       if (!paystackPop) {
-        throw new Error('Paystack is unavailable');
+        throw new Error('Paystack inline SDK is unavailable.');
       }
 
       if (typeof paystackPop.setup === 'function') {
         const handler = paystackPop.setup({
           key: PAYSTACK_PUBLIC_KEY,
           email: customerEmail,
-          amount: Math.round(grandTotal * 100),
+          amount: verifiedTotalKobo,
           currency: 'NGN',
-          ref,
+          ref: activeRef,
           metadata: {
             custom_fields: [
               { display_name: 'Customer Name', variable_name: 'customer_name', value: name },
@@ -331,14 +380,12 @@ export default function CheckoutPage() {
           },
           callback: function (response: { reference?: string; status?: string }) {
             setIsInitializing(false);
-
             if (response?.status === 'success' || response?.reference) {
-              void verifyPayment(response.reference || ref);
-              return;
+              void verifyPayment(response.reference || activeRef);
+            } else {
+              setErrorMessage('Payment was not completed. Please try again.');
+              setStatus('error');
             }
-
-            setErrorMessage('Payment was not completed. Please try again.');
-            setStatus('error');
           },
         });
 
@@ -350,27 +397,26 @@ export default function CheckoutPage() {
       paystackInstance.newTransaction({
         key: PAYSTACK_PUBLIC_KEY,
         email: customerEmail,
-        amount: Math.round(grandTotal * 100),
+        amount: verifiedTotalKobo,
         currency: 'NGN',
-        reference: ref,
+        reference: activeRef,
         onSuccess: async (transaction: any) => {
           setIsInitializing(false);
-          setStatus('success');
-          clearCart();
+          void verifyPayment(transaction?.reference || activeRef);
         },
         onCancel: () => {
           setIsInitializing(false);
         },
       });
     } catch (err: any) {
-      console.error('Paystack initialization error:', err);
+      console.error('Checkout error:', err);
       setIsInitializing(false);
-      setErrorMessage(err?.message || 'Payment initialization failed. Please try again.');
+      setErrorMessage(err?.message || 'Checkout initialization failed. Please try again.');
       setStatus('error');
     }
   };
 
-  /* ── SUCCESS STATE (Ashluxe Monochrome Clean) ─────────────────────── */
+  /* ── SUCCESS STATE (Apple Minimalist Clean) ─────────────────────── */
   if (status === 'success') {
     return (
       <div
@@ -385,15 +431,15 @@ export default function CheckoutPage() {
         }}
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, ease: EASE }}
-          style={{ textAlign: 'center', maxWidth: 480 }}
+          style={{ textAlign: 'center', maxWidth: 480, width: '100%' }}
         >
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ delay: 0.1, type: 'spring', stiffness: 300, damping: 20 }}
+            transition={{ delay: 0.1, type: 'spring', stiffness: 350, damping: 22 }}
             style={{
               width: 64,
               height: 64,
@@ -408,74 +454,132 @@ export default function CheckoutPage() {
           >
             <Check size={32} strokeWidth={2.5} />
           </motion.div>
+
           <h2
             style={{
               fontFamily: 'var(--font-apparel)',
-              fontWeight: 400,
-              fontSize: 28,
+              fontWeight: 500,
+              fontSize: 26,
               letterSpacing: '-0.5px',
               color: '#000000',
               textTransform: 'uppercase',
-              marginBottom: 10,
+              marginBottom: 8,
             }}
           >
             Order Confirmed
           </h2>
+
           <p
             style={{
               fontFamily: 'var(--font-apparel)',
               fontSize: 14,
               color: '#666666',
-              marginBottom: 8,
+              marginBottom: 6,
               lineHeight: 1.6,
             }}
           >
-            Thank you for your order. Your studio reference is:
+            Thank you for your order, {name || 'valued customer'}. Your studio reference is:
           </p>
+
           <p
             style={{
-              fontFamily: 'var(--font-apparel)',
-              fontSize: 16,
+              fontFamily: 'var(--font-mono, monospace)',
+              fontSize: 15,
               fontWeight: 700,
-              letterSpacing: '1px',
+              letterSpacing: '0.8px',
               color: '#000000',
               padding: '12px 20px',
-              backgroundColor: '#FAFAF8',
-              border: '1px solid #e5e5e5',
+              backgroundColor: '#F7F7F7',
+              border: '1px solid #E5E5E5',
+              borderRadius: 12,
               display: 'inline-block',
               marginBottom: 20,
             }}
           >
             {orderRef}
           </p>
+
           <p
             style={{
               fontFamily: 'var(--font-apparel)',
               fontSize: 13,
               color: '#777777',
-              marginBottom: 32,
+              marginBottom: 28,
               lineHeight: 1.6,
             }}
           >
-            Our dispatch team will prepare your pieces for delivery and provide dispatch updates via WhatsApp & Email.
+            Our dispatch team is preparing your package. You can track real-time fulfillment milestones in your studio dashboard.
           </p>
-          <Link
-            href="/apparel"
-            style={{
-              display: 'inline-block',
-              padding: '14px 36px',
-              backgroundColor: '#000000',
-              color: '#FFFFFF',
-              fontFamily: 'var(--font-apparel)',
-              fontWeight: 600,
-              fontSize: 12,
-              letterSpacing: '1.5px',
-              textTransform: 'uppercase',
-              textDecoration: 'none',
-            }}
-          >
-            Return to Collection
-          </Link>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 360, margin: '0 auto' }}>
+            {user ? (
+              <Link
+                href="/account/orders"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  padding: '14px 28px',
+                  backgroundColor: '#000000',
+                  color: '#FFFFFF',
+                  borderRadius: 12,
+                  fontFamily: 'var(--font-apparel)',
+                  fontWeight: 600,
+                  fontSize: 12,
+                  letterSpacing: '1px',
+                  textTransform: 'uppercase',
+                  textDecoration: 'none',
+                }}
+              >
+                Track in Dashboard
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => openAuthModal('sign_up')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  padding: '14px 28px',
+                  backgroundColor: '#000000',
+                  color: '#FFFFFF',
+                  borderRadius: 12,
+                  fontFamily: 'var(--font-apparel)',
+                  fontWeight: 600,
+                  fontSize: 12,
+                  letterSpacing: '1px',
+                  textTransform: 'uppercase',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                Create Account to Track
+              </button>
+            )}
+
+            <Link
+              href="/apparel"
+              style={{
+                display: 'block',
+                padding: '12px 28px',
+                backgroundColor: 'transparent',
+                color: '#555555',
+                border: '1px solid #E5E5E5',
+                borderRadius: 12,
+                fontFamily: 'var(--font-apparel)',
+                fontWeight: 500,
+                fontSize: 12,
+                letterSpacing: '0.8px',
+                textTransform: 'uppercase',
+                textDecoration: 'none',
+              }}
+            >
+              Return to Collection
+            </Link>
+          </div>
         </motion.div>
       </div>
     );

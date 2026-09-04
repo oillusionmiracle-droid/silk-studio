@@ -20,6 +20,16 @@ const config: Config = {
         jakarta: ["var(--font-jakarta)", "sans-serif"],
         general: ["var(--font-general)", "sans-serif"],
         mono: ["var(--font-mono)", "monospace"],
+        apple: [
+          "-apple-system",
+          "BlinkMacSystemFont",
+          '"SF Pro Display"',
+          '"SF Pro Text"',
+          '"SF Pro"',
+          "system-ui",
+          '"Helvetica Neue"',
+          "sans-serif",
+        ],
       },
       keyframes: {
         marquee: {

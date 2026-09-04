@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, DM_Mono } from "next/font/google";
 import "@/app/globals.css";
+import { AuthProvider } from '@/lib/AuthContext';
 import { CartProvider } from '@/lib/CartContext';
 import { WishlistProvider } from '@/lib/WishlistContext';
 import Navbar from "@/components/Navbar";
@@ -10,6 +11,7 @@ import LoadingScreen from "@/components/LoadingScreen";
 import CustomCursor from "@/components/CustomCursor";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import GeminiAssistant from "@/components/GeminiAssistant";
+import AuthSheet from "@/components/auth/AuthSheet";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -70,19 +72,21 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-512x512.png" />
       </head>
       <body>
-        <LoadingScreen />
-        <Navbar />
-        <CartProvider>
-          <WishlistProvider>
-            {children}
-          </WishlistProvider>
-        </CartProvider>
-        <Footer />
-        <WhatsAppButton />
-        <CustomCursor />
-        <MobileBottomNav />
-        <GeminiAssistant />
-
+        <AuthProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <LoadingScreen />
+              <Navbar />
+              {children}
+              <AuthSheet />
+              <Footer />
+              <WhatsAppButton />
+              <CustomCursor />
+              <MobileBottomNav />
+              <GeminiAssistant />
+            </WishlistProvider>
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );
