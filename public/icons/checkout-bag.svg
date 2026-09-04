@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%" fill="none">
+  <!-- Bag Handle -->
+  <path
+    d="M178 175V150C178 107 213 72 256 72C299 72 334 107 334 150V175"
+    stroke="#168339"
+    stroke-width="44"
+    stroke-linecap="round"
+  />
+  <!-- Bag Body -->
+  <path
+    d="M106 130C91 130 78 143 80 158L104 402C107 435 135 460 168 460H344C377 460 405 435 408 402L432 158C434 143 421 130 406 130H106Z"
+    fill="#22C55E"
+  />
+  <!-- Checkmark -->
+  <path
+    d="M182 314L244 374L350 248"
+    stroke="#EFEFEF"
+    stroke-width="44"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>
