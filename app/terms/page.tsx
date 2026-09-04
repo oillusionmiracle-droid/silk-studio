@@ -215,7 +215,7 @@ export default function TermsPage() {
         pointerEvents: 'none',
       }} />
 
-      <div style={{ position: 'relative', zIndex: 2, maxWidth: 900, margin: '0 auto', padding: 'clamp(24px, 5vw, 120px) 24px' }}>
+      <div className="relative z-[2] max-w-[900px] mx-auto px-6 pt-28 md:pt-[clamp(24px,5vw,120px)] pb-16 md:pb-24">
 
         {/* HERO BLOCK */}
         <div ref={heroRef} style={{ marginBottom: 'clamp(60px, 10vw, 100px)' }}>

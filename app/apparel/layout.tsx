@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import '@/app/apparel/apparel.css';
 import ApparelNavbar from '@/components/apparel/ApparelNavbar';
 import ApparelFooter from '@/components/apparel/ApparelFooter';
+import FloatingCheckout from '@/components/apparel/FloatingCheckout';
 
 export const metadata: Metadata = {
   title: 'Apparel — Silk Studio',
@@ -17,6 +18,7 @@ export default function ApparelLayout({
     <div className="apparel-root" style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
       <ApparelNavbar />
       <main>{children}</main>
+      <FloatingCheckout />
       <ApparelFooter />
     </div>
   );
