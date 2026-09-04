@@ -272,7 +272,8 @@ body {
   display: none;
 }
 @media (max-width: 767px) {
-  .md\:hidden { display: flex !important; }
+  .md\:hidden { display: block !important; }
+  .md\:hidden.flex { display: flex !important; }
   .hidden.md\:flex { display: none !important; }
   .hidden.md\:inline-flex { display: none !important; }
 }

@@ -182,13 +182,13 @@ export default function AccountOverviewPage() {
   }, [profile, user, orders]);
 
   return (
-    <div className="font-sans antialiased text-neutral-900">
+    <div className="font-sans antialiased text-neutral-900 w-full block">
       {/* ═════════════════════════════════════════════════════════
           MOBILE VIEW (Exact Airbnb iOS Style — screens < 768px)
       ═════════════════════════════════════════════════════════ */}
-      <div className="md:hidden max-w-lg mx-auto px-1 pb-32">
+      <div className="md:hidden flex flex-col w-full max-w-lg mx-auto px-2 pb-36 space-y-0">
         {/* Large Airbnb Title */}
-        <div className="pt-2 pb-5">
+        <div className="pt-2 pb-5 w-full">
           <h1 className="text-[34px] font-bold text-neutral-900 tracking-tight">
             Profile
           </h1>
@@ -223,10 +223,10 @@ export default function AccountOverviewPage() {
         <div className="h-px bg-neutral-200/80 my-4" />
 
         {/* Promo Banner Card ("Airbnb your place" style) */}
-        <Link href="/order" className="block my-6">
+        <Link href="/order" className="block my-6 w-full">
           <motion.div
             whileTap={{ scale: 0.98 }}
-            className="rounded-[22px] bg-white border border-neutral-200/80 p-5 shadow-[0_4px_24px_rgba(0,0,0,0.06)] flex items-center justify-between gap-4 cursor-pointer"
+            className="rounded-[22px] bg-white border border-neutral-200/80 p-5 shadow-[0_4px_24px_rgba(0,0,0,0.06)] flex items-center justify-between gap-4 cursor-pointer w-full"
           >
             <div className="space-y-1 pr-2">
               <h3 className="text-[17px] font-bold text-neutral-900 leading-snug">
@@ -243,7 +243,7 @@ export default function AccountOverviewPage() {
         </Link>
 
         {/* ── Section: Settings ─────────────────────────────── */}
-        <div className="mt-8">
+        <div className="mt-8 w-full">
           <h2 className="text-[22px] font-bold text-neutral-900 tracking-tight mb-2">
             Settings
           </h2>
@@ -281,7 +281,7 @@ export default function AccountOverviewPage() {
         </div>
 
         {/* ── Section: Studio Activity ──────────────────────── */}
-        <div className="mt-8">
+        <div className="mt-8 w-full">
           <h2 className="text-[22px] font-bold text-neutral-900 tracking-tight mb-2">
             Studio Activity
           </h2>
@@ -333,7 +333,7 @@ export default function AccountOverviewPage() {
         </div>
 
         {/* ── Section: Studio Services ──────────────────────── */}
-        <div className="mt-8">
+        <div className="mt-8 w-full">
           <h2 className="text-[22px] font-bold text-neutral-900 tracking-tight mb-2">
             Studio Services
           </h2>
@@ -376,7 +376,7 @@ export default function AccountOverviewPage() {
         </div>
 
         {/* ── Section: Account ──────────────────────────────── */}
-        <div className="mt-8">
+        <div className="mt-8 w-full">
           <h2 className="text-[22px] font-bold text-neutral-900 tracking-tight mb-2">
             Account
           </h2>
