@@ -13,6 +13,7 @@ import {
   LogOut,
   ChevronDown,
   LayoutDashboard,
+  User as UserIcon,
 } from 'lucide-react';
 
 export default function AccountMenu() {
@@ -36,9 +37,11 @@ export default function AccountMenu() {
       <button
         type="button"
         onClick={() => openAuthModal('sign_in')}
-        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium tracking-wide transition-all duration-200 border border-neutral-200 dark:border-white/20 bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100 shadow-xs"
+        aria-label="Sign In"
+        className="flex h-8 w-8 md:w-auto md:px-3.5 md:py-1.5 items-center justify-center rounded-full text-xs font-medium tracking-wide transition-all duration-200 bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100 shadow-xs"
       >
-        Sign In
+        <UserIcon className="h-4 w-4 md:hidden" />
+        <span className="hidden md:inline">Sign In</span>
       </button>
     );
   }
@@ -57,15 +60,16 @@ export default function AccountMenu() {
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-full border border-neutral-200 dark:border-white/15 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md hover:bg-white dark:hover:bg-neutral-800 transition-colors shadow-xs"
+        aria-label={`Open account menu for ${displayName}`}
+        className="flex h-8 w-8 items-center justify-center rounded-full focus:outline-none transition-transform hover:scale-105 active:scale-95 md:h-8 md:w-auto md:p-1 md:pl-1.5 md:pr-2.5 md:border md:border-neutral-200 md:dark:border-white/15 md:bg-white/80 md:dark:bg-neutral-900/80 md:backdrop-blur-md md:gap-2 shadow-xs"
       >
-        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-950 dark:bg-white text-[11px] font-semibold text-white dark:text-neutral-950">
+        <div className="flex h-8 w-8 md:h-7 md:w-7 shrink-0 items-center justify-center rounded-full bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 text-[11px] font-semibold">
           {initials}
         </div>
-        <span className="hidden md:inline-block max-w-[100px] truncate text-xs font-medium text-neutral-800 dark:text-neutral-200">
+        <span className="hidden md:inline-block max-w-[90px] truncate text-xs font-medium text-neutral-800 dark:text-neutral-200">
           {displayName}
         </span>
-        <ChevronDown className="h-3 w-3 text-neutral-400 transition-transform stroke-[2]" />
+        <ChevronDown className="hidden md:block h-3 w-3 text-neutral-400 transition-transform stroke-[2]" />
       </button>
 
       <AnimatePresence>
