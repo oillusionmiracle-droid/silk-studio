@@ -215,37 +215,72 @@ ALTER TABLE IF EXISTS public.variants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.order_items ENABLE ROW LEVEL SECURITY;
 
--- Profiles Policies
+-- 1. Helper function to check admin role without recursive RLS evaluation
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+STABLE
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND role = 'admin'
+  );
+$$;
+
+GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated, anon;
+
+-- 2. Trigger to prevent non-admins from changing their role
+CREATE OR REPLACE FUNCTION public.protect_profile_role()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF NEW.role IS DISTINCT FROM OLD.role THEN
+    IF NOT public.is_admin() THEN
+      NEW.role := OLD.role;
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS tr_protect_profile_role ON public.profiles;
+CREATE TRIGGER tr_protect_profile_role
+  BEFORE UPDATE ON public.profiles
+  FOR EACH ROW
+  EXECUTE FUNCTION public.protect_profile_role();
+
+-- Profiles Policies (Non-recursive)
 DROP POLICY IF EXISTS "Users can view own profile or admins all" ON public.profiles;
-CREATE POLICY "Users can view own profile or admins all"
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users and admins can insert profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Admins can insert profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Admins can update profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Admins can view all profiles" ON public.profiles;
+DROP POLICY IF EXISTS "profiles_select_policy" ON public.profiles;
+DROP POLICY IF EXISTS "profiles_update_policy" ON public.profiles;
+DROP POLICY IF EXISTS "profiles_insert_policy" ON public.profiles;
+
+CREATE POLICY "profiles_select_policy"
   ON public.profiles FOR SELECT
   TO authenticated
-  USING (
-    id = auth.uid()
-    OR EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid() AND p.role = 'admin'
-    )
-  );
+  USING (id = auth.uid() OR public.is_admin());
 
-DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
-CREATE POLICY "Users can update own profile"
+CREATE POLICY "profiles_update_policy"
   ON public.profiles FOR UPDATE
   TO authenticated
-  USING (id = auth.uid())
-  WITH CHECK (
-    role = (SELECT role FROM public.profiles WHERE id = auth.uid())
-    OR EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid() AND p.role = 'admin'
-    )
-  );
+  USING (id = auth.uid() OR public.is_admin())
+  WITH CHECK (id = auth.uid() OR public.is_admin());
 
-DROP POLICY IF EXISTS "Users and admins can insert profile" ON public.profiles;
-CREATE POLICY "Users and admins can insert profile"
+CREATE POLICY "profiles_insert_policy"
   ON public.profiles FOR INSERT
   TO authenticated
-  WITH CHECK (id = auth.uid() OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+  WITH CHECK (id = auth.uid() OR public.is_admin());
 
 -- Wishlists Policies
 DROP POLICY IF EXISTS "Users can view own wishlist" ON public.wishlists;
@@ -278,13 +313,7 @@ DROP POLICY IF EXISTS "Users can view own orders or admins all" ON public.orders
 CREATE POLICY "Users can view own orders or admins all"
   ON public.orders FOR SELECT
   TO authenticated
-  USING (
-    user_id = auth.uid()
-    OR EXISTS (
-      SELECT 1 FROM public.profiles 
-      WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
-    )
-  );
+  USING (user_id = auth.uid() OR public.is_admin());
 
 DROP POLICY IF EXISTS "Allow inserting orders" ON public.orders;
 CREATE POLICY "Allow inserting orders"
@@ -296,12 +325,7 @@ DROP POLICY IF EXISTS "Admins can update orders" ON public.orders;
 CREATE POLICY "Admins can update orders"
   ON public.orders FOR UPDATE
   TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles 
-      WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
-    )
-  );
+  USING (public.is_admin());
 
 -- Order Items Policies
 DROP POLICY IF EXISTS "Users can view own order items" ON public.order_items;
@@ -312,13 +336,7 @@ CREATE POLICY "Users can view own order items"
     EXISTS (
       SELECT 1 FROM public.orders
       WHERE orders.id = order_items.order_id
-        AND (
-          orders.user_id = auth.uid()
-          OR EXISTS (
-            SELECT 1 FROM public.profiles 
-            WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
-          )
-        )
+        AND (orders.user_id = auth.uid() OR public.is_admin())
     )
   );
 
