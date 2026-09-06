@@ -4,17 +4,11 @@ import { supabase } from '@/lib/supabase';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const welcomeEmailHTML = `[your HTML here]`;
-
 export async function POST(req: NextRequest) {
   try {
-    console.log('📧 Newsletter request received');
-    
     const { email } = await req.json();
-    console.log('Email from body:', email);
 
     if (!email || typeof email !== 'string' || !email.includes('@')) {
-      console.log('❌ Invalid email format');
       return NextResponse.json(
         { error: 'Please provide a valid email address.' },
         { status: 400 }
@@ -22,10 +16,8 @@ export async function POST(req: NextRequest) {
     }
 
     const trimmedEmail = email.toLowerCase().trim();
-    console.log('✅ Email validated:', trimmedEmail);
 
-    // 1. Save to Supabase
-    console.log('💾 Saving to Supabase...');
+    // 1. Save subscriber in Supabase
     const { error: supabaseError } = await supabase
       .from('newsletter_subscribers')
       .upsert(
@@ -39,44 +31,49 @@ export async function POST(req: NextRequest) {
       );
 
     if (supabaseError) {
-      console.error('❌ Supabase error:', supabaseError);
-    } else {
-      console.log('✅ Saved to Supabase');
+      console.error('Supabase newsletter error:', supabaseError);
     }
 
-    // 2. Send email
-    console.log('📨 Sending email via Resend...');
-    console.log('From:', 'hello@mail.silkstudios.com.ng');
-    console.log('To:', trimmedEmail);
-    console.log('API Key exists:', !!process.env.RESEND_API_KEY);
+    // 2. Add subscriber to Resend
+    const { data: contact, error: resendError } =
+      await resend.contacts.create({
+        email: trimmedEmail,
+        unsubscribed: false,
+      });
 
-    const { data: emailData, error: emailError } = await resend.emails.send({
-      from: 'hello@mail.silkstudios.com.ng',
-      to: trimmedEmail,
-      subject: '🖤 Welcome to Silk Studios',
-      html: welcomeEmailHTML,
-    });
+    if (resendError) {
+      console.error('Resend contact error:', resendError);
 
-    if (emailError) {
-      console.error('❌ RESEND ERROR:', emailError);
-      console.error('Error code:', emailError.message);
       return NextResponse.json(
-        { error: 'Email failed: ' + emailError.message },
+        {
+          error:
+            'Your subscription could not be completed right now. Please try again.',
+        },
         { status: 500 }
       );
     }
 
-    console.log('✅ Email sent successfully:', emailData);
+    console.log('Newsletter subscriber added to Resend:', contact);
+
+    // 3. Trigger the Resend welcome automation
+    const { error: eventError } = await resend.events.send({
+      event: 'newsletter.subscribed',
+      email: trimmedEmail,
+    });
+
+    if (eventError) {
+      console.error('Resend automation event error:', eventError);
+    }
 
     return NextResponse.json({
       ok: true,
-      message: "You're on the list! Check your email.",
-      emailId: emailData.id,
+      message: "You're on the list!",
     });
   } catch (error) {
-    console.error('❌ FATAL ERROR:', error);
+    console.error('Newsletter error:', error);
+
     return NextResponse.json(
-      { error: 'Something went wrong: ' + String(error) },
+      { error: 'Something went wrong. Please try again.' },
       { status: 500 }
     );
   }
