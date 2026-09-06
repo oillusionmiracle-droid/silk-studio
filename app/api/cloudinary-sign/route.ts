@@ -110,43 +110,4 @@ export async function POST(req: Request) {
       headers: { 'Content-Type': 'application/json' },
     });
   }
-}export async function POST(req: Request) {
-  try {
-    const formData = await req.formData();
-    const file = formData.get('file') as Blob | null;
-
-    if (!file || !(file instanceof Blob)) {
-      return new Response(JSON.stringify({ error: 'No file uploaded' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    if (file.size > MAX_FILE_SIZE_BYTES) {
-      return new Response(
-        JSON.stringify({ error: 'File exceeds maximum size limit of 20MB.' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-    if (file.type && !ALLOWED_TYPES.includes(file.type) && !file.type.startsWith('image/')) {
-      return new Response(
-        JSON.stringify({ error: 'File type not supported. Please upload JPG, PNG, WEBP, PDF, or PSD.' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const result = await uploadBuffer(buffer);
-
-    return new Response(JSON.stringify(result), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (error: any) {
-    return new Response(JSON.stringify({ error: error?.message || 'Upload failed' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
 }
