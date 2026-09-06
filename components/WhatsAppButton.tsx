@@ -33,7 +33,7 @@ export default function WhatsAppButton() {
         (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1)';
       }}
     >
-      <img src="https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/icons/whatsapp.png" alt="WhatsApp" width={52} height={52} style={{ objectFit: 'contain' }} />
+      <img src="/icons/whatsapp.png" alt="WhatsApp" width={52} height={52} style={{ objectFit: 'contain' }} />
     </a>
   );
 }

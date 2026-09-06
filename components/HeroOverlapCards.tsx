@@ -10,9 +10,9 @@ import { X, Volume2, VolumeX } from 'lucide-react';
   Files go in: public/videos/ or public/images/
 */
 const placeholders = [
-  { id: 1, type: 'video' as const, src: 'https://res.cloudinary.com/dagqxe3fh/video/upload/silk-studio/videos/sample-video.mp4', label: 'PROJECT ONE' },
-  { id: 2, type: 'image' as const, src: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/portfolio/work-4.jpg', label: 'PROJECT TWO' },
-  { id: 3, type: 'image' as const, src: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/portfolio/work-5.jpg', label: 'PROJECT THREE' },
+  { id: 1, type: 'video' as const, src: '/videos/sample-video.mp4', label: 'PROJECT ONE' },
+  { id: 2, type: 'image' as const, src: '/images/portfolio/work-4.jpg', label: 'PROJECT TWO' },
+  { id: 3, type: 'image' as const, src: '/images/portfolio/work-5.jpg', label: 'PROJECT THREE' },
 ];
 
 /* ─────────────────────────────────────────

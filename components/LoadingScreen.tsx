@@ -54,7 +54,7 @@ export default function LoadingScreen() {
     >
       <div style={{ width: 100, height: 100 }}>
         <img
-          src="https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/loading-animation.gif"
+          src="/images/loading-animation.gif"
           alt="Loading..."
           style={{ width: '100%', height: '100%', objectFit: 'contain' }}
         />

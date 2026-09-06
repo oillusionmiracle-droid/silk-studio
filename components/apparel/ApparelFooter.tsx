@@ -23,17 +23,17 @@ const SOCIAL_LINKS = [
   {
     name: 'Instagram',
     url: 'https://instagram.com/thesilkstudiong',
-    icon: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/icons/instagram.png',
+    icon: '/icons/instagram.png',
   },
   {
     name: 'TikTok',
     url: 'https://tiktok.com/@thesilkstudiong',
-    icon: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/icons/tiktok.png',
+    icon: '/icons/tiktok.png',
   },
   {
     name: 'Facebook',
     url: 'https://facebook.com/thesilkstudiong',
-    icon: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/icons/facebook.png',
+    icon: '/icons/facebook.png',
   },
 ];
 

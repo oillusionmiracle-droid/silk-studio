@@ -36,7 +36,7 @@ export default function ContactPage() {
         overflow: 'hidden',
       }}>
         <img
-          src="https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/hero-bg.jpg"
+          src="/images/hero-bg.jpg"
           alt=""
           style={{
             position: 'absolute', inset: 0,

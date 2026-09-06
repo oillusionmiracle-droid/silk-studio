@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Volume2, VolumeX } from 'lucide-react';
 
 export default function VideoAdSection({
-  videoSrc = 'https://res.cloudinary.com/dagqxe3fh/video/upload/silk-studio/videos/ad-video.mp4',
+  videoSrc = '/videos/ad-video.mp4',
   poster,
 }: {
   videoSrc?: string;
@@ -241,7 +241,7 @@ export default function VideoAdSection({
                   ▶
                 </div>
                 <span style={{ fontSize: 13 }}>
-                  Place <code style={{ color: '#C6FF33', fontSize: 12 }}>publichttps://res.cloudinary.com/dagqxe3fh/video/upload/silk-studio/videos/ad-video.mp4</code> to activate
+                  Place <code style={{ color: '#C6FF33', fontSize: 12 }}>public/videos/ad-video.mp4</code> to activate
                 </span>
               </div>
             )}

@@ -68,21 +68,21 @@ const formatPrice = (n: number) => `\u20A6${n.toLocaleString()}`;
 ───────────────────────────────────────── */
 const HERO_SLIDES = [
   {
-    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/apparel/hero-1.jpg',
+    image: '/images/apparel/hero-1.jpg',
     tag: 'DROP 001 // CORE COLLECTION',
     headline: 'Wears that speak for themselves.',
     subhead: 'Heavyweight 260gsm streetwear essentials designed in Lagos, engineered for everywhere.',
     ctaText: 'Explore Collection',
   },
   {
-    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/apparel/hero-2.jpg',
+    image: '/images/apparel/hero-2.jpg',
     tag: 'LAGOS MINIMALIST SERIES',
     headline: 'Raw texture. Quiet confidence.',
     subhead: 'Unstructured low-profile caps and signature oversized tees. Zero filler, no restocks.',
     ctaText: 'Browse Catalog',
   },
   {
-    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/hero/hero-img-1.jpg',
+    image: '/images/hero/hero-img-1.jpg',
     tag: 'STUDIO CRAFT // SMALL BATCH',
     headline: 'Wearable artifacts from Lagos.',
     subhead: 'Every piece is printed and finished in our Lagos studio with uncompromised precision.',
@@ -977,14 +977,14 @@ const STORY_BLOCKS = [
     title: 'Engineered Weight & Drape',
     description:
       'We refuse thin, throwaway garments. Every Silk Studio tee is constructed from custom-knitted 260gsm combed cotton for a substantial boxy hang that holds its silhouette wash after wash.',
-    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/apparel/process-tag.jpg',
+    image: '/images/apparel/process-tag.jpg',
   },
   {
     tag: 'ARTISANAL PRINTING',
     title: 'Screenprinted by Hand in Lagos',
     description:
       'No peeling heat transfers. Every artwork is burned to screens and pulled by hand using water-based inks that fuse into the garment fibers for a breathable, vintage soft-hand feel.',
-    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/apparel/process-print.jpg',
+    image: '/images/apparel/process-print.jpg',
   },
 ];
 

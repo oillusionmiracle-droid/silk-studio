@@ -24,17 +24,17 @@ const connectLinks = [
   {
     name: 'Instagram',
     url: 'https://instagram.com/thesilkstudiong',
-    icon: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/icons/instagram.png',
+    icon: '/icons/instagram.png',
   },
   {
     name: 'TikTok',
     url: 'https://tiktok.com/@thesilkstudiong',
-    icon: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/icons/tiktok.png',
+    icon: '/icons/tiktok.png',
   },
   {
     name: 'Facebook',
     url: 'https://facebook.com/thesilkstudiong',
-    icon: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/icons/facebook.png',
+    icon: '/icons/facebook.png',
   },
 ];
 
@@ -119,7 +119,7 @@ export default function Footer() {
           same <video autoPlay muted loop playsInline> block used in the hero/FinalCTA,
           but I'd push back on that for this section specifically. ── */}
       <img
-        src="https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/hero-bg.jpg"
+        src="/images/hero-bg.jpg"
         alt=""
         aria-hidden
         style={{
@@ -318,7 +318,7 @@ export default function Footer() {
               overflow: 'visible',
             }}>
               <img
-                src="https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/newsletter-mascot.png"
+                src="/images/newsletter-mascot.png"
                 alt=""
                 style={{
                   position: 'absolute',

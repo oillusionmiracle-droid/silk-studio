@@ -6,10 +6,10 @@ import { usePathname } from 'next/navigation';
 import { User } from 'lucide-react';
 
 const navItems = [
-  { label: 'Home', href: '/', icon: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/icons/home.png' },
-  { label: 'Services', href: '/services', icon: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/icons/services.png' },
-  { label: 'Order', href: '/order', icon: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/icons/order.png' },
-  { label: 'Portfolio', href: '/portfolio', icon: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/icons/portfolio.png' },
+  { label: 'Home', href: '/', icon: '/icons/home.png' },
+  { label: 'Services', href: '/services', icon: '/icons/services.png' },
+  { label: 'Order', href: '/order', icon: '/icons/order.png' },
+  { label: 'Portfolio', href: '/portfolio', icon: '/icons/portfolio.png' },
   { label: 'Profile', href: '/account', icon: 'profile' },
 ];
 

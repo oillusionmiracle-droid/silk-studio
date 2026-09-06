@@ -11,9 +11,9 @@ import { usePageContent } from '@/lib/usePageContent';
 ───────────────────────────────────────── */
 
 const HERO_IMAGES = [
-  'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/apparel/hero-1.jpg',
-  'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/apparel/hero-2.jpg',
-  'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/apparel/hero-3.jpg',
+  '/images/apparel/hero-1.jpg',
+  '/images/apparel/hero-2.jpg',
+  '/images/apparel/hero-3.jpg',
 ];
 
 const APPAREL_HERO_FALLBACK = {

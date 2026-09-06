@@ -6,10 +6,15 @@ const mapPath = path.join(projectRoot, 'cloudinary-url-map.json');
 const roots = ['app', 'components', 'lib'];
 const extensions = new Set(['.ts', '.tsx', '.css', '.mjs']);
 const dryRun = process.argv.includes('--dry-run');
+const restoreLocal = process.argv.includes('--restore-local');
 
 const mapDocument = JSON.parse(await fs.readFile(mapPath, 'utf8'));
 const urlMap = mapDocument.urlMap || {};
-const entries = Object.entries(urlMap).sort(([left], [right]) => right.length - left.length);
+const entries = Object.entries(urlMap)
+  .map(([localPath, cloudinaryUrl]) => restoreLocal
+    ? [cloudinaryUrl, localPath]
+    : [localPath, cloudinaryUrl])
+  .sort(([left], [right]) => right.length - left.length);
 
 async function walk(directory) {
   const files = [];
@@ -49,5 +54,5 @@ for (const root of roots) {
   }
 }
 
-console.log(`${dryRun ? 'Dry run: would change' : 'Changed'} ${changedFiles} files with ${replacements} asset replacements.`);
+console.log(`${dryRun ? 'Dry run: would change' : 'Changed'} ${changedFiles} files with ${replacements} ${restoreLocal ? 'local-path restorations' : 'asset replacements'}.`);
 for (const item of report) console.log(`${item.file}: ${item.replacements}`);

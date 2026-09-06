@@ -372,7 +372,7 @@ export default function OrderPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', position: 'relative', background: 'url(https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/order-bg.jpg) center/cover no-repeat', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', position: 'relative', background: 'url(/images/order-bg.jpg) center/cover no-repeat', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, backdropFilter: 'blur(12px)', backgroundColor: 'rgba(13,13,13,0.85)', zIndex: 0 }} />
       <div style={{ position: 'relative', zIndex: 1, maxWidth: isMobile ? '100%' : 1200, margin: '0 auto', padding: isMobile ? '100px 16px 80px' : '140px 24px 60px' }}>
         
