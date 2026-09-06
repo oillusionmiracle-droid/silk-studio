@@ -8,7 +8,7 @@ const sections = [
     id: 'who-we-are',
     number: '01',
     title: 'Who We Are',
-    content: 'Silk Studio is a product of Silk Studio Nigeria Limited, a technology, design, and apparel company based in Lagos, Nigeria. When we say "we," "us," or "our," we mean Silk Studio Nigeria Limited. When we say "you" or "your," we mean the person or business using Silk Studio\'s platform, services, or apparel shop. Contact us at thesilkstudiong@gmail.com or visit silkstudio.ng.\n\nThis policy covers our entire platform, including our design and print services, our custom order tool, and our apparel ("wears") shop.',
+    content: 'Silk Studio is a product of Silk Studio Nigeria Limited, a technology, design, and apparel company based in Lagos, Nigeria. When we say "we," "us," or "our," we mean Silk Studio Nigeria Limited. When we say "you" or "your," we mean the person or business using Silk Studio\'s platform, services, or apparel shop. Contact us at thesilkstudiong@gmail.com or visit silkstudios.com.ng.\n\nThis policy covers our entire platform, including our design and print services, our custom order tool, and our apparel ("wears") shop.',
   },
   {
     id: 'information-collect',
@@ -121,7 +121,7 @@ const sections = [
     title: 'Contact Us',
     bullets: [
       { label: 'Email', detail: 'thesilkstudiong@gmail.com' },
-      { label: 'Website', detail: 'silkstudio.ng' },
+      { label: 'Website', detail: 'silkstudios.com.ng' },
       { label: 'WhatsApp', detail: '+2347064829776' },
       { label: 'Location', detail: 'Lagos, Nigeria' },
     ],

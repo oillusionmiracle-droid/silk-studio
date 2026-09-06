@@ -138,7 +138,7 @@ const clauses = [
     title: 'Contact & Support',
     bullets: [
       { label: 'Email', detail: 'thesilkstudiong@gmail.com' },
-      { label: 'Website', detail: 'silkstudio.ng' },
+      { label: 'Website', detail: 'silkstudios.com.ng' },
       { label: 'WhatsApp', detail: '+2347064829776' },
       { label: 'Location', detail: 'Lagos, Nigeria' },
     ],

@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { Resend } from 'resend';
 import { supabase } from '@/lib/supabase';
 
-/* ─────────────────────────────────────────
-   Newsletter Subscription API Route
-   Connects to Mailchimp using existing .env.local keys
-   and optionally logs to Supabase if configured.
-───────────────────────────────────────── */
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,59 +17,61 @@ export async function POST(req: NextRequest) {
 
     const trimmedEmail = email.toLowerCase().trim();
 
-    // 1. Mailchimp Integration (using keys in .env.local)
-    const apiKey = process.env.MAILCHIMP_API_KEY;
-    const audienceId = process.env.MAILCHIMP_AUDIENCE_ID;
-    const region = process.env.MAILCHIMP_API_REGION || 'us2';
-
-    let mailchimpSuccess = false;
-
-    if (apiKey && audienceId) {
-      try {
-        const url = `https://${region}.api.mailchimp.com/3.0/lists/${audienceId}/members`;
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: {
-            Authorization: `apikey ${apiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email_address: trimmedEmail,
-            status: 'subscribed',
-          }),
-        });
-
-        const data = await res.json();
-
-        // 200/201 is success; title: 'Member Exists' is also acceptable
-        if (res.ok || data.title === 'Member Exists') {
-          mailchimpSuccess = true;
-        } else {
-          console.warn('Mailchimp API notice:', data);
+    // 1. Save subscriber in Supabase
+    const { error: supabaseError } = await supabase
+      .from('newsletter_subscribers')
+      .upsert(
+        {
+          email: trimmedEmail,
+          subscribed_at: new Date().toISOString(),
+        },
+        {
+          onConflict: 'email',
         }
-      } catch (mcErr) {
-        console.error('Mailchimp connection error:', mcErr);
-      }
+      );
+
+    if (supabaseError) {
+      console.error('Supabase newsletter error:', supabaseError);
     }
 
-    // 2. Supabase Integration (fallback / dual storage)
-    try {
-      await supabase
-        .from('newsletter_subscribers')
-        .upsert(
-          { email: trimmedEmail, subscribed_at: new Date().toISOString() },
-          { onConflict: 'email' }
-        );
-    } catch {
-      // Ignore Supabase table errors if table isn't created yet
+    // 2. Add subscriber to Resend
+    const { data: contact, error: resendError } =
+      await resend.contacts.create({
+        email: trimmedEmail,
+        unsubscribed: false,
+      });
+
+    if (resendError) {
+      console.error('Resend contact error:', resendError);
+
+      return NextResponse.json(
+        {
+          error:
+            'Your subscription could not be completed right now. Please try again.',
+        },
+        { status: 500 }
+      );
+    }
+
+    console.log('Newsletter subscriber added to Resend:', contact);
+
+    // 3. Trigger the Resend welcome automation
+    const { error: eventError } = await resend.events.send({
+      event: 'newsletter.subscribed',
+      email: trimmedEmail,
+    });
+
+    if (eventError) {
+      console.error('Resend automation event error:', eventError);
     }
 
     return NextResponse.json({
       ok: true,
-      message: "You're on the list! Thank you for subscribing.",
+      message: "You're on the list!",
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Newsletter error:', error);
+
     return NextResponse.json(
       { error: 'Something went wrong. Please try again.' },
       { status: 500 }

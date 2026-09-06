@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Silk Studio — Design, Print & Digital",
     description: "One Brief. Fast & Smooth Delivery.",
-    url: "https://silkstudio.ng",
+    url: "https://silkstudios.com.ng",
     siteName: "Silk Studio",
     locale: "en_NG",
     type: "website",

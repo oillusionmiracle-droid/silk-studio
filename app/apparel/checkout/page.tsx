@@ -273,7 +273,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    const customerEmail = email.trim() || `${phone.replace(/\D/g, '') || Date.now()}@orders.silkstudio.ng`;
+    const customerEmail = email.trim() || `${phone.replace(/\D/g, '') || Date.now()}@orders.silkstudios.com.ng`;
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
 
     try {
