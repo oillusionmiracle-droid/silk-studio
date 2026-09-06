@@ -37,7 +37,7 @@ export default function AdminCustomersPage() {
       try {
         const { data: profiles, error: profErr } = await supabase
           .from('profiles')
-          .select('*')
+          .select('id, full_name, phone, default_address, default_area, role, created_at')
           .order('created_at', { ascending: false });
 
         const { data: orders, error: ordErr } = await supabase

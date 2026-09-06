@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
+import Image from 'next/image';
 import { Heart, Plus } from 'lucide-react';
 import { useProducts, Product } from '@/lib/useProducts';
 import { useWishlist } from '@/lib/WishlistContext';
@@ -111,24 +112,27 @@ function ProductCard({
       <div className="product-card__image-container">
         {/* Primary image */}
         {product.image_1_url && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={product.image_1_url}
             alt={product.name}
+            width={800}
+            height={1000}
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+            priority={index < 2}
             className="product-card__image"
-            loading={index < 4 ? 'eager' : 'lazy'}
             draggable={false}
           />
         )}
 
         {/* Alt image (shown on hover) */}
         {product.image_2_url && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={product.image_2_url}
             alt={`${product.name} alternate view`}
+            width={800}
+            height={1000}
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
             className="product-card__image product-card__image--alt"
-            loading="lazy"
             draggable={false}
           />
         )}

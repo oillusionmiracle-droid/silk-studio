@@ -9,6 +9,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ScrollReveal from '@/components/ScrollReveal';
 import FinalCTA from '@/components/FinalCTA';
 import HeroOverlapCards from '@/components/HeroOverlapCards';
+import { usePageContent } from '@/lib/usePageContent';
 
 
 if (typeof window !== 'undefined') {
@@ -45,13 +46,47 @@ const portfolioFallbacks = [
   'linear-gradient(135deg, #1a1a0a 0%, #3a3a10 100%)',
 ];
 
+const HOME_HERO_FALLBACK = {
+  headline: 'Design. Print. Deliver.',
+  highlight: 'Flawlessly fast!',
+  subtext: '250+ expert printers & designers across Lagos. One brief, flawless delivery.',
+  cta_text: 'START YOUR ORDER',
+  cta_link: '/order',
+  video_url: '/videos/hero-bg.mp4',
+  image_url: '/images/hero-bg.jpg',
+};
+
 /* ─────────────────────────────────────────
    HERO SECTION
 ───────────────────────────────────────── */
 
-function HeroSection({ loaded }: { loaded: boolean }) {
+function HeroSection({ loaded, content }: { loaded: boolean; content: typeof HOME_HERO_FALLBACK }) {
   const heroRef = useRef<HTMLElement>(null);
-  const [bgMode, setBgMode] = useState<'video' | 'image'>('video');
+  const [bgMode, setBgMode] = useState<'video' | 'image'>('image');
+  const [videoEnabled, setVideoEnabled] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const connection = (navigator as Navigator & {
+      connection?: { effectiveType?: string; saveData?: boolean };
+    }).connection;
+    const slowConnection = ['slow-2g', '2g', '3g'].includes(connection?.effectiveType || '');
+    if (connection?.saveData || slowConnection) return;
+
+    const enableVideo = () => {
+      setVideoEnabled(true);
+      setBgMode('video');
+    };
+
+    if ('requestIdleCallback' in window) {
+      const idleId = window.requestIdleCallback(enableVideo, { timeout: 1800 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timer = globalThis.setTimeout(enableVideo, 1200);
+    return () => globalThis.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (!loaded || !heroRef.current) return;
@@ -80,7 +115,7 @@ function HeroSection({ loaded }: { loaded: boolean }) {
       {/* Full-bleed background */}
       <div className="hero-bg-container">
         {/* Video background */}
-        <video
+        {videoEnabled && <video
           autoPlay muted loop playsInline
           className="hero-bg-video"
           style={{
@@ -90,14 +125,15 @@ function HeroSection({ loaded }: { loaded: boolean }) {
             opacity: bgMode === 'video' ? 1 : 0,
             transition: 'opacity 0.8s ease',
           }}
-          preload="metadata"
+          preload="none"
+          poster={content.image_url}
         >
-          <source src="/videos/hero-bg.mp4" type="video/mp4" />
-        </video>
+          <source src={content.video_url} type="video/mp4" />
+        </video>}
 
         {/* Image background */}
         <img
-          src="/images/hero-bg.jpg"
+          src={content.image_url}
           alt=""
           className="hero-bg-img"
           style={{
@@ -135,18 +171,18 @@ function HeroSection({ loaded }: { loaded: boolean }) {
               marginBottom: 40,
             }}
           >
-            Design. Print. Deliver.<br />
-            <span style={{ color: '#C6FF33' }}>Flawlessly fast!</span>
+            {content.headline}<br />
+            <span style={{ color: '#C6FF33' }}>{content.highlight}</span>
           </div>
 
           {/* CTA buttons */}
           <div className="hero-anim" style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
             <Link
-              href="/order"
+              href={content.cta_link}
               className="hero-btn-solid"
               style={{ fontSize: 13, padding: '12px 28px', boxShadow: '0 0 32px rgba(198,255,51,0.55), 0 0 80px rgba(198,255,51,0.2)' }}
             >
-              START YOUR ORDER
+              {content.cta_text}
             </Link>
           </div>
 
@@ -158,7 +194,7 @@ function HeroSection({ loaded }: { loaded: boolean }) {
               color: 'rgba(255, 255, 255, 0.9)',
               margin: '0 auto',
             }}>
-              250+ expert printers & designers across Lagos. One brief, flawless delivery.
+              {content.subtext}
             </p>
           </div>
         </div>
@@ -672,6 +708,7 @@ function BayWindowPortfolio() {
 export default function HomePage() {
   const [heroActive, setHeroActive] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
+  const heroContent = usePageContent('home', 'hero', HOME_HERO_FALLBACK);
 
   useEffect(() => {
     const tl = gsap.timeline({
@@ -695,7 +732,7 @@ export default function HomePage() {
     <>
       <div style={{ position: 'fixed', inset: 0, backgroundColor: '#000000', zIndex: -1 }} />
       <main ref={mainRef} style={{ backgroundColor: '#0D0D0D', minHeight: '100vh', clipPath: 'circle(0% at 50% 50%)' }}>
-        <HeroSection loaded={heroActive} />
+        <HeroSection loaded={heroActive} content={heroContent} />
         <HeroOverlapCards />
         <CategoriesSection />
 

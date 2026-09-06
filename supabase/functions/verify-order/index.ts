@@ -149,7 +149,7 @@ serve(async (req) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: 'Silk Studio <orders@silkstudio.ng>',
+            from: 'Silk Studio <orders@mail.silkstudios.com.ng>',
             to: [order.email],
             subject: `Order Confirmed — ${order.paystack_ref}`,
             html: `

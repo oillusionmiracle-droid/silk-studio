@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, DM_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import dynamic from "next/dynamic";
 import "@/app/globals.css";
 import { AuthProvider } from '@/lib/AuthContext';
 import { CartProvider } from '@/lib/CartContext';
@@ -10,19 +11,22 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import LoadingScreen from "@/components/LoadingScreen";
 import CustomCursor from "@/components/CustomCursor";
 import MobileBottomNav from "@/components/MobileBottomNav";
-import GeminiAssistant from "@/components/GeminiAssistant";
 import AuthSheet from "@/components/auth/AuthSheet";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+const GeminiAssistant = dynamic(() => import('@/components/GeminiAssistant'), {
+  ssr: false,
+  loading: () => null,
+});
+
+const jakarta = localFont({
+  src: "./fonts/GeistVF.woff",
   variable: "--font-jakarta",
   display: "swap",
 });
 
-const dmMono = DM_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
+const dmMono = localFont({
+  src: "./fonts/GeistMonoVF.woff",
   variable: "--font-mono",
   display: "swap",
 });
@@ -84,6 +88,7 @@ export default function RootLayout({
               <CustomCursor />
               <MobileBottomNav />
               <GeminiAssistant />
+              <SpeedInsights />
             </WishlistProvider>
           </CartProvider>
         </AuthProvider>

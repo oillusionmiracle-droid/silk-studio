@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import Link from 'next/link';
 import LenisScroll from '@/components/LenisScroll';
 import FinalCTA from '@/components/FinalCTA';
 import WorkDetailOverlay from '@/components/WorkDetailOverlay';
-import { portfolioData, PortfolioItem } from '@/app/data/portfolio';
+import { PortfolioItem } from '@/app/data/portfolio';
+import { usePortfolio } from '@/lib/usePortfolio';
 
 // ─── Tabs: "All" removed ───────────────────────────────────────────
 const TABS = ['Print', 'Branding', 'Apparel', 'Web', 'Events'];
@@ -142,10 +144,13 @@ function ParallaxImage({
         ...style,
       }}
     >
-      <img
+      <Image
         ref={imgRef}
         src={src}
         alt={alt}
+        width={1200}
+        height={900}
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         style={{
           width: '100%',
           height: '110%',
@@ -366,8 +371,9 @@ export default function PortfolioPage() {
   // Default to first real tab (Print) since All is removed
   const [activeTab, setActiveTab] = useState<string>(TABS[0]);
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
+  const editablePortfolio = usePortfolio();
 
-  const filteredData = portfolioData.filter(
+  const filteredData = editablePortfolio.filter(
     (item) => item.category === activeTab
   );
 
