@@ -384,7 +384,7 @@ export default function PortfolioPage() {
         style={{
           minHeight: '100vh',
           backgroundColor: '#000000',
-          backgroundImage: 'url(/images/hero-bg.jpg)',
+          backgroundImage: 'url(https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/hero-bg.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center top',
           backgroundAttachment: 'fixed',

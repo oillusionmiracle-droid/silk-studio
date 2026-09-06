@@ -5,9 +5,9 @@ import Link from 'next/link';
 
 /*
   ── WAVING HAND PNG ──
-  📁 FILE: public/images/waving-hand.png
+  📁 FILE: publichttps://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/waving-hand.png
   Drop your PNG there. Recommended size: 80–100px, transparent background.
-  The component references it via <img src="/images/waving-hand.png" ... />
+  The component references it via <img src="https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/waving-hand.png" ... />
   The waving animation is CSS keyframes — it works on any <img> or emoji.
 */
 
@@ -160,7 +160,7 @@ export default function FinalCTA() {
         <video
           autoPlay muted loop playsInline
           className="hero-bg-video"
-          poster="/images/hero-bg.jpg"
+          poster="https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/hero-bg.jpg"
           style={{
             position: 'absolute', inset: 0,
             width: '100%', height: '100%',
@@ -168,7 +168,7 @@ export default function FinalCTA() {
             opacity: 0.32,
           }}
         >
-          <source src="/videos/hero-bg.mp4" type="video/mp4" />
+          <source src="https://res.cloudinary.com/dagqxe3fh/video/upload/silk-studio/videos/hero-bg.mp4" type="video/mp4" />
         </video>
         <div style={{
           position: 'absolute', inset: 0, zIndex: 0,
@@ -211,7 +211,7 @@ export default function FinalCTA() {
           {/* ── Waving Hand ── */}
           <div className="cta-hand-wrap" style={{ marginBottom: 'clamp(24px, 5vw, 40px)', textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
             <img
-              src="/images/waving-hand.png"
+              src="https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/waving-hand.png"
               alt=""
               aria-hidden
               className="waving-hand"

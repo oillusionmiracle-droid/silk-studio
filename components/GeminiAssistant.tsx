@@ -94,7 +94,7 @@ export default function GeminiAssistant() {
               cursor: 'pointer',
             }}
           >
-            <img src="/icons/chat.png" alt="AI Assistant" width={52} height={52} style={{ objectFit: 'contain' }} />
+            <img src="https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/icons/chat.png" alt="AI Assistant" width={52} height={52} style={{ objectFit: 'contain' }} />
           </motion.button>
         )}
       </AnimatePresence>

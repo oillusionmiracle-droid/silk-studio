@@ -18,7 +18,7 @@ const servicesData = [
   {
     category: 'Print',
     title: 'Flyers & Handbills',
-    image: '/images/services/flyers.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/flyers.jpg',
     icon: '/icons/print.svg',
     tag: 'PRINT',
     body: 'A5, A4, A3 sizes. Single or double-sided. Sharp colour, consistent output.',
@@ -28,7 +28,7 @@ const servicesData = [
   {
     category: 'Print',
     title: 'Banners',
-    image: '/images/services/banners.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/banners.jpg',
     icon: '/icons/print.svg',
     tag: 'PRINT',
     body: 'Custom dimensions. Priced at ₦1,000 per square foot. Eyelets available on request.',
@@ -38,7 +38,7 @@ const servicesData = [
   {
     category: 'Print',
     title: 'Billboards & Flex',
-    image: '/images/services/billboards.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/billboards.jpg',
     icon: '/icons/print.svg',
     tag: 'PRINT',
     body: 'Large-format outdoor printing. Specifications on request.',
@@ -48,7 +48,7 @@ const servicesData = [
   {
     category: 'Print',
     title: 'Jotters & Notepads',
-    image: '/images/services/jotters.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/jotters.jpg',
     icon: '/icons/print.svg',
     tag: 'PRINT',
     body: 'Plain or ruled. Matte or gloss. Spiral or perfect binding (+₦3,000). Soft or hard cover (+₦2,000).',
@@ -58,7 +58,7 @@ const servicesData = [
   {
     category: 'Print',
     title: 'ID Cards & Passes',
-    image: '/images/services/id-cards.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/id-cards.jpg',
     icon: '/icons/print.svg',
     tag: 'PRINT',
     body: 'Standard, with lanyard+holder, or badge reel+holder.',
@@ -68,7 +68,7 @@ const servicesData = [
   {
     category: 'Print',
     title: 'Business Cards',
-    image: '/images/services/business-cards.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/business-cards.jpg',
     icon: '/icons/print.svg',
     tag: 'PRINT',
     body: '300gsm. Matte or gloss. Square or rounded (+₦2,000). Super thick 600gsm (+₦2,000).',
@@ -78,7 +78,7 @@ const servicesData = [
   {
     category: 'Print',
     title: 'Letterheads',
-    image: '/images/services/letterheads.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/letterheads.jpg',
     icon: '/icons/print.svg',
     tag: 'PRINT',
     body: 'Print-ready letterheads for professional correspondence.',
@@ -88,7 +88,7 @@ const servicesData = [
   {
     category: 'Apparel',
     title: 'Custom T-Shirts',
-    image: '/images/services/tshirts.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/tshirts.jpg',
     icon: '/icons/apparel.svg',
     tag: 'APPAREL',
     body: 'Off-white or black 100% cotton. Sublimation and screen print available.',
@@ -98,7 +98,7 @@ const servicesData = [
   {
     category: 'Apparel',
     title: 'Sweatshirts',
-    image: '/images/services/sweatshirts.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/sweatshirts.jpg',
     icon: '/icons/apparel.svg',
     tag: 'APPAREL',
     body: 'Premium heavyweight. Custom graphics, brand logos, event designs.',
@@ -108,7 +108,7 @@ const servicesData = [
   {
     category: 'Apparel',
     title: 'Grey Joggers',
-    image: '/images/services/joggers.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/joggers.jpg',
     icon: '/icons/apparel.svg',
     tag: 'APPAREL',
     body: 'Custom printed or embroidered. Ideal for brand merch and uniforms.',
@@ -118,7 +118,7 @@ const servicesData = [
   {
     category: 'Apparel',
     title: 'Hoodies',
-    image: '/images/services/hoodies.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/hoodies.jpg',
     icon: '/icons/apparel.svg',
     tag: 'APPAREL',
     body: 'Specs and pricing on request. Minimum order applies.',
@@ -128,7 +128,7 @@ const servicesData = [
   {
     category: 'Apparel',
     title: 'Event Merch Sets',
-    image: '/images/services/merch-sets.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/merch-sets.jpg',
     icon: '/icons/apparel.svg',
     tag: 'APPAREL',
     body: 'Coordinated merch packages for events, launches, and team days.',
@@ -138,7 +138,7 @@ const servicesData = [
   {
     category: 'Apparel',
     title: 'Corporate Uniforms',
-    image: '/images/services/uniforms.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/uniforms.jpg',
     icon: '/icons/apparel.svg',
     tag: 'APPAREL',
     body: 'Bulk orders with consistent branding across your team.',
@@ -148,7 +148,7 @@ const servicesData = [
   {
     category: 'Design',
     title: 'Logo & Brand Identity',
-    image: '/images/services/logo-design.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/logo-design.jpg',
     icon: '/icons/design.svg',
     tag: 'DESIGN',
     body: 'Mark, wordmark, colour palette, typography, usage guide.',
@@ -158,7 +158,7 @@ const servicesData = [
   {
     category: 'Design',
     title: 'Event Branding Kit',
-    image: '/images/services/event-branding.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/event-branding.jpg',
     icon: '/icons/design.svg',
     tag: 'DESIGN',
     body: 'Full visual package — invites, banners, social graphics.',
@@ -168,7 +168,7 @@ const servicesData = [
   {
     category: 'Design',
     title: 'Social Media Templates',
-    image: '/images/services/social-templates.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/social-templates.jpg',
     icon: '/icons/design.svg',
     tag: 'DESIGN',
     body: 'Editable Canva or Figma templates. Posts, stories, highlights.',
@@ -178,7 +178,7 @@ const servicesData = [
   {
     category: 'Design',
     title: 'Print-Ready Artwork',
-    image: '/images/services/print-artwork.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/print-artwork.jpg',
     icon: '/icons/design.svg',
     tag: 'DESIGN',
     body: 'Design work prepared to exact print specs and bleed settings.',
@@ -188,7 +188,7 @@ const servicesData = [
   {
     category: 'Web',
     title: 'Landing Page',
-    image: '/images/services/landing-page.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/landing-page.jpg',
     icon: '/icons/web.svg',
     tag: 'WEB',
     body: 'Wireframe, responsive build, copy, contact form, SEO, analytics.',
@@ -198,7 +198,7 @@ const servicesData = [
   {
     category: 'Web',
     title: 'Business Website',
-    image: '/images/services/business-website.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/business-website.jpg',
     icon: '/icons/web.svg',
     tag: 'WEB',
     body: '10–20 pages. Full build, copy, forms, page templates, SEO.',
@@ -208,7 +208,7 @@ const servicesData = [
   {
     category: 'Web',
     title: 'E-commerce',
-    image: '/images/services/ecommerce.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/ecommerce.jpg',
     icon: '/icons/web.svg',
     tag: 'WEB',
     body: 'Catalogue, cart, payments, shipping, transactional emails, security.',
@@ -218,7 +218,7 @@ const servicesData = [
   {
     category: 'Web',
     title: 'Event Page',
-    image: '/images/services/event-page.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/event-page.jpg',
     icon: '/icons/web.svg',
     tag: 'WEB',
     body: 'Single-page event site. RSVP, countdown, schedule, map.',
@@ -230,7 +230,7 @@ const servicesData = [
 const bundlesData = [
   {
     title: 'Event Package',
-    image: '/images/services/bundle-event.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/bundle-event.jpg',
     icon: '/icons/bundle.svg',
     tag: 'BUNDLE',
     pills: ['Invite Design + Print', 'Event Banner', '10 Custom Shirts'],
@@ -240,7 +240,7 @@ const bundlesData = [
   },
   {
     title: 'Business Starter',
-    image: '/images/services/bundle-business.jpg',
+    image: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/bundle-business.jpg',
     icon: '/icons/bundle.svg',
     tag: 'BUNDLE',
     pills: ['Logo & Brand Identity', 'Business Cards', 'Letterhead', 'Social Templates'],
@@ -864,7 +864,7 @@ export default function ServicesPage() {
       }}>
         {/* Hero background image */}
         <img
-          src="/images/hero-bg.jpg"
+          src="https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/hero-bg.jpg"
           alt=""
           style={{
             position: 'absolute', inset: 0,

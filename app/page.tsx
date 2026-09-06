@@ -23,19 +23,19 @@ if (typeof window !== 'undefined') {
 
 
 const categories = [
-  { label: 'Logo & branding', img: '/images/categories/logo.jpg', emoji: '✦' },
-  { label: 'Website & app design', img: '/images/categories/web.jpg', emoji: '◈' },
-  { label: 'Business & advertising', img: '/images/categories/business.jpg', emoji: '◎' },
-  { label: 'Art & illustration', img: '/images/categories/art.jpg', emoji: '◇' },
-  { label: 'Packaging & label', img: '/images/categories/packaging.jpg', emoji: '⬡' },
+  { label: 'Logo & branding', img: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/categories/logo.jpg', emoji: '✦' },
+  { label: 'Website & app design', img: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/categories/web.jpg', emoji: '◈' },
+  { label: 'Business & advertising', img: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/categories/business.jpg', emoji: '◎' },
+  { label: 'Art & illustration', img: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/categories/art.jpg', emoji: '◇' },
+  { label: 'Packaging & label', img: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/categories/packaging.jpg', emoji: '⬡' },
 ];
 
 const portfolioItems = [
-  { src: '/images/portfolio/work-1.mp4', tag: 'Branding', label: 'Identity System', isVideo: true },
-  { src: '/images/portfolio/work-2.jpg', tag: 'Print', label: 'Print Campaign', isVideo: false },
-  { src: '/images/portfolio/work-3.mp4', tag: 'Digital', label: 'Digital Assets', isVideo: true },
-  { src: '/images/portfolio/work-4.jpg', tag: 'Identity', label: 'Brand Identity', isVideo: false },
-  { src: '/images/portfolio/work-5.jpg', tag: 'Web', label: 'Web Design', isVideo: false },
+  { src: 'https://res.cloudinary.com/dagqxe3fh/video/upload/silk-studio/images/portfolio/work-1.mp4', tag: 'Branding', label: 'Identity System', isVideo: true },
+  { src: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/portfolio/work-2.jpg', tag: 'Print', label: 'Print Campaign', isVideo: false },
+  { src: 'https://res.cloudinary.com/dagqxe3fh/video/upload/silk-studio/images/portfolio/work-3.mp4', tag: 'Digital', label: 'Digital Assets', isVideo: true },
+  { src: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/portfolio/work-4.jpg', tag: 'Identity', label: 'Brand Identity', isVideo: false },
+  { src: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/portfolio/work-5.jpg', tag: 'Web', label: 'Web Design', isVideo: false },
 ];
 
 const portfolioFallbacks = [
@@ -52,8 +52,8 @@ const HOME_HERO_FALLBACK = {
   subtext: '250+ expert printers & designers across Lagos. One brief, flawless delivery.',
   cta_text: 'START YOUR ORDER',
   cta_link: '/order',
-  video_url: '/videos/hero-bg.mp4',
-  image_url: '/images/hero-bg.jpg',
+  video_url: 'https://res.cloudinary.com/dagqxe3fh/video/upload/silk-studio/videos/hero-bg.mp4',
+  image_url: 'https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/hero-bg.jpg',
 };
 
 /* ─────────────────────────────────────────
@@ -741,14 +741,14 @@ export default function HomePage() {
           headline="Print Services"
           body="Fast. Flawless. Every time. Flyers, banners, billboards, jotters, ID cards — produced fast through our Lagos-wide production network. Zero compromise on quality."
           price="From ₦4,500" ctaHref="/order?service=print"
-          image="/images/services/print-bg.jpg" imgLeft={false} dark={true}
+          image="https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/print-bg.jpg" imgLeft={false} dark={true}
         />
         <ServiceFeatureBlock
           tag=""
           headline="Web & Digital"
           body="Built to convert, built to last. Landing pages, business websites, AI-enhanced digital assets and event pages. Fast, mobile-first, built for real-world results."
           price="From ₦80,000" ctaHref="/order?service=web"
-          image="/images/services/web-bg.jpg" imgLeft={true} dark={true}
+          image="https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/images/services/web-bg.jpg" imgLeft={true} dark={true}
         />
 
         <BayWindowPortfolio />

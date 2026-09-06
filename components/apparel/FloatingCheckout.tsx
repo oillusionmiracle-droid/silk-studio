@@ -38,7 +38,7 @@ export default function FloatingCheckout() {
           */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/icons/checkout-bag.png"
+            src="https://res.cloudinary.com/dagqxe3fh/image/upload/silk-studio/icons/checkout-bag.png"
             alt="Checkout"
             className="w-12 h-12 sm:w-14 sm:h-14 object-contain filter drop-shadow-[0_8px_20px_rgba(22,163,74,0.35)] transition-transform duration-200"
             draggable={false}
