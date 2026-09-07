@@ -3,14 +3,13 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { User } from 'lucide-react';
 
 const navItems = [
   { label: 'Home', href: '/', icon: '/icons/home.png' },
   { label: 'Services', href: '/services', icon: '/icons/services.png' },
+  { label: 'Profile', href: '/account', icon: '/icons/user.png' },
   { label: 'Order', href: '/order', icon: '/icons/order.png' },
   { label: 'Portfolio', href: '/portfolio', icon: '/icons/portfolio.png' },
-  { label: 'Profile', href: '/account', icon: 'profile' },
 ];
 
 export default function MobileBottomNav() {
@@ -79,6 +78,7 @@ export default function MobileBottomNav() {
     }}>
       {navItems.map(({ label, href, icon }) => {
         const isActive = pathname === href;
+
         return (
           <Link
             key={label}
@@ -91,33 +91,16 @@ export default function MobileBottomNav() {
               transition: 'all 0.25s ease',
             }}
           >
-            {icon === 'profile' ? (
-              <div
-                style={{
-                  width: 48,
-                  height: 48,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  opacity: isActive ? 1 : 0.6,
-                  color: isLightPage ? '#111' : '#fff',
-                  transition: 'opacity 0.2s ease',
-                }}
-              >
-                <User size={24} strokeWidth={isActive ? 2.2 : 1.75} />
-              </div>
-            ) : (
-              <img
-                src={icon}
-                alt={label}
-                style={{
-                  width: 48,
-                  height: 48,
-                  opacity: isActive ? 1 : 0.6,
-                  transition: 'opacity 0.2s ease',
-                }}
-              />
-            )}
+            <img
+              src={icon}
+              alt={label}
+              style={{
+                width: 48,
+                height: 48,
+                opacity: isActive ? 1 : 0.6,
+                transition: 'opacity 0.2s ease',
+              }}
+            />
           </Link>
         );
       })}

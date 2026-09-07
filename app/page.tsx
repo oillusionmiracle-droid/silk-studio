@@ -9,6 +9,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ScrollReveal from '@/components/ScrollReveal';
 import FinalCTA from '@/components/FinalCTA';
 import HeroOverlapCards from '@/components/HeroOverlapCards';
+import EcosystemSocialProof from '@/components/EcosystemSocialProof';
 import { usePageContent } from '@/lib/usePageContent';
 
 
@@ -364,10 +365,6 @@ function CategoriesSection() {
     }}>
       <div style={{ width: '100%', margin: '0 auto' }}>
         <div ref={headingRef} style={{ textAlign: 'center', marginBottom: 'clamp(48px, 8vw, 72px)', padding: '0 var(--section-px)' }}>
-          <p style={{
-            fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 3,
-            color: '#C6FF33', marginBottom: 16, textTransform: 'uppercase',
-          }}>WHAT WE DO</p>
           <h2 style={{
             fontFamily: 'var(--font-jakarta)', fontWeight: 800,
             fontSize: 'clamp(44px, 7vw, 72px)', color: '#ffffff',
@@ -750,6 +747,8 @@ export default function HomePage() {
           price="From ₦80,000" ctaHref="/order?service=web"
           image="/images/services/web-bg.jpg" imgLeft={true} dark={true}
         />
+
+        <EcosystemSocialProof />
 
         <BayWindowPortfolio />
         <FinalCTA />
