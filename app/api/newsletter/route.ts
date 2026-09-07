@@ -4,11 +4,13 @@ import { supabase } from '@/lib/supabase';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 export async function POST(req: NextRequest) {
   try {
     const { email } = await req.json();
 
-    if (!email || typeof email !== 'string' || !email.includes('@')) {
+    if (!email || typeof email !== 'string' || email.length > 254 || !EMAIL_REGEX.test(email.trim())) {
       return NextResponse.json(
         { error: 'Please provide a valid email address.' },
         { status: 400 }
@@ -59,6 +61,9 @@ export async function POST(req: NextRequest) {
     const { error: eventError } = await resend.events.send({
       event: 'newsletter.subscribed',
       email: trimmedEmail,
+      payload: {
+        email: trimmedEmail,
+      },
     });
 
     if (eventError) {

@@ -23,8 +23,8 @@ interface AuthContextType {
   isLoading: boolean;
   isAdmin: boolean;
   isAuthModalOpen: boolean;
-  authModalView: 'sign_in' | 'sign_up';
-  openAuthModal: (view?: 'sign_in' | 'sign_up') => void;
+  authModalView: 'intro' | 'sign_in' | 'sign_up';
+  openAuthModal: (view?: 'intro' | 'sign_in' | 'sign_up') => void;
   closeAuthModal: () => void;
   signInWithEmail: (email: string, password: string) => Promise<{ error: string | null }>;
   signUpWithEmail: (email: string, password: string, fullName: string) => Promise<{ error: string | null; requiresEmailConfirmation?: boolean }>;
@@ -42,9 +42,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalView, setAuthModalView] = useState<'sign_in' | 'sign_up'>('sign_in');
+  const [authModalView, setAuthModalView] = useState<'intro' | 'sign_in' | 'sign_up'>('intro');
 
-  const openAuthModal = useCallback((view: 'sign_in' | 'sign_up' = 'sign_in') => {
+  const openAuthModal = useCallback((view: 'intro' | 'sign_in' | 'sign_up' = 'intro') => {
     setAuthModalView(view);
     setIsAuthModalOpen(true);
   }, []);

@@ -43,7 +43,7 @@ const legalLinks = [
   { label: 'Privacy', href: '/privacy' },
 ];
 
-const NEWSLETTER_ENDPOINT = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/subscribe-newsletter`;
+const NEWSLETTER_ENDPOINT = '/api/newsletter';
 
 async function subscribeEmail(email: string): Promise<{ ok: boolean; message: string }> {
   try {

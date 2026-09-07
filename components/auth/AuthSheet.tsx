@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/lib/AuthContext';
 import {
@@ -10,18 +11,44 @@ import {
   X,
   Loader2,
   ArrowRight,
+  ArrowLeft,
   CheckCircle2,
   AlertCircle,
   Eye,
   EyeOff,
   Check,
-  Sparkles,
+  Phone,
 } from 'lucide-react';
 
-/* ─── Google SVG Icon ───────────────────────────────── */
-function GoogleIcon({ className = 'h-5 w-5' }: { className?: string }) {
+/* ─── Brand Logo PNG Component ─────────────────────── */
+function BrandLogo({ size = 22, className = '' }: { size?: number; className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24">
+    <div
+      className={`relative flex items-center justify-center shrink-0 ${className}`}
+      style={{ width: size, height: size, minWidth: size, minHeight: size }}
+    >
+      <Image
+        src="/images/s-logo.png"
+        alt="Silk Studio Logo"
+        width={size}
+        height={size}
+        className="object-contain"
+        priority
+      />
+    </div>
+  );
+}
+
+/* ─── Google SVG Icon with Fixed Strict Dimensions ──── */
+function GoogleIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      style={{ width: size, height: size, minWidth: size, minHeight: size }}
+      className="shrink-0"
+    >
       <path
         fill="#EA4335"
         d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
@@ -42,7 +69,7 @@ function GoogleIcon({ className = 'h-5 w-5' }: { className?: string }) {
   );
 }
 
-/* ─── Password Validation Checklist (Buffer-style) ─── */
+/* ─── Password Validation Checklist ─────────────────── */
 function PasswordChecklist({ password }: { password: string }) {
   const rules = useMemo(
     () => [
@@ -60,22 +87,19 @@ function PasswordChecklist({ password }: { password: string }) {
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
       exit={{ opacity: 0, height: 0 }}
-      className="mt-2.5 space-y-2 px-1"
+      className="mt-2 space-y-1.5 px-1"
     >
       {rules.map((rule) => (
         <div key={rule.label} className="flex items-center gap-2">
-          <motion.div
-            initial={false}
-            animate={{ scale: rule.met ? [1, 1.25, 1] : 1 }}
-            transition={{ duration: 0.25 }}
-            className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full transition-colors duration-200 ${
+          <div
+            className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full transition-colors duration-200 ${
               rule.met ? 'bg-emerald-500 text-white' : 'bg-neutral-200'
             }`}
           >
-            {rule.met && <Check className="h-2.5 w-2.5 stroke-[3]" />}
-          </motion.div>
+            {rule.met && <Check className="h-2 w-2 stroke-[3]" />}
+          </div>
           <span
-            className={`text-[12px] font-medium transition-colors ${
+            className={`text-[11.5px] font-medium transition-colors ${
               rule.met ? 'text-emerald-700' : 'text-neutral-400'
             }`}
           >
@@ -84,6 +108,81 @@ function PasswordChecklist({ password }: { password: string }) {
         </div>
       ))}
     </motion.div>
+  );
+}
+
+/* ─── Luma-Style Orbital Visual Background ─────────── */
+function LumaOrbitalBackground() {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+      {/* Soft Luminous Gradient Wash */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#eaf2fd] via-[#f7eef5] to-[#fff6f0]" />
+
+      {/* Radiant Glow Orb */}
+      <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-[280px] h-[280px] rounded-full bg-gradient-to-tr from-pink-200/50 via-amber-100/50 to-sky-200/50 blur-2xl opacity-75" />
+
+      {/* Concentric Orbital Rings */}
+      <div className="absolute top-[28%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180px] h-[180px] rounded-full border border-neutral-300/35" />
+      <div className="absolute top-[28%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] rounded-full border border-neutral-300/25" />
+      <div className="absolute top-[28%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] rounded-full border border-neutral-300/15" />
+
+      {/* Center 4-Point Radiant Gradient Star */}
+      <div className="absolute top-[28%] left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+        <motion.div
+          animate={{ scale: [1, 1.08, 1], rotate: [0, 4, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          className="w-10 h-10 flex items-center justify-center drop-shadow-sm"
+        >
+          <svg viewBox="0 0 24 24" className="w-9 h-9">
+            <path
+              d="M12 0L14.6 9.4L24 12L14.6 14.6L12 24L9.4 14.6L0 12L9.4 9.4L12 0Z"
+              fill="url(#star-grad-mini)"
+            />
+            <defs>
+              <linearGradient id="star-grad-mini" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#F472B6" />
+                <stop offset="50%" stopColor="#FB923C" />
+                <stop offset="100%" stopColor="#FBBF24" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </motion.div>
+      </div>
+
+      {/* Floating Badges */}
+      <motion.div
+        animate={{ y: [-2, 2, -2] }}
+        transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-[15%] left-[16%] flex flex-col items-center justify-center w-10 h-10 rounded-xl bg-white shadow-xs border border-neutral-100 rotate-[-10deg]"
+      >
+        <span className="text-[8px] font-bold text-blue-500 uppercase tracking-wider leading-none">MAR</span>
+        <span className="text-[12px] font-extrabold text-neutral-800 leading-none mt-0.5">21</span>
+      </motion.div>
+
+      <motion.div
+        animate={{ y: [2, -2, 2] }}
+        transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-[12%] right-[22%] flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-purple-400 to-amber-300 shadow-xs p-2 text-white rotate-[8deg]"
+      >
+        <span className="text-[14px]">📍</span>
+      </motion.div>
+
+      <motion.div
+        animate={{ y: [-3, 3, -3] }}
+        transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-[28%] left-[10%] flex items-center justify-center w-9 h-9 rounded-full bg-sky-100 shadow-xs border border-sky-200 text-[14px]"
+      >
+        🎨
+      </motion.div>
+
+      <motion.div
+        animate={{ y: [3, -3, 3] }}
+        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-[36%] right-[12%] flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-200 to-rose-200 shadow-xs border border-white text-[14px] rotate-[12deg]"
+      >
+        👕
+      </motion.div>
+    </div>
   );
 }
 
@@ -100,49 +199,70 @@ export default function AuthSheet() {
     signInWithGoogle,
   } = useAuth();
 
+  const [step, setStep] = useState<'intro' | 'options' | 'email_form' | 'phone_form'>('intro');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [botField, setBotField] = useState('');
+  const [formMode, setFormMode] = useState<'sign_in' | 'sign_up'>('sign_up');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
 
-  const isSignUp = authModalView === 'sign_up';
-
-  // ── First-time visitor auto pop-up with bounce ──────
+  // ── First-time visitor auto pop-up (Fast 350ms delay) ──
   useEffect(() => {
     if (typeof window === 'undefined') return;
     try {
       const hasVisited = localStorage.getItem('silk_first_visit_shown');
       if (!hasVisited && !user) {
         const timer = setTimeout(() => {
-          openAuthModal('sign_up');
+          openAuthModal('intro');
           localStorage.setItem('silk_first_visit_shown', 'true');
-        }, 1200);
+        }, 350);
         return () => clearTimeout(timer);
       }
     } catch {
-      // localStorage unavailable
+      // localStorage disabled/unavailable
     }
-  }, [user]);
+  }, [user, openAuthModal]);
 
+  // Sync step when modal opens
   useEffect(() => {
-    if (!isAuthModalOpen) {
+    if (isAuthModalOpen) {
       setError(null);
       setSuccessNotice(null);
       setShowPassword(false);
+      setBotField('');
+
+      if (authModalView === 'sign_in') {
+        setFormMode('sign_in');
+        setStep('email_form');
+      } else if (authModalView === 'sign_up') {
+        setFormMode('sign_up');
+        setStep('email_form');
+      } else {
+        setStep('intro');
+      }
     }
-  }, [isAuthModalOpen]);
+  }, [isAuthModalOpen, authModalView]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Silent honeypot bot check
+    if (botField) {
+      setIsLoading(false);
+      return;
+    }
+
     setError(null);
     setSuccessNotice(null);
     setIsLoading(true);
 
     try {
-      if (!isSignUp) {
+      if (formMode === 'sign_in') {
         const res = await signInWithEmail(email, password);
         if (res.error) setError(res.error);
       } else {
@@ -155,9 +275,7 @@ export default function AuthSheet() {
         if (res.error) {
           setError(res.error);
         } else if (res.requiresEmailConfirmation) {
-          setSuccessNotice(
-            'Account created! Check your email to confirm your account.'
-          );
+          setSuccessNotice('Account created! Check your email to confirm your account.');
         }
       }
     } catch (err: any) {
@@ -165,6 +283,17 @@ export default function AuthSheet() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handlePhoneSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!phone.trim()) {
+      setError('Please enter a phone number.');
+      return;
+    }
+    setError(null);
+    setSuccessNotice(`Phone number saved (${phone}). Please complete your details.`);
+    setStep('email_form');
   };
 
   const handleGoogleAuth = async () => {
@@ -177,7 +306,7 @@ export default function AuthSheet() {
         res.error.toLowerCase().includes('unsupported provider')
       ) {
         setError(
-          'Google sign-in is not yet enabled in the Supabase dashboard. Please use email & password above!'
+          'Google sign-in is not yet enabled in the Supabase dashboard. Please use email & password!'
         );
       } else {
         setError(res.error);
@@ -186,259 +315,505 @@ export default function AuthSheet() {
     }
   };
 
-  const switchView = (view: 'sign_in' | 'sign_up') => {
-    setError(null);
-    setSuccessNotice(null);
-    openAuthModal(view);
-  };
-
   return (
     <AnimatePresence>
       {isAuthModalOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 font-sans">
+        <div className="fixed inset-0 z-[9999] flex flex-col justify-end items-center p-0 sm:pb-5 sm:px-4 pointer-events-none font-sans">
           {/* ── Backdrop ──────────────────────────── */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.18 }}
             onClick={closeAuthModal}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md"
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs pointer-events-auto"
           />
 
-          {/* ── Modal with Scale-Up Bounce (Pop In) ── */}
+          {/* ── Sheet Container (Sliding Up from Bottom, Not Filling Page) ── */}
           <motion.div
-            initial={{ scale: 0.7, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.75, opacity: 0, transition: { duration: 0.15 } }}
+            initial={{ y: '100%', opacity: 0.6 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: '100%', opacity: 0 }}
             transition={{
               type: 'spring',
-              damping: 17,
-              stiffness: 300,
-              mass: 0.8,
+              damping: 30,
+              stiffness: 360,
+              mass: 0.75,
             }}
-            className="relative w-full max-w-[440px] max-h-[92vh] overflow-y-auto rounded-[28px] bg-white text-neutral-900 shadow-2xl z-10 border border-neutral-100"
+            className="pointer-events-auto relative w-full max-w-[410px] rounded-t-[28px] sm:rounded-[28px] bg-white text-neutral-900 shadow-2xl z-10 border border-neutral-200/80 overflow-hidden flex flex-col max-h-[85vh]"
           >
-            {/* Close button */}
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={closeAuthModal}
-              className="absolute top-5 right-5 h-9 w-9 flex items-center justify-center rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-500 transition-colors z-20"
-            >
-              <X className="w-4 h-4 stroke-[2.5]" />
-            </motion.button>
+            {/* Mobile Grab Handle */}
+            <div className="w-8 h-1 rounded-full bg-neutral-300 mx-auto mt-2.5 mb-0.5 sm:hidden shrink-0" />
 
-            <div className="p-7 sm:p-8">
-              {/* ── Friendly Header ─────────────────────── */}
-              <div className="text-center mb-6">
-                <div className="inline-flex items-center justify-center h-12 w-12 rounded-2xl bg-neutral-900 text-white mb-3 shadow-md">
-                  <span className="text-xl font-bold tracking-tight">S</span>
+            {/* ══════════════════════════════════════════
+                STEP 1: INTRO / LUMA START SCREEN
+               ══════════════════════════════════════════ */}
+            {step === 'intro' && (
+              <div className="relative min-h-[440px] flex flex-col justify-between p-5 sm:p-7 overflow-hidden">
+                {/* Luma Orbital Art & Mesh */}
+                <LumaOrbitalBackground />
+
+                {/* Top Close Button */}
+                <div className="relative z-20 flex justify-end">
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={closeAuthModal}
+                    aria-label="Close modal"
+                    className="h-8 w-8 flex items-center justify-center rounded-full bg-white/80 hover:bg-white text-neutral-600 shadow-2xs transition-all cursor-pointer border border-white/80"
+                  >
+                    <X className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </motion.button>
                 </div>
-                <h2 className="text-[24px] font-bold text-neutral-900 tracking-tight leading-tight">
-                  {isSignUp ? 'Create your account' : 'Welcome back!'}
-                </h2>
-                <p className="text-[13px] text-neutral-500 mt-2 leading-relaxed max-w-[340px] mx-auto">
-                  {isSignUp
-                    ? 'Sign up or log in to track your orders, save your wishlist, book custom streetwear drops, and manage your delivery details!'
-                    : 'Log in to track your active orders, check design proofs, and view saved items.'}
-                </p>
-              </div>
 
-              {/* ── Tab Segmented Control with Bounce ── */}
-              <div className="relative flex bg-neutral-100 rounded-2xl p-1 mb-6 border border-neutral-200/60">
-                <motion.div
-                  layout
-                  className="absolute top-1 bottom-1 rounded-xl bg-white shadow-sm"
-                  style={{
-                    width: 'calc(50% - 4px)',
-                    left: isSignUp ? 'calc(50% + 2px)' : '4px',
-                  }}
-                  transition={{ type: 'spring', damping: 22, stiffness: 350 }}
-                />
-                <button
-                  type="button"
-                  onClick={() => switchView('sign_in')}
-                  className={`relative z-10 flex-1 py-2.5 text-[14px] font-semibold rounded-xl transition-colors ${
-                    !isSignUp ? 'text-neutral-900' : 'text-neutral-500 hover:text-neutral-800'
-                  }`}
-                >
-                  Log In
-                </button>
-                <button
-                  type="button"
-                  onClick={() => switchView('sign_up')}
-                  className={`relative z-10 flex-1 py-2.5 text-[14px] font-semibold rounded-xl transition-colors ${
-                    isSignUp ? 'text-neutral-900' : 'text-neutral-500 hover:text-neutral-800'
-                  }`}
-                >
-                  Sign Up
-                </button>
-              </div>
+                {/* Bottom Content Area */}
+                <div className="relative z-20 mt-auto pt-16 text-center">
+                  {/* Compact SVG Brand Logo */}
+                  <div className="inline-flex items-center justify-center gap-1.5 mb-2.5 px-3 py-1 rounded-full bg-white/85 backdrop-blur-xs border border-neutral-200/60 shadow-2xs">
+                    <BrandLogo size={16} className="text-neutral-900" />
+                    <span
+                      className="text-[13px] font-extrabold tracking-tight text-neutral-800"
+                      style={{ fontFamily: 'var(--font-jakarta)' }}
+                    >
+                      Silk Studio
+                    </span>
+                  </div>
 
-              {/* ── Google Social Button (Apple Removed) ── */}
-              <motion.button
-                whileTap={{ scale: 0.98 }}
-                type="button"
-                onClick={handleGoogleAuth}
-                className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-2xl border border-neutral-200 bg-white hover:bg-neutral-50 text-[14px] font-semibold text-neutral-800 transition-colors shadow-xs mb-5"
+                  {/* Headline in Hero Font */}
+                  <h2
+                    className="text-[26px] sm:text-[30px] font-black tracking-tight text-neutral-950 leading-[1.14] mb-5"
+                    style={{ fontFamily: 'var(--font-jakarta)' }}
+                  >
+                    Delightful Creations
+                    <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] via-[#D946EF] to-[#F97316]">
+                      Start Here
+                    </span>
+                  </h2>
+
+                  {/* Luma-style Black Pill Button */}
+                  <motion.button
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.97 }}
+                    type="button"
+                    onClick={() => setStep('options')}
+                    className="w-full py-3.5 rounded-full bg-neutral-950 hover:bg-neutral-800 text-white text-[15px] font-bold tracking-tight transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
+                    style={{ fontFamily: 'var(--font-jakarta)' }}
+                  >
+                    <span>Get Started</span>
+                  </motion.button>
+                </div>
+              </div>
+            )}
+
+            {/* ══════════════════════════════════════════
+                STEP 2: OPTIONS SHEET
+               ══════════════════════════════════════════ */}
+            {step === 'options' && (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.18 }}
+                className="p-5 sm:p-7"
               >
-                <GoogleIcon className="h-5 w-5 shrink-0" />
-                <span>Continue with Google</span>
-              </motion.button>
-
-              {/* ── Divider ─────────────────────────────── */}
-              <div className="flex items-center gap-4 mb-5">
-                <div className="flex-1 h-px bg-neutral-200" />
-                <span className="text-[12px] text-neutral-400 font-medium uppercase tracking-wider">
-                  or with email
-                </span>
-                <div className="flex-1 h-px bg-neutral-200" />
-              </div>
-
-              {/* ── Alerts ──────────────────────────────── */}
-              <AnimatePresence mode="wait">
-                {error && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    className="mb-4 p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-[13px] flex items-start gap-2.5"
+                {/* Header Row: Compact S Logo Badge + Close Button */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="h-9 w-9 rounded-xl bg-neutral-100 flex items-center justify-center text-neutral-900 border border-neutral-200/80 shadow-2xs">
+                    <BrandLogo size={18} />
+                  </div>
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={closeAuthModal}
+                    aria-label="Close modal"
+                    className="h-8 w-8 flex items-center justify-center rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 transition-colors cursor-pointer"
                   >
-                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 stroke-[2]" />
-                    <span className="leading-snug">{error}</span>
-                  </motion.div>
-                )}
+                    <X className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </motion.button>
+                </div>
 
-                {successNotice && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    className="mb-4 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-[13px] flex items-start gap-2.5"
+                {/* Title & Subtext */}
+                <h2
+                  className="text-[23px] font-black text-neutral-900 tracking-tight"
+                  style={{ fontFamily: 'var(--font-jakarta)' }}
+                >
+                  Get Started
+                </h2>
+                <p className="text-[13px] text-neutral-500 leading-relaxed mt-1 mb-5">
+                  Track your orders, save design proofs, book custom streetwear drops, and manage your deliveries.
+                </p>
+
+                {/* Option Buttons */}
+                <div className="space-y-2.5">
+                  {/* Continue with Phone */}
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    type="button"
+                    onClick={() => setStep('phone_form')}
+                    className="w-full py-3 px-4 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white text-[14px] font-bold tracking-tight flex items-center justify-center gap-2.5 transition-all cursor-pointer shadow-xs"
+                    style={{ fontFamily: 'var(--font-jakarta)' }}
                   >
-                    <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 stroke-[2]" />
-                    <span className="leading-snug">{successNotice}</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    <Phone className="w-4 h-4 stroke-[2.2] shrink-0" />
+                    <span>Continue with Phone</span>
+                  </motion.button>
 
-              {/* ── Form ────────────────────────────────── */}
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {isSignUp && (
+                  {/* Continue with Email */}
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    type="button"
+                    onClick={() => {
+                      setFormMode('sign_up');
+                      setStep('email_form');
+                    }}
+                    className="w-full py-3 px-4 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-900 text-[14px] font-bold tracking-tight flex items-center justify-center gap-2.5 transition-all cursor-pointer"
+                    style={{ fontFamily: 'var(--font-jakarta)' }}
+                  >
+                    <Mail className="w-4 h-4 stroke-[2.2] shrink-0" />
+                    <span>Continue with Email</span>
+                  </motion.button>
+
+                  {/* Continue with Google (Strictly constrained 18px SVG) */}
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    type="button"
+                    onClick={handleGoogleAuth}
+                    className="w-full py-3 px-4 rounded-xl border border-neutral-200 bg-white hover:bg-neutral-50 text-[14px] font-bold text-neutral-800 flex items-center justify-center gap-2.5 transition-all cursor-pointer shadow-2xs"
+                    style={{ fontFamily: 'var(--font-jakarta)' }}
+                  >
+                    <GoogleIcon size={18} />
+                    <span>Continue with Google</span>
+                  </motion.button>
+                </div>
+
+                {/* Bottom Row */}
+                <div className="mt-5 pt-3.5 border-t border-neutral-100 flex items-center justify-between text-[12.5px] text-neutral-500">
+                  <button
+                    type="button"
+                    onClick={() => setStep('intro')}
+                    className="hover:text-neutral-800 flex items-center gap-1 font-medium cursor-pointer"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>Overview</span>
+                  </button>
+
                   <div>
-                    <label className="block text-[12px] font-semibold text-neutral-700 mb-1.5">
-                      Full Name
+                    Already a member?{' '}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormMode('sign_in');
+                        setStep('email_form');
+                      }}
+                      className="font-bold text-neutral-900 hover:underline cursor-pointer ml-1"
+                    >
+                      Log in
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* ══════════════════════════════════════════
+                STEP 3: PHONE FORM
+               ══════════════════════════════════════════ */}
+            {step === 'phone_form' && (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.18 }}
+                className="p-5 sm:p-7"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <button
+                    type="button"
+                    onClick={() => setStep('options')}
+                    className="inline-flex items-center gap-1 text-[12.5px] font-bold text-neutral-600 hover:text-neutral-950 transition-colors cursor-pointer"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <span>Back</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={closeAuthModal}
+                    className="h-8 w-8 flex items-center justify-center rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 transition-colors cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </button>
+                </div>
+
+                <h3
+                  className="text-[20px] font-black text-neutral-900 tracking-tight"
+                  style={{ fontFamily: 'var(--font-jakarta)' }}
+                >
+                  Enter phone number
+                </h3>
+                <p className="text-[12.5px] text-neutral-500 mt-0.5 mb-4">
+                  Receive instant order proofs and drop notifications.
+                </p>
+
+                <form onSubmit={handlePhoneSubmit} className="space-y-3.5">
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 px-3 py-2.5 rounded-xl bg-neutral-100 border border-neutral-200 text-[13px] font-bold text-neutral-800 shrink-0">
+                      <span>🇳🇬</span>
+                      <span>+234</span>
+                    </div>
+                    <input
+                      type="tel"
+                      required
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="801 234 5678"
+                      className="flex-1 px-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 text-[13.5px] font-semibold text-neutral-900 placeholder:text-neutral-400 focus:bg-white focus:border-neutral-900 outline-none transition-all"
+                    />
+                  </div>
+
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    type="submit"
+                    className="w-full py-3 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white text-[13.5px] font-bold tracking-tight transition-all cursor-pointer shadow-xs"
+                    style={{ fontFamily: 'var(--font-jakarta)' }}
+                  >
+                    Continue
+                  </motion.button>
+                </form>
+              </motion.div>
+            )}
+
+            {/* ══════════════════════════════════════════
+                STEP 4: EMAIL FORM (SIGN UP / LOG IN)
+               ══════════════════════════════════════════ */}
+            {step === 'email_form' && (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.18 }}
+                className="p-5 sm:p-7 overflow-y-auto max-h-[82vh]"
+              >
+                {/* Header Row */}
+                <div className="flex items-center justify-between mb-3">
+                  <button
+                    type="button"
+                    onClick={() => setStep('options')}
+                    className="inline-flex items-center gap-1 text-[12.5px] font-bold text-neutral-600 hover:text-neutral-950 transition-colors cursor-pointer"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <span>Options</span>
+                  </button>
+
+                  <div className="h-7 w-7 rounded-lg bg-neutral-100 flex items-center justify-center text-neutral-900 border border-neutral-200/60">
+                    <BrandLogo size={15} />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={closeAuthModal}
+                    className="h-8 w-8 flex items-center justify-center rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 transition-colors cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </button>
+                </div>
+
+                {/* Heading */}
+                <div className="text-center mb-4">
+                  <h2
+                    className="text-[20px] font-black text-neutral-900 tracking-tight"
+                    style={{ fontFamily: 'var(--font-jakarta)' }}
+                  >
+                    {formMode === 'sign_up' ? 'Create your account' : 'Welcome back!'}
+                  </h2>
+                  <p className="text-[12.5px] text-neutral-500 mt-0.5">
+                    {formMode === 'sign_up'
+                      ? 'Sign up to track orders and save design proofs.'
+                      : 'Log in to view your order proofs and designs.'}
+                  </p>
+                </div>
+
+                {/* Segmented Control */}
+                <div className="relative flex bg-neutral-100 rounded-xl p-1 mb-4 border border-neutral-200/60">
+                  <motion.div
+                    layout
+                    className="absolute top-1 bottom-1 rounded-lg bg-white shadow-2xs"
+                    style={{
+                      width: 'calc(50% - 4px)',
+                      left: formMode === 'sign_up' ? 'calc(50% + 2px)' : '4px',
+                    }}
+                    transition={{ type: 'spring', damping: 26, stiffness: 380 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormMode('sign_in');
+                      setError(null);
+                    }}
+                    className={`relative z-10 flex-1 py-1.5 text-[13px] font-bold rounded-lg transition-colors cursor-pointer ${
+                      formMode === 'sign_in' ? 'text-neutral-900' : 'text-neutral-500 hover:text-neutral-800'
+                    }`}
+                  >
+                    Log In
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormMode('sign_up');
+                      setError(null);
+                    }}
+                    className={`relative z-10 flex-1 py-1.5 text-[13px] font-bold rounded-lg transition-colors cursor-pointer ${
+                      formMode === 'sign_up' ? 'text-neutral-900' : 'text-neutral-500 hover:text-neutral-800'
+                    }`}
+                  >
+                    Sign Up
+                  </button>
+                </div>
+
+                {/* Google Button (Strictly Constrained 18px Icon) */}
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  type="button"
+                  onClick={handleGoogleAuth}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-neutral-200 bg-white hover:bg-neutral-50 text-[13px] font-bold text-neutral-800 transition-colors shadow-2xs mb-3.5 cursor-pointer"
+                >
+                  <GoogleIcon size={18} />
+                  <span>Continue with Google</span>
+                </motion.button>
+
+                {/* Divider */}
+                <div className="flex items-center gap-3 mb-3.5">
+                  <div className="flex-1 h-px bg-neutral-200" />
+                  <span className="text-[10.5px] text-neutral-400 font-semibold uppercase tracking-wider">
+                    or with email
+                  </span>
+                  <div className="flex-1 h-px bg-neutral-200" />
+                </div>
+
+                {/* Alerts */}
+                <AnimatePresence mode="wait">
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      className="mb-3 p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-[12px] flex items-start gap-2"
+                    >
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 stroke-[2]" />
+                      <span className="leading-snug">{error}</span>
+                    </motion.div>
+                  )}
+
+                  {successNotice && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      className="mb-3 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-[12px] flex items-start gap-2"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5 stroke-[2]" />
+                      <span className="leading-snug">{successNotice}</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Form Fields */}
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  {/* Honeypot Bot Trap (Hidden from real users) */}
+                  <div className="hidden" aria-hidden="true">
+                    <input
+                      type="text"
+                      name="website_url"
+                      tabIndex={-1}
+                      value={botField}
+                      onChange={(e) => setBotField(e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                  {formMode === 'sign_up' && (
+                    <div>
+                      <label className="block text-[11px] font-bold text-neutral-700 mb-1">
+                        Full Name
+                      </label>
+                      <div className="relative flex items-center">
+                        <User className="absolute left-3 h-3.5 w-3.5 text-neutral-400 stroke-[2]" />
+                        <input
+                          type="text"
+                          required
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          placeholder="Your Name"
+                          className="w-full pl-9 pr-3.5 py-2 rounded-xl bg-neutral-50 border border-neutral-200 text-[13px] text-neutral-900 placeholder:text-neutral-400 focus:bg-white focus:border-neutral-900 outline-none transition-all font-medium"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-neutral-700 mb-1">
+                      Email Address
                     </label>
                     <div className="relative flex items-center">
-                      <User className="absolute left-3.5 h-4 w-4 text-neutral-400 stroke-[2]" />
+                      <Mail className="absolute left-3 h-3.5 w-3.5 text-neutral-400 stroke-[2]" />
                       <input
-                        type="text"
+                        type="email"
                         required
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        placeholder="Miracle Onyenwe"
-                        className="w-full pl-10 pr-4 py-3 rounded-2xl bg-neutral-50 border border-neutral-200 text-[14px] text-neutral-900 placeholder:text-neutral-400 focus:bg-white focus:border-neutral-900 focus:ring-2 focus:ring-neutral-100 outline-none transition-all"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="you@example.com"
+                        className="w-full pl-9 pr-3.5 py-2 rounded-xl bg-neutral-50 border border-neutral-200 text-[13px] text-neutral-900 placeholder:text-neutral-400 focus:bg-white focus:border-neutral-900 outline-none transition-all font-medium"
                       />
                     </div>
                   </div>
-                )}
 
-                <div>
-                  <label className="block text-[12px] font-semibold text-neutral-700 mb-1.5">
-                    Email Address
-                  </label>
-                  <div className="relative flex items-center">
-                    <Mail className="absolute left-3.5 h-4 w-4 text-neutral-400 stroke-[2]" />
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="miracle@example.com"
-                      className="w-full pl-10 pr-4 py-3 rounded-2xl bg-neutral-50 border border-neutral-200 text-[14px] text-neutral-900 placeholder:text-neutral-400 focus:bg-white focus:border-neutral-900 focus:ring-2 focus:ring-neutral-100 outline-none transition-all"
-                    />
-                  </div>
-                </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-neutral-700 mb-1">
+                      Password
+                    </label>
+                    <div className="relative flex items-center">
+                      <Lock className="absolute left-3 h-3.5 w-3.5 text-neutral-400 stroke-[2]" />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="w-full pl-9 pr-10 py-2 rounded-xl bg-neutral-50 border border-neutral-200 text-[13px] text-neutral-900 placeholder:text-neutral-400 focus:bg-white focus:border-neutral-900 outline-none transition-all font-medium"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((s) => !s)}
+                        className="absolute right-3 p-1 text-neutral-400 hover:text-neutral-600 transition-colors"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="w-3.5 h-3.5 stroke-[2]" />
+                        ) : (
+                          <Eye className="w-3.5 h-3.5 stroke-[2]" />
+                        )}
+                      </button>
+                    </div>
 
-                <div>
-                  <label className="block text-[12px] font-semibold text-neutral-700 mb-1.5">
-                    Password
-                  </label>
-                  <div className="relative flex items-center">
-                    <Lock className="absolute left-3.5 h-4 w-4 text-neutral-400 stroke-[2]" />
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full pl-10 pr-12 py-3 rounded-2xl bg-neutral-50 border border-neutral-200 text-[14px] text-neutral-900 placeholder:text-neutral-400 focus:bg-white focus:border-neutral-900 focus:ring-2 focus:ring-neutral-100 outline-none transition-all"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((s) => !s)}
-                      className="absolute right-3.5 p-1 text-neutral-400 hover:text-neutral-600 transition-colors"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-4 h-4 stroke-[2]" />
-                      ) : (
-                        <Eye className="w-4 h-4 stroke-[2]" />
-                      )}
-                    </button>
+                    <AnimatePresence>
+                      {formMode === 'sign_up' && <PasswordChecklist password={password} />}
+                    </AnimatePresence>
                   </div>
 
-                  {/* Buffer-style live checklist for sign up */}
-                  <AnimatePresence>
-                    {isSignUp && <PasswordChecklist password={password} />}
-                  </AnimatePresence>
-                </div>
-
-                {/* Submit button with bounce */}
-                <motion.button
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full mt-2 py-3.5 rounded-2xl bg-neutral-950 text-white text-[14px] font-bold tracking-tight flex items-center justify-center gap-2 shadow-md hover:bg-neutral-800 disabled:opacity-50 transition-all cursor-pointer"
-                >
-                  {isLoading ? (
-                    <Loader2 className="w-5 h-5 animate-spin stroke-[2]" />
-                  ) : (
-                    <>
-                      <span>{isSignUp ? 'Create My Account' : 'Log In'}</span>
-                      <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-                    </>
-                  )}
-                </motion.button>
-              </form>
-
-              {/* ── Switcher ────────────────────────────── */}
-              <div className="mt-6 text-center text-[13px] text-neutral-500">
-                {!isSignUp ? (
-                  <p>
-                    Don&apos;t have an account yet?{' '}
-                    <button
-                      type="button"
-                      onClick={() => switchView('sign_up')}
-                      className="font-bold text-neutral-900 hover:underline underline-offset-4 cursor-pointer"
-                    >
-                      Sign up for free
-                    </button>
-                  </p>
-                ) : (
-                  <p>
-                    Already have an account?{' '}
-                    <button
-                      type="button"
-                      onClick={() => switchView('sign_in')}
-                      className="font-bold text-neutral-900 hover:underline underline-offset-4 cursor-pointer"
-                    >
-                      Log in here
-                    </button>
-                  </p>
-                )}
-              </div>
-            </div>
+                  {/* Submit Button */}
+                  <motion.button
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full mt-2 py-3 rounded-xl bg-neutral-950 text-white text-[13.5px] font-bold tracking-tight flex items-center justify-center gap-2 shadow-sm hover:bg-neutral-800 disabled:opacity-50 transition-all cursor-pointer"
+                    style={{ fontFamily: 'var(--font-jakarta)' }}
+                  >
+                    {isLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin stroke-[2]" />
+                    ) : (
+                      <>
+                        <span>{formMode === 'sign_up' ? 'Create Account' : 'Log In'}</span>
+                        <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                      </>
+                    )}
+                  </motion.button>
+                </form>
+              </motion.div>
+            )}
           </motion.div>
         </div>
       )}
