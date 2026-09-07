@@ -101,7 +101,7 @@ supabase functions deploy verify-order
 ```bash
 npm run dev
 ```
-Visit http://localhost:3000.
+Visit http://silkstudios.com.ng
 
 ---
 
@@ -176,4 +176,3 @@ This project is **not production-hardened yet**. Current priorities, roughly in 
 
 ## License
 
-Add your license here (MIT, proprietary, etc.)
