@@ -34,7 +34,7 @@ const FALLBACK_TESTIMONIALS: Testimonial[] = [
     testimonial:
       'They handle our high-volume production with total precision. From large-format event billboards to corporate apparel, their 48-hour dispatch system is something Lagos commerce has needed for years.',
     photo_url:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80',
+      'https://res.cloudinary.com/dagqxe3fh/image/upload/v1788824778/510267066_1788823516534214_xexcun.jpg',
   },
   {
     id: 'fallback-3',
@@ -44,7 +44,7 @@ const FALLBACK_TESTIMONIALS: Testimonial[] = [
     testimonial:
       'Beyond the physical prints, having them handle our web design and automated customer workflows changed how our brand operates online. They bridge the gap between creative design and serious tech.',
     photo_url:
-      'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=900&q=80',
+      'https://res.cloudinary.com/dagqxe3fh/image/upload/v1788824777/912323983_1788823117159588_e0cnx9.jpg',
   },
 ];
 
@@ -135,7 +135,7 @@ export default function EcosystemSocialProof() {
     async function loadTestimonials() {
       const { data, error } = await supabase
         .from('testimonials')
-        .select('id, customer_name, testimonial, photo_url')
+        .select('id, customer_name, role, testimonial, photo_url')
         .eq('published', true)
         .order('display_order', { ascending: true })
         .limit(3);
@@ -144,11 +144,6 @@ export default function EcosystemSocialProof() {
         // Map Supabase testimonials with fallback photos/brands
         const mapped = data.map((t, idx) => {
           const fallback = FALLBACK_TESTIMONIALS[idx % FALLBACK_TESTIMONIALS.length];
-          // Clean up legacy names where a prior admin fallback appended the role
-          // into customer_name, e.g. "Name (Role)" -> "Name"
-          let customerName = t.customer_name || fallback.customer_name;
-          const legacyParen = customerName.match(/^(.*?)\s*\([^)]*\)\s*$/);
-          if (legacyParen && legacyParen[1].trim()) customerName = legacyParen[1].trim();
           // Extract brand if role contains "at <Brand>"
           let roleTitle = t.role || fallback.role || '';
           let brandName = fallback.brand || 'CLIENT';
@@ -156,15 +151,15 @@ export default function EcosystemSocialProof() {
             const parts = roleTitle.split(' at ');
             roleTitle = parts[0];
             brandName = parts[1].toUpperCase();
-          } else if (roleTitle.includes(' — ')) {
-            const parts = roleTitle.split(' — ');
+          } else if (roleTitle.includes(' – ')) {
+            const parts = roleTitle.split(' – ');
             roleTitle = parts[0];
             brandName = parts[1].toUpperCase();
           }
 
           return {
             id: t.id,
-            customer_name: customerName,
+            customer_name: t.customer_name || fallback.customer_name,
             role: roleTitle,
             brand: brandName,
             testimonial: t.testimonial || fallback.testimonial,
@@ -200,9 +195,9 @@ export default function EcosystemSocialProof() {
       }}
     >
       <div style={{ maxWidth: 1240, margin: '0 auto' }}>
-        {/* ──────────────────────────────────────────────────────────
+        {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             1. TRUSTED BY SECTION (Headline same size/color, 4 up 2 down)
-           ────────────────────────────────────────────────────────── */}
+           â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -257,9 +252,9 @@ export default function EcosystemSocialProof() {
           </div>
         </motion.div>
 
-        {/* ──────────────────────────────────────────────────────────
+        {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             2. ECOSYSTEM STATEMENT (No black box, left text + right image)
-           ────────────────────────────────────────────────────────── */}
+           â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -346,9 +341,9 @@ export default function EcosystemSocialProof() {
           </div>
         </motion.div>
 
-        {/* ──────────────────────────────────────────────────────────
+        {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             3. THE PROBLEM & THE SOLUTION (No boxes, big white titles, full width)
-           ────────────────────────────────────────────────────────── */}
+           â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -449,13 +444,13 @@ export default function EcosystemSocialProof() {
                 >
                   <span
                     style={{
-                      color: '#ffffff',
+                      color: '#C6FF33',
                       fontSize: 18,
                       lineHeight: 1.4,
                       flexShrink: 0,
                     }}
                   >
-                    •
+                    ✦
                   </span>
                   <span>{point}</span>
                 </li>
@@ -464,9 +459,9 @@ export default function EcosystemSocialProof() {
           </div>
         </motion.div>
 
-        {/* ──────────────────────────────────────────────────────────
+        {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             4. TESTIMONIALS (Exact ClickUp Portrait Cards Style)
-           ────────────────────────────────────────────────────────── */}
+           â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -587,7 +582,7 @@ export default function EcosystemSocialProof() {
       </div>
 
       <style>{`
-        /* ── Desktop & Base Card ── */
+        /* â”€â”€ Desktop & Base Card â”€â”€ */
         .testimonial-card {
           position: relative;
           display: flex;
@@ -609,7 +604,7 @@ export default function EcosystemSocialProof() {
           transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* ── Desktop Overlays (min-width: 769px) ── */
+        /* â”€â”€ Desktop Overlays (min-width: 769px) â”€â”€ */
         @media (min-width: 769px) {
           .testimonial-card {
             height: 560px;
@@ -726,7 +721,7 @@ export default function EcosystemSocialProof() {
           }
         }
 
-        /* ── Mobile View (max-width: 768px): Text under the image, smaller ── */
+        /* â”€â”€ Mobile View (max-width: 768px): Text under the image, smaller â”€â”€ */
         @media (max-width: 768px) {
           .testimonial-card {
             height: auto;
