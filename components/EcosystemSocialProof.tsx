@@ -151,8 +151,8 @@ export default function EcosystemSocialProof() {
             const parts = roleTitle.split(' at ');
             roleTitle = parts[0];
             brandName = parts[1].toUpperCase();
-          } else if (roleTitle.includes(' – ')) {
-            const parts = roleTitle.split(' – ');
+          } else if (roleTitle.includes(' \u2013 ')) {
+            const parts = roleTitle.split(' \u2013 ');
             roleTitle = parts[0];
             brandName = parts[1].toUpperCase();
           }
@@ -195,9 +195,9 @@ export default function EcosystemSocialProof() {
       }}
     >
       <div style={{ maxWidth: 1240, margin: '0 auto' }}>
-        {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        {/* ─────────────────────────────────────────────────────────
             1. TRUSTED BY SECTION (Headline same size/color, 4 up 2 down)
-           â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+           ───────────────────────────────────────────────────────── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -217,7 +217,7 @@ export default function EcosystemSocialProof() {
               margin: '0 auto clamp(40px, 6vw, 64px) auto',
             }}
           >
-            Trusted by leading teams & brands across Lagos
+            Trusted by leading teams &amp; brands across Lagos
           </h2>
 
           {/* 4 UP */}
@@ -252,9 +252,9 @@ export default function EcosystemSocialProof() {
           </div>
         </motion.div>
 
-        {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        {/* ─────────────────────────────────────────────────────────
             2. ECOSYSTEM STATEMENT (No black box, left text + right image)
-           â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+           ───────────────────────────────────────────────────────── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -341,9 +341,9 @@ export default function EcosystemSocialProof() {
           </div>
         </motion.div>
 
-        {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        {/* ─────────────────────────────────────────────────────────
             3. THE PROBLEM & THE SOLUTION (No boxes, big white titles, full width)
-           â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+           ───────────────────────────────────────────────────────── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -381,7 +381,7 @@ export default function EcosystemSocialProof() {
                 margin: 0,
               }}
             >
-              Lagos has hundreds of professional, high-quality printers—but they are
+              Lagos has hundreds of professional, high-quality printers\u2014but they are
               scattered, underutilized, and hard to find. Small businesses, event
               planners, and startups waste valuable time hunting for reliable print
               shops, while printers sit idle between jobs.
@@ -450,7 +450,7 @@ export default function EcosystemSocialProof() {
                       flexShrink: 0,
                     }}
                   >
-                    ✦
+                    &#10086;
                   </span>
                   <span>{point}</span>
                 </li>
@@ -459,9 +459,9 @@ export default function EcosystemSocialProof() {
           </div>
         </motion.div>
 
-        {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        {/* ─────────────────────────────────────────────────────────
             4. TESTIMONIALS (Exact ClickUp Portrait Cards Style)
-           â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+           ───────────────────────────────────────────────────────── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -582,7 +582,7 @@ export default function EcosystemSocialProof() {
       </div>
 
       <style>{`
-        /* â”€â”€ Desktop & Base Card â”€â”€ */
+        /* -- Desktop & Base Card -- */
         .testimonial-card {
           position: relative;
           display: flex;
@@ -604,7 +604,7 @@ export default function EcosystemSocialProof() {
           transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* â”€â”€ Desktop Overlays (min-width: 769px) â”€â”€ */
+        /* -- Desktop Overlays (min-width: 769px) -- */
         @media (min-width: 769px) {
           .testimonial-card {
             height: 560px;
@@ -721,7 +721,7 @@ export default function EcosystemSocialProof() {
           }
         }
 
-        /* â”€â”€ Mobile View (max-width: 768px): Text under the image, smaller â”€â”€ */
+        /* -- Mobile View (max-width: 768px): Text under the image, smaller -- */
         @media (max-width: 768px) {
           .testimonial-card {
             height: auto;
