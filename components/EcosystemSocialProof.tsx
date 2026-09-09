@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -381,7 +381,7 @@ export default function EcosystemSocialProof() {
                 margin: 0,
               }}
             >
-              Lagos has hundreds of professional, high-quality printers\u2014but they are
+              Lagos has hundreds of professional, high-quality printers, but they are
               scattered, underutilized, and hard to find. Small businesses, event
               planners, and startups waste valuable time hunting for reliable print
               shops, while printers sit idle between jobs.
