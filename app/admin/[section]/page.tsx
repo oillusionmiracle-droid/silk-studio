@@ -72,6 +72,37 @@ const SECTION_CONFIGS: Record<string, SectionConfig> = {
     { key: 'email', label: 'Email', type: 'text' },
     { key: 'subscribed_at', label: 'Subscribed', type: 'text' },
   ] },
+  'studio-products': { title: 'Studio Order Services', description: 'Manage print, design, web & bundle service prices and configurations for the Order page.', table: 'products', fields: [
+    { key: 'title', label: 'Title', type: 'text', required: true },
+    { key: 'slug', label: 'Slug', type: 'text' },
+    { key: 'category', label: 'Category (PRINT | DESIGN | WEB | BUNDLES | APPAREL)', type: 'text', required: true },
+    { key: 'description', label: 'Description', type: 'textarea' },
+    { key: 'price', label: 'Base / Starting Price (₦)', type: 'number' },
+    { key: 'pricing_type', label: 'Pricing type (unit | tier | custom_quote | package)', type: 'text' },
+    { key: 'config_schema', label: 'Config Schema (JSON)', type: 'textarea' },
+    { key: 'display_order', label: 'Display Order', type: 'number' },
+    { key: 'is_active', label: 'Active', type: 'checkbox' },
+  ] },
+  products: { title: 'Products & Offerings', description: 'Manage products, offerings, categories, pricing types, and config schemas.', table: 'products', fields: [
+    { key: 'title', label: 'Title', type: 'text', required: true },
+    { key: 'slug', label: 'Slug', type: 'text' },
+    { key: 'category', label: 'Category', type: 'text', required: true },
+    { key: 'description', label: 'Description', type: 'textarea' },
+    { key: 'price', label: 'Base / Starting Price (₦)', type: 'number' },
+    { key: 'pricing_type', label: 'Pricing type (unit | tier | custom_quote | package)', type: 'text' },
+    { key: 'config_schema', label: 'Config Schema (JSON)', type: 'textarea' },
+    { key: 'display_order', label: 'Display Order', type: 'number' },
+    { key: 'is_active', label: 'Active', type: 'checkbox' },
+  ] },
+  variants: { title: 'Product Variants', description: 'Manage product variants, custom rates, options, and stock.', table: 'variants', fields: [
+    { key: 'product_id', label: 'Product UUID', type: 'text', required: true },
+    { key: 'name', label: 'Variant Name', type: 'text', required: true },
+    { key: 'sku', label: 'SKU', type: 'text' },
+    { key: 'price', label: 'Price (₦)', type: 'number', required: true },
+    { key: 'stock', label: 'Stock Quantity', type: 'number' },
+    { key: 'options', label: 'Options (JSON)', type: 'textarea' },
+    { key: 'min_quantity', label: 'Min Quantity', type: 'number' },
+  ] },
 };
 
 const READ_ONLY_COLUMNS = new Set(['id', 'created_at', 'updated_at', 'subscribed_at']);
@@ -163,7 +194,7 @@ export default function AdminSectionPage() {
         let { data, error: insertErr } = await supabase.from('testimonials').insert(starters).select('*');
         if (insertErr && insertErr.message.includes("'role' column")) {
           const fallbackStarters = starters.map((s) => ({
-            customer_name: `${s.customer_name} (${s.role})`,
+            customer_name: s.customer_name,
             testimonial: s.testimonial,
             photo_url: s.photo_url,
             display_order: s.display_order,
@@ -178,9 +209,9 @@ export default function AdminSectionPage() {
         if (data) setRows(data as Row[]);
       } else if (section === 'about') {
         const starters = [
-          { page: 'about', section: 'gallery', field: 'image_1', value: '/images/services/print-bg.jpg', value_type: 'image', published: true },
-          { page: 'about', section: 'gallery', field: 'image_2', value: '/images/services/web-bg.jpg', value_type: 'image', published: true },
-          { page: 'about', section: 'gallery', field: 'image_3', value: '/images/about/hero-bg.jpg', value_type: 'image', published: true },
+          { page: 'about', section: 'gallery', field: 'image_1', value: '/images/about/about-1.jpg', value_type: 'image', published: true },
+          { page: 'about', section: 'gallery', field: 'image_2', value: '/images/about/about-2.jpg', value_type: 'image', published: true },
+          { page: 'about', section: 'gallery', field: 'image_3', value: '/images/about/about-3.jpg', value_type: 'image', published: true },
         ];
         const { data, error: insertErr } = await supabase.from('page_content').insert(starters).select('*');
         if (insertErr) throw insertErr;
@@ -211,9 +242,6 @@ export default function AdminSectionPage() {
 
       if (request.error && request.error.message.includes("'role' column")) {
         const fallbackPayload = { ...payload };
-        if (fallbackPayload.role && fallbackPayload.customer_name) {
-          fallbackPayload.customer_name = `${fallbackPayload.customer_name} (${fallbackPayload.role})`;
-        }
         delete fallbackPayload.role;
         request = editing.id
           ? await supabase.from(config.table).update(fallbackPayload).eq('id', editing.id).select('*').single()
@@ -231,7 +259,19 @@ export default function AdminSectionPage() {
   }
 
   async function deleteRow(row: Row) {
-    if (config.readOnly || !row.id || !window.confirm('Delete this record?')) return;
+    if (config.readOnly || !row.id) return;
+
+    if (config.table === 'products') {
+      const confirmAction = window.confirm('Archive/deactivate this product? (It will be hidden from the customer order page without breaking past order history).');
+      if (!confirmAction) return;
+
+      const { error: updateError } = await supabase.from('products').update({ is_active: false }).eq('id', row.id);
+      if (updateError) setError(updateError.message);
+      else setRows((current) => current.map((item) => item.id === row.id ? { ...item, is_active: false } : item));
+      return;
+    }
+
+    if (!window.confirm('Delete this record?')) return;
     const { error: deleteError } = await supabase.from(config.table).delete().eq('id', row.id);
     if (deleteError) setError(deleteError.message);
     else setRows((current) => current.filter((item) => item.id !== row.id));

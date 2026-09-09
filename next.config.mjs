@@ -15,10 +15,10 @@ const withAnalyzer = withBundleAnalyzer({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   async headers() {
     return [
@@ -43,6 +43,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
+      },
+      // Product photos in the apparel catalog are hosted on Unsplash
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
       },
     ],
     formats: ['image/avif', 'image/webp'],

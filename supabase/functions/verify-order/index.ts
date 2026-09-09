@@ -72,7 +72,14 @@ serve(async (req) => {
       );
     }
 
-    // Verify amount (Paystack returns in kobo)
+    // Verify currency and amount (Paystack returns in kobo)
+    if (verifyData.data.currency && verifyData.data.currency.toUpperCase() !== 'NGN') {
+      return new Response(
+        JSON.stringify({ error: `Currency mismatch: expected NGN, received ${verifyData.data.currency}` }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const paidAmountNaira = verifyData.data.amount / 100;
     const requiredAmount = Number(order.server_verified_amount || order.total);
 

@@ -24,6 +24,13 @@ export interface Product {
   variants: Variant[];
 }
 
+/**
+ * The only categories that belong on the apparel storefront.
+ * Lowercase, matching the Apparel admin dropdown.
+ * Filters out the PRINT/DESIGN/WEB/BUNDLES/APPAREL order-catalog rows.
+ */
+export const APPAREL_CATEGORIES = ['tee', 'shirt', 'hoodie', 'cap'];
+
 const FALLBACK_PRODUCTS: Product[] = [
   {
     id: 'prod-1',
@@ -200,7 +207,11 @@ export function useProducts(category?: string | null) {
           .select('*, variants(*)');
 
         if (category) {
+          // Explicit category → only that category (e.g. 'tee', 'cap')
           query = query.eq('category', category);
+        } else {
+          // Storefront (no category) → ONLY apparel categories
+          query = query.in('category', APPAREL_CATEGORIES);
         }
 
         query = query.order('created_at', { ascending: false });

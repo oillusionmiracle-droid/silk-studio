@@ -41,3 +41,8 @@ next-env.d.ts
 supabase/.temp/
 .env
 .env.local
+# local dev server logs & diagnostics (never commit)
+dev-server*.log
+dev-server*.err.log
+dev-server*.out.log
+netstat*.txt

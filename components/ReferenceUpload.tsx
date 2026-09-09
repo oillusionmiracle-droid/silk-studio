@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UploadCloud, FileText, CheckCircle2, AlertCircle, X, Loader2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface ReferenceUploadProps {
   onUpload: (url: string) => void;
@@ -35,8 +36,17 @@ export default function ReferenceUpload({ onUpload, currentUrls = [] }: Referenc
       const formData = new FormData();
       formData.append('file', file);
 
+      // Attach the Supabase access token so the server can verify the
+      // logged-in user even though the client session lives in localStorage.
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       const res = await fetch('/api/cloudinary-sign', {
         method: 'POST',
+        headers: session?.access_token
+          ? { Authorization: `Bearer ${session.access_token}` }
+          : {},
         body: formData,
       });
 

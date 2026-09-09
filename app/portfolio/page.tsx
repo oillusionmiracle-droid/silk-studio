@@ -602,7 +602,7 @@ export default function PortfolioPage() {
                         marginBottom: 32,
                       }}
                     >
-                      We're just getting started. Check back shortly.
+                      We&apos;re just getting started. Check back shortly.
                     </p>
                     <Link
                       href="/order"

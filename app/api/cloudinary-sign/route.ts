@@ -36,15 +36,35 @@ async function uploadBuffer(buffer: Buffer): Promise<UploadApiResponse> {
   });
 }
 
-// Verifies the request is coming from a logged-in Supabase user by reading
-// the session cookie server-side. Returns the user id if valid, or null.
-async function getAuthenticatedUserId(): Promise<string | null> {
+// Verifies the request is coming from a logged-in Supabase user.
+// Supports both:
+//  1. Bearer access token (client keeps its session in localStorage, so it
+//     sends the JWT explicitly in the Authorization header), and
+//  2. Session cookie (SSR browser clients).
+// Returns the user id if valid, or null.
+async function getAuthenticatedUserId(req: Request): Promise<string | null> {
+  const authHeader = req.headers.get('authorization') ?? '';
+  const bearerToken = /^Bearer\s+(.+)$/i.exec(authHeader)?.[1]?.trim();
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+  // --- Path 1: explicit Bearer token from the client ---
+  if (bearerToken) {
+    try {
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabase = createClient(supabaseUrl, supabaseAnonKey);
+      const { data, error } = await supabase.auth.getUser(bearerToken);
+      if (!error && data.user) return data.user.id;
+    } catch {
+      // Fall through to the cookie check below.
+    }
+  }
+
+  // --- Path 2: session cookie ---
   const cookieStore = await cookies();
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
       cookies: {
         getAll() {
           return cookieStore.getAll();
@@ -53,8 +73,7 @@ async function getAuthenticatedUserId(): Promise<string | null> {
           // No-op: this is a read-only check, we're not refreshing the session here.
         },
       },
-    }
-  );
+    });
 
   const { data, error } = await supabase.auth.getUser();
   if (error || !data.user) return null;
@@ -64,7 +83,7 @@ async function getAuthenticatedUserId(): Promise<string | null> {
 export async function POST(req: Request) {
   try {
     // --- AUTH CHECK: reject the request before touching Cloudinary at all ---
-    const userId = await getAuthenticatedUserId();
+    const userId = await getAuthenticatedUserId(req);
     if (!userId) {
       return new Response(
         JSON.stringify({ error: 'You must be signed in to upload files.' }),

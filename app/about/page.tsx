@@ -51,9 +51,9 @@ const animationProps = {
 };
 
 const DEFAULT_GALLERY = {
-  image_1: '/images/services/print-bg.jpg',
-  image_2: '/images/services/web-bg.jpg',
-  image_3: '/images/about/hero-bg.jpg',
+  image_1: '/images/about/about-1.jpg',
+  image_2: '/images/about/about-2.jpg',
+  image_3: '/images/about/about-3.jpg',
 };
 
 // 3-Image Parallax Showcase that moves as the user scrolls down
@@ -98,7 +98,7 @@ function ScrollingGallery({
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src =
-                '/images/services/print-bg.jpg';
+                '/images/about/about-1.jpg';
             }}
           />
         </motion.div>
@@ -118,7 +118,7 @@ function ScrollingGallery({
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src =
-                '/images/services/web-bg.jpg';
+                '/images/about/about-2.jpg';
             }}
           />
         </motion.div>
@@ -138,7 +138,7 @@ function ScrollingGallery({
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src =
-                '/images/services/print-bg.jpg';
+                '/images/about/about-3.jpg';
             }}
           />
         </motion.div>
@@ -147,28 +147,23 @@ function ScrollingGallery({
       <style jsx>{`
         .about-gallery-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          grid-template-columns: repeat(3, 1fr);
           gap: 24px;
           align-items: center;
         }
 
         .about-gallery-card {
           position: relative;
-          border-radius: 24px;
+          aspect-ratio: 1 / 1;
+          border-radius: 8px; /* match Design section cards */
           overflow: hidden;
-          background-color: #0a0a0a;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+          background-color: #111;
+          border: none;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
         }
 
-        .card-1, .card-3 {
-          height: 380px;
-        }
-
-        .card-2 {
-          height: 430px;
-          border-color: rgba(255, 255, 255, 0.14);
-          box-shadow: 0 28px 70px rgba(0, 0, 0, 0.9);
+        @media (max-width: 1100px) {
+          .about-gallery-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; }
         }
 
         @media (max-width: 768px) {
@@ -192,11 +187,19 @@ function ScrollingGallery({
           }
 
           .about-gallery-card {
-            flex: 0 0 84% !important;
-            height: 320px !important;
-            border-radius: 20px !important;
+            flex: 0 0 65% !important;
+            min-width: 200px;
+            aspect-ratio: 1 / 1 !important;
+            height: auto !important;
+            border-radius: 8px !important;
             scroll-snap-align: center;
             transform: none !important; /* Disable parallax y on mobile */
+          }
+        }
+
+        @media (max-width: 480px) {
+          .about-gallery-card {
+            flex: 0 0 75% !important;
           }
         }
       `}</style>

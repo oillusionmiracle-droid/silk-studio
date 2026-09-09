@@ -170,10 +170,10 @@ This project is **not production-hardened yet**. Current priorities, roughly in 
 - Row Level Security is enabled on all customer-data tables; policies are defined in `supabase/migrations/`.
 - Admin role changes are protected by a `BEFORE UPDATE` trigger that silently reverts unauthorized role modifications — admin roles should only be granted manually via the Supabase dashboard.
 - Payment verification happens server-side in `verify-order`, never trusting client-reported payment status.
-- If you find a security issue, please don't open a public GitHub issue — contact [add your contact here] instead.
+- If you find a security issue, please don't open a public GitHub issue — contact silkstudiosupport@gmail.com instead.
 
 ---
 
 ## License
 
-Add your license here (MIT, proprietary, etc.)
+

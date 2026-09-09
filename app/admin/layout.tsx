@@ -26,8 +26,9 @@ import {
 const ADMIN_NAV = [
   { href: '/admin', label: 'Analytics & Overview', icon: LayoutDashboard },
   { href: '/admin/orders', label: 'All Studio Orders', icon: Package },
+  { href: '/admin/products', label: 'Products & Offerings', icon: ShoppingBag },
+  { href: '/admin/variants', label: 'Product Variants', icon: Package },
   { href: '/admin/customers', label: 'Customer Directory', icon: Users },
-  { href: '/admin/products', label: 'Apparel Products', icon: ShoppingBag },
   { href: '/admin/home', label: 'Homepage Content', icon: Home },
   { href: '/admin/banners', label: 'Banners', icon: Images },
   { href: '/admin/apparel', label: 'Apparel Content', icon: ShoppingBag },
@@ -91,21 +92,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 Sign In as Admin
               </button>
             ) : (
-              <button
-                type="button"
-                onClick={async () => {
-                  try {
-                    const { supabase } = await import('@/lib/supabase');
-                    await supabase.from('profiles').upsert({ id: user.id, role: 'admin' });
-                  } catch (e) {
-                    console.error(e);
-                  }
-                  window.location.reload();
-                }}
-                className="w-full py-3.5 px-5 rounded-2xl bg-emerald-500 text-white text-[14px] font-bold tracking-tight hover:bg-emerald-600 transition-colors shadow-md cursor-pointer"
-              >
-                Activate Admin Privileges →
-              </button>
+              <p className="text-[13px] text-amber-600 font-medium bg-amber-50 rounded-xl p-3 border border-amber-200/60">
+                This account does not have administrator privileges. Please contact an existing studio administrator to grant access.
+              </p>
             )}
             <Link
               href="/account"

@@ -85,16 +85,37 @@ serve(async (req) => {
 
       let totalQuantity = 0;
       for (const item of items) {
-        const variant = variantMap.get(item.variant_id);
+        if (!item || (!item.variant_id && !item.product_id)) {
+          return new Response(
+            JSON.stringify({ error: 'Each item must specify a valid product or variant ID.' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        const variant = item.variant_id ? variantMap.get(item.variant_id) : null;
+        if (!variant && !item.product_id) {
+          return new Response(
+            JSON.stringify({ error: `Product or variant with ID '${item.variant_id || item.product_id}' was not found.` }),
+            { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        const qty = Math.max(1, parseInt(item.quantity, 10) || 1);
+
         if (variant) {
-          const qty = Math.max(1, parseInt(item.quantity, 10) || 1);
-          if (variant.stock < qty) {
+          if (variant.stock !== undefined && variant.stock < qty) {
             return new Response(
-              JSON.stringify({ error: `Insufficient stock for selected item.` }),
+              JSON.stringify({ error: `Insufficient stock for selected variant '${variant.id}'.` }),
               { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             );
           }
-          const unitPrice = Number(variant.products?.price) || 0;
+          const unitPrice = Number(variant.price > 0 ? variant.price : variant.products?.price);
+          if (!unitPrice || unitPrice <= 0) {
+            return new Response(
+              JSON.stringify({ error: `Item '${variant.id}' does not have a valid price set in the database.` }),
+              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
           calculatedSubtotal += unitPrice * qty;
           totalQuantity += qty;
           validatedItems.push({
@@ -103,17 +124,37 @@ serve(async (req) => {
             price_at_purchase: unitPrice,
           });
         } else {
-          // Fallback: If variant not found in DB (e.g. mock or unseeded items), use the client item price
-          const qty = Math.max(1, parseInt(item.quantity, 10) || 1);
-          const unitPrice = Number(item.price) || 20000;
+          // If no variant ID, query product by product_id
+          const { data: dbProd } = await supabase
+            .from('products')
+            .select('id, price, is_active')
+            .eq('id', item.product_id)
+            .single();
+
+          if (!dbProd || dbProd.is_active === false) {
+            return new Response(
+              JSON.stringify({ error: `Product '${item.product_id}' was not found or is currently inactive.` }),
+              { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+
+          const unitPrice = Number(dbProd.price);
+          if (!unitPrice || unitPrice <= 0) {
+            return new Response(
+              JSON.stringify({ error: `Product '${dbProd.id}' does not have a valid price set.` }),
+              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+
           calculatedSubtotal += unitPrice * qty;
           totalQuantity += qty;
           validatedItems.push({
-            variant_id: item.variant_id || 'v-fallback',
+            variant_id: dbProd.id,
             quantity: qty,
             price_at_purchase: unitPrice,
           });
         }
+      }
       // Delivery rule: free if 10+ items, else 2500
       const deliveryFee = totalQuantity >= 10 ? 0 : 2500;
       const calculatedTotal = calculatedSubtotal + deliveryFee;

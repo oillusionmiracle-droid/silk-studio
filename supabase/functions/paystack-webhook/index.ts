@@ -54,6 +54,13 @@ serve(async (req) => {
     if (event.event === 'charge.success') {
       const data = event.data;
       const paystackRef = data.reference;
+      
+      // Validate currency
+      if (data.currency && data.currency.toUpperCase() !== 'NGN') {
+        console.warn(`Webhook ignored: currency was ${data.currency}, expected NGN`);
+        return new Response('Ignored currency mismatch', { status: 200 });
+      }
+
       const paidAmount = data.amount / 100; // kobo to naira
 
       const supabaseUrl = Deno.env.get('SUPABASE_URL')!;

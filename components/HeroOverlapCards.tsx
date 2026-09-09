@@ -280,20 +280,26 @@ export default function HeroOverlapCards() {
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       padding: 0 20px 24px;
+      margin: -60px -20px 0 -20px;
       gap: 16px;
       scrollbar-width: none;
-      margin-top: -60px;
     }
     .hero-cards-mobile::-webkit-scrollbar { display: none; }
 
     .hc-mobile-card {
-      flex: 0 0 72%;
+      flex: 0 0 65%;
       aspect-ratio: 3/4;
       scroll-snap-align: center;
       position: relative;
       border-radius: 18px;
       overflow: hidden;
       box-shadow: 0 16px 32px rgba(0,0,0,0.3);
+    }
+
+    @media (max-width: 480px) {
+      .hc-mobile-card {
+        flex: 0 0 75%;
+      }
     }
 
     @media (max-width: 768px) {

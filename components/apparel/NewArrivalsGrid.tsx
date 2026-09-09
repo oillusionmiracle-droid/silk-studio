@@ -253,10 +253,12 @@ export default function NewArrivalsGrid({
   const { products, loading, error } = useProducts();
   const [activeCategory, setActiveCategory] = useState('all');
 
-  // Filter products by selected category
+  // Filter products by selected category, and guard against
+  // rows that somehow lack an image (can never crash VIEW ALL)
+  const storefrontProducts = products.filter((p) => p.image_1_url);
   const filteredProducts = activeCategory === 'all'
-    ? products
-    : products.filter((p) => p.category === activeCategory);
+    ? storefrontProducts
+    : storefrontProducts.filter((p) => p.category === activeCategory);
 
   // Show first 5 products as "New Arrivals" unless showAll is true or user filtered
   const displayProducts = showAll || activeCategory !== 'all'
