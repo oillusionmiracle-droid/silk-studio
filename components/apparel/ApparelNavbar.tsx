@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Search, Heart, ShoppingBag, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -26,8 +26,34 @@ const navLinks = [
 
 export default function ApparelNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+  const lastScrollY = useRef(0);
   const { totalItems, setIsOpen: setCartOpen } = useCart();
   const { setIsOpen: setWishlistOpen } = useWishlist();
+
+  // Track scroll direction to hide the navbar on scroll down and reveal it on scroll up.
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      setIsScrolled(currentScrollY > 8);
+
+      if (currentScrollY > lastScrollY.current + 5) {
+        setIsHidden(true);
+      } else if (currentScrollY < lastScrollY.current - 5) {
+        setIsHidden(false);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    lastScrollY.current = window.scrollY;
+    handleScroll();
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Lock body scroll when menu is open
   useEffect(() => {
@@ -43,7 +69,11 @@ export default function ApparelNavbar() {
 
   return (
     <>
-      <nav className="apparel-navbar" role="navigation" aria-label="Apparel navigation">
+      <nav
+        className={`apparel-navbar${isHidden ? ' is-hidden' : ''}${isScrolled ? ' is-scrolled' : ''}`}
+        role="navigation"
+        aria-label="Apparel navigation"
+      >
         {/* Left: 2-line Hamburger Menu icon */}
         <div className="apparel-navbar__left">
           <button

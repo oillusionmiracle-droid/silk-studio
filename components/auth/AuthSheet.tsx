@@ -111,81 +111,6 @@ function PasswordChecklist({ password }: { password: string }) {
   );
 }
 
-/* ─── Luma-Style Orbital Visual Background ─────────── */
-function LumaOrbitalBackground() {
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-      {/* Soft Luminous Gradient Wash */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#eaf2fd] via-[#f7eef5] to-[#fff6f0]" />
-
-      {/* Radiant Glow Orb */}
-      <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-[280px] h-[280px] rounded-full bg-gradient-to-tr from-pink-200/50 via-amber-100/50 to-sky-200/50 blur-2xl opacity-75" />
-
-      {/* Concentric Orbital Rings */}
-      <div className="absolute top-[28%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180px] h-[180px] rounded-full border border-neutral-300/35" />
-      <div className="absolute top-[28%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] rounded-full border border-neutral-300/25" />
-      <div className="absolute top-[28%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] rounded-full border border-neutral-300/15" />
-
-      {/* Center 4-Point Radiant Gradient Star */}
-      <div className="absolute top-[28%] left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
-        <motion.div
-          animate={{ scale: [1, 1.08, 1], rotate: [0, 4, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-10 h-10 flex items-center justify-center drop-shadow-sm"
-        >
-          <svg viewBox="0 0 24 24" className="w-9 h-9">
-            <path
-              d="M12 0L14.6 9.4L24 12L14.6 14.6L12 24L9.4 14.6L0 12L9.4 9.4L12 0Z"
-              fill="url(#star-grad-mini)"
-            />
-            <defs>
-              <linearGradient id="star-grad-mini" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#F472B6" />
-                <stop offset="50%" stopColor="#FB923C" />
-                <stop offset="100%" stopColor="#FBBF24" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </motion.div>
-      </div>
-
-      {/* Floating Badges */}
-      <motion.div
-        animate={{ y: [-2, 2, -2] }}
-        transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-[15%] left-[16%] flex flex-col items-center justify-center w-10 h-10 rounded-xl bg-white shadow-xs border border-neutral-100 rotate-[-10deg]"
-      >
-        <span className="text-[8px] font-bold text-blue-500 uppercase tracking-wider leading-none">MAR</span>
-        <span className="text-[12px] font-extrabold text-neutral-800 leading-none mt-0.5">21</span>
-      </motion.div>
-
-      <motion.div
-        animate={{ y: [2, -2, 2] }}
-        transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-[12%] right-[22%] flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-purple-400 to-amber-300 shadow-xs p-2 text-white rotate-[8deg]"
-      >
-        <span className="text-[14px]">📍</span>
-      </motion.div>
-
-      <motion.div
-        animate={{ y: [-3, 3, -3] }}
-        transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-[28%] left-[10%] flex items-center justify-center w-9 h-9 rounded-full bg-sky-100 shadow-xs border border-sky-200 text-[14px]"
-      >
-        🎨
-      </motion.div>
-
-      <motion.div
-        animate={{ y: [3, -3, 3] }}
-        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-[36%] right-[12%] flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-200 to-rose-200 shadow-xs border border-white text-[14px] rotate-[12deg]"
-      >
-        👕
-      </motion.div>
-    </div>
-  );
-}
-
 /* ─── Main AuthSheet Component ─────────────────────── */
 export default function AuthSheet() {
   const {
@@ -199,7 +124,7 @@ export default function AuthSheet() {
     signInWithGoogle,
   } = useAuth();
 
-  const [step, setStep] = useState<'intro' | 'options' | 'email_form' | 'phone_form'>('intro');
+  const [step, setStep] = useState<'options' | 'email_form' | 'phone_form'>('options');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -218,7 +143,7 @@ export default function AuthSheet() {
       const hasVisited = localStorage.getItem('silk_first_visit_shown');
       if (!hasVisited && !user) {
         const timer = setTimeout(() => {
-          openAuthModal('intro');
+          openAuthModal('options');
           localStorage.setItem('silk_first_visit_shown', 'true');
         }, 350);
         return () => clearTimeout(timer);
@@ -243,7 +168,7 @@ export default function AuthSheet() {
         setFormMode('sign_up');
         setStep('email_form');
       } else {
-        setStep('intro');
+        setStep('options');
       }
     }
   }, [isAuthModalOpen, authModalView]);
@@ -346,66 +271,7 @@ export default function AuthSheet() {
             <div className="w-8 h-1 rounded-full bg-neutral-300 mx-auto mt-2.5 mb-0.5 sm:hidden shrink-0" />
 
             {/* ══════════════════════════════════════════
-                STEP 1: INTRO / LUMA START SCREEN
-               ══════════════════════════════════════════ */}
-            {step === 'intro' && (
-              <div className="relative min-h-[440px] flex flex-col justify-between p-5 sm:p-7 overflow-hidden">
-                {/* Luma Orbital Art & Mesh */}
-                <LumaOrbitalBackground />
-
-                {/* Top Close Button */}
-                <div className="relative z-20 flex justify-end">
-                  <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    onClick={closeAuthModal}
-                    aria-label="Close modal"
-                    className="h-8 w-8 flex items-center justify-center rounded-full bg-white/80 hover:bg-white text-neutral-600 shadow-2xs transition-all cursor-pointer border border-white/80"
-                  >
-                    <X className="w-3.5 h-3.5 stroke-[2.5]" />
-                  </motion.button>
-                </div>
-
-                {/* Bottom Content Area */}
-                <div className="relative z-20 mt-auto pt-16 text-center">
-                  {/* Compact SVG Brand Logo */}
-                  <div className="inline-flex items-center justify-center gap-1.5 mb-2.5 px-3 py-1 rounded-full bg-white/85 backdrop-blur-xs border border-neutral-200/60 shadow-2xs">
-                    <BrandLogo size={16} className="text-neutral-900" />
-                    <span
-                      className="text-[13px] font-extrabold tracking-tight text-neutral-800"
-                      style={{ fontFamily: 'var(--font-jakarta)' }}
-                    >
-                      Silk Studio
-                    </span>
-                  </div>
-
-                  {/* Headline in Hero Font */}
-                  <h2
-                    className="text-[26px] sm:text-[30px] font-black tracking-tight text-neutral-950 leading-[1.14] mb-5"
-                    style={{ fontFamily: 'var(--font-jakarta)' }}
-                  >
-                    Delightful Creations
-                    <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] via-[#D946EF] to-[#F97316]">
-                      Start Here
-                    </span>
-                  </h2>
-
-                  {/* Luma-style Black Pill Button */}
-                  <motion.button
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.97 }}
-                    type="button"
-                    onClick={() => setStep('options')}
-                    className="w-full py-3.5 rounded-full bg-neutral-950 hover:bg-neutral-800 text-white text-[15px] font-bold tracking-tight transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
-                    style={{ fontFamily: 'var(--font-jakarta)' }}
-                  >
-                    <span>Get Started</span>
-                  </motion.button>
-                </div>
-              </div>
-            )}
-
-            {/* ══════════════════════════════════════════
-                STEP 2: OPTIONS SHEET
+                STEP 1: LOGIN OPTIONS
                ══════════════════════════════════════════ */}
             {step === 'options' && (
               <motion.div
@@ -484,16 +350,7 @@ export default function AuthSheet() {
                 </div>
 
                 {/* Bottom Row */}
-                <div className="mt-5 pt-3.5 border-t border-neutral-100 flex items-center justify-between text-[12.5px] text-neutral-500">
-                  <button
-                    type="button"
-                    onClick={() => setStep('intro')}
-                    className="hover:text-neutral-800 flex items-center gap-1 font-medium cursor-pointer"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5" />
-                    <span>Overview</span>
-                  </button>
-
+                <div className="mt-5 pt-3.5 border-t border-neutral-100 justify-end text-[12.5px] text-neutral-500">
                   <div>
                     Already a member?{' '}
                     <button

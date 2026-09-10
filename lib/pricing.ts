@@ -3,6 +3,7 @@
 export interface DbProduct {
   id: string;
   title: string;
+  name?: string;           // some products only have name set (admin-created apparel shop items)
   slug: string;
   category: string;
   description: string;
@@ -11,6 +12,7 @@ export interface DbProduct {
   config_schema?: Record<string, any>;
   display_order?: number;
   is_active?: boolean;
+  is_custom_quote?: boolean;
 }
 
 export interface DbVariant {
@@ -28,27 +30,28 @@ export interface DbVariant {
 const DEFAULT_PRODUCTS_MAP: Record<string, Partial<DbProduct>> = {
   'flyers & handbills': { title: 'Flyers & Handbills', slug: 'flyers', category: 'PRINT', price: 120, pricing_type: 'tier' },
   'banners': { title: 'Banners', slug: 'rollup-banners', category: 'PRINT', price: 15000, pricing_type: 'unit' },
-  'billboards & flex': { title: 'Billboards & Flex', slug: 'flex-billboards', category: 'PRINT', price: 450, pricing_type: 'unit', config_schema: { has_dimensions: true } },
+  'billboards & flex': { title: 'Billboards & Flex', slug: 'flex-billboards', category: 'PRINT', price: 0, pricing_type: 'custom_quote' },
   'jotters & notepads': { title: 'Jotters & Notepads', slug: 'jotters', category: 'PRINT', price: 850, pricing_type: 'tier' },
   'id cards': { title: 'ID Cards', slug: 'id-cards', category: 'PRINT', price: 4500, pricing_type: 'tier' },
   'business cards': { title: 'Business Cards', slug: 'business-cards', category: 'PRINT', price: 85, pricing_type: 'tier' },
-  'letterheads': { title: 'Letterheads', slug: 'letterheads', category: 'PRINT', price: 120, pricing_type: 'tier' },
-  'custom t-shirts': { title: 'Custom T-Shirts', slug: 'custom-tshirts', category: 'APPAREL', price: 6500, pricing_type: 'tier' },
+  'letterheads': { title: 'Letterheads', slug: 'letterheads', category: 'PRINT', price: 520, pricing_type: 'tier' },
+  'custom t-shirts': { title: 'Custom T-Shirts', slug: 'custom-tshirts', category: 'APPAREL', price: 9000, pricing_type: 'tier' },
   'sweatshirts': { title: 'Sweatshirts', slug: 'custom-sweatshirts', category: 'APPAREL', price: 14000, pricing_type: 'tier' },
   'grey joggers': { title: 'Grey Joggers', slug: 'custom-joggers', category: 'APPAREL', price: 15000, pricing_type: 'tier' },
   'hoodies': { title: 'Hoodies', slug: 'custom-hoodies', category: 'APPAREL', price: 18000, pricing_type: 'tier' },
   'event merch set': { title: 'Event Merch Set', slug: 'event-merch', category: 'APPAREL', price: 4500, pricing_type: 'tier' },
-  'corporate uniforms': { title: 'Corporate Uniforms', slug: 'corporate-uniforms', category: 'APPAREL', price: 9500, pricing_type: 'tier' },
-  'logo & brand identity': { title: 'Logo & Brand Identity', slug: 'logo-brand-identity', category: 'DESIGN', price: 75000, pricing_type: 'package' },
-  'event branding kit': { title: 'Event Branding Kit', slug: 'event-branding', category: 'DESIGN', price: 120000, pricing_type: 'package' },
-  'social media templates': { title: 'Social Media Templates', slug: 'social-media-templates', category: 'DESIGN', price: 45000, pricing_type: 'package' },
-  'print-ready artwork': { title: 'Print-Ready Artwork', slug: 'print-ready-artwork', category: 'DESIGN', price: 15000, pricing_type: 'unit' },
-  'landing page': { title: 'Landing Page', slug: 'landing-page', category: 'WEB', price: 150000, pricing_type: 'package' },
-  'business website': { title: 'Business Website', slug: 'business-website', category: 'WEB', price: 350000, pricing_type: 'package' },
-  'e-commerce': { title: 'E-commerce', slug: 'ecommerce-website', category: 'WEB', price: 600000, pricing_type: 'package' },
-  'event page': { title: 'Event Page', slug: 'event-website', category: 'WEB', price: 200000, pricing_type: 'package' },
-  'event package': { title: 'Event Package', slug: 'event-branding-bundle', category: 'BUNDLES', price: 320000, pricing_type: 'package' },
-  'business starter': { title: 'Business Starter', slug: 'startup-launch-pack', category: 'BUNDLES', price: 180000, pricing_type: 'package' },
+  'corporate uniforms': { title: 'Corporate Uniforms', slug: 'corporate-uniforms', category: 'APPAREL', price: 0, pricing_type: 'custom_quote' },
+  // DESIGN, WEB, BUNDLES — always custom quote. No price shown, customer submits brief.
+  'logo & brand identity': { title: 'Logo & Brand Identity', slug: 'logo-brand-identity', category: 'DESIGN', price: 0, pricing_type: 'custom_quote' },
+  'event branding kit': { title: 'Event Branding Kit', slug: 'event-branding', category: 'DESIGN', price: 0, pricing_type: 'custom_quote' },
+  'social media templates': { title: 'Social Media Templates', slug: 'social-media-templates', category: 'DESIGN', price: 0, pricing_type: 'custom_quote' },
+  'print-ready artwork': { title: 'Print-Ready Artwork', slug: 'print-ready-artwork', category: 'DESIGN', price: 0, pricing_type: 'custom_quote' },
+  'landing page': { title: 'Landing Page', slug: 'landing-page', category: 'WEB', price: 0, pricing_type: 'custom_quote' },
+  'business website': { title: 'Business Website', slug: 'business-website', category: 'WEB', price: 0, pricing_type: 'custom_quote' },
+  'e-commerce': { title: 'E-commerce', slug: 'ecommerce-website', category: 'WEB', price: 0, pricing_type: 'custom_quote' },
+  'event page': { title: 'Event Page', slug: 'event-website', category: 'WEB', price: 0, pricing_type: 'custom_quote' },
+  'event package': { title: 'Event Package', slug: 'event-branding-bundle', category: 'BUNDLES', price: 0, pricing_type: 'custom_quote' },
+  'business starter': { title: 'Business Starter', slug: 'startup-launch-pack', category: 'BUNDLES', price: 0, pricing_type: 'custom_quote' },
 };
 
 /**
@@ -65,16 +68,21 @@ export function matchProductForSubService(
   // 1. Direct match in DB by title or slug
   if (dbProducts && dbProducts.length > 0) {
     const directMatch = dbProducts.find(
-      (p) =>
-        p.title.toLowerCase() === target ||
-        p.slug === target.replace(/[^a-z0-9]+/g, '-')
+      (p) => {
+        // Null-safe: some products only have 'name', not 'title'
+        const pName = (p.title || p.name || '').toLowerCase();
+        return (
+          pName === target ||
+          (p.slug && p.slug === target.replace(/[^a-z0-9]+/g, '-'))
+        );
+      }
     );
     if (directMatch) return directMatch;
 
     // 2. Fuzzy / keyword match in DB
     const fuzzyMatch = dbProducts.find((p) => {
-      const pTitle = p.title.toLowerCase();
-      const pSlug = p.slug.toLowerCase();
+      const pTitle = (p.title || p.name || '').toLowerCase();
+      const pSlug = (p.slug || '').toLowerCase();
       if (target.includes('flyer') && (pSlug === 'flyers' || pTitle.includes('flyer'))) return true;
       if (target.includes('banner') && (pSlug === 'rollup-banners' || pTitle.includes('banner'))) return true;
       if ((target.includes('flex') || target.includes('billboard')) && (pSlug === 'flex-billboards' || pTitle.includes('flex') || pTitle.includes('billboard'))) return true;
@@ -140,7 +148,19 @@ export function calculateDynamicPricing(params: {
     return { unitPrice: 0, subtotal: 0, isCustomQuote: true };
   }
 
-  // 1. If product is set to custom_quote pricing type, require custom quote
+  // 1. DESIGN, WEB, BUNDLES are ALWAYS custom quote — no price shown, customer submits brief.
+  //    This is a hard code-level guard that works even without the SQL migration being run.
+  const ALWAYS_CUSTOM_QUOTE_CATEGORIES = ['DESIGN', 'WEB', 'BUNDLES'];
+  if (ALWAYS_CUSTOM_QUOTE_CATEGORIES.includes(product.category.toUpperCase())) {
+    return { unitPrice: 0, subtotal: 0, isCustomQuote: true };
+  }
+
+  // 2. If the admin has toggled "Custom Quote" on this product in the admin panel
+  if (product.is_custom_quote === true) {
+    return { unitPrice: 0, subtotal: 0, isCustomQuote: true };
+  }
+
+  // 3. If product pricing_type is explicitly set to custom_quote
   if (product.pricing_type === 'custom_quote') {
     return { unitPrice: 0, subtotal: 0, isCustomQuote: true };
   }
@@ -221,8 +241,14 @@ export function calculateDynamicPricing(params: {
   }
 
   const unitPrice = Math.round(basePrice);
-  const subtotal = unitPrice * Math.max(1, quantity);
 
+  // Package pricing = flat fee, NOT multiplied by quantity.
+  // (A logo design or web build is priced once regardless of how many you "order".)
+  if (product.pricing_type === 'package') {
+    return { unitPrice, subtotal: unitPrice, isCustomQuote: false };
+  }
+
+  const subtotal = unitPrice * Math.max(1, quantity);
   return { unitPrice, subtotal, isCustomQuote: false };
 }
 

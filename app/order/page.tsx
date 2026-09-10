@@ -98,10 +98,15 @@ export default function OrderPage() {
   // Fetch active database catalog
   useEffect(() => {
     async function loadDbCatalog() {
+      // NOTE: Using .neq('is_active', false) instead of .eq('is_active', true)
+      // because the is_active column may be NULL on many products (it was added
+      // via CREATE TABLE but the table already existed, so the column defaulted
+      // to NULL rather than true for existing rows).
+      // neq(false) matches both TRUE and NULL — so all real products are included.
       const { data: productsData } = await supabase
         .from('products')
         .select('*')
-        .eq('is_active', true)
+        .neq('is_active', false)
         .order('display_order', { ascending: true });
 
       if (productsData && productsData.length > 0) {
@@ -143,8 +148,10 @@ export default function OrderPage() {
     dbProducts.forEach((p) => {
       const formattedCat = p.category.charAt(0).toUpperCase() + p.category.slice(1).toLowerCase();
       if (!map[formattedCat]) map[formattedCat] = [];
-      if (!map[formattedCat].includes(p.title)) {
-        map[formattedCat].push(p.title);
+      // Use title or name — some products only have one of the two
+      const productName = p.title || (p as any).name || '';
+      if (productName && !map[formattedCat].includes(productName)) {
+        map[formattedCat].push(productName);
       }
     });
     return map;
