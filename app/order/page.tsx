@@ -37,6 +37,7 @@ const INITIAL_SPECS: OrderSpecs = {
   idType: 'Standard',
   stock: 'Standard 300gsm',
   corners: 'Square',
+  paperType: 'Standard',
   apparelSizes: { S: 0, M: 0, L: 0, XL: 0, XXL: 0 },
   deadline: '',
   description: '',
@@ -121,12 +122,32 @@ export default function OrderPage() {
     void loadDbCatalog();
   }, []);
 
-  // Dynamically map categories
+  // Shop-apparel categories (lowercase single-word) belong ONLY to the /apparel
+  // store. They must never appear as tiles or sub-services on the /order page.
+  const SHOP_ONLY_CATEGORIES = ['tee', 'shirt', 'hoodie', 'cap'];
+
+  // Map uppercase DB service categories onto the canonical default tiles so the
+  // seeded order-service rows (PRINT/APPAREL/DESIGN/WEB/BUNDLES) fold into the
+  // existing Print/Apparel/Design/Web/Bundle tiles instead of creating duplicates.
+  const DB_CATEGORY_TO_TILE: Record<string, string> = {
+    PRINT: 'Print',
+    APPAREL: 'Apparel',
+    DESIGN: 'Design',
+    WEB: 'Web',
+    BUNDLES: 'Bundle',
+  };
+  const mapCategoryToTile = (category: string) =>
+    DB_CATEGORY_TO_TILE[category.toUpperCase()] ||
+    category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+
+  // Dynamically map categories: start from the static catalog, overlay DB rows.
   const activeCategories = useMemo(() => {
-    if (dbProducts.length === 0) return DEFAULT_CATEGORIES;
     const catMap = new Map<string, OrderCategoryItem>();
+    DEFAULT_CATEGORIES.forEach((c) => catMap.set(c.id, c));
     dbProducts.forEach((p) => {
-      const formattedCat = p.category.charAt(0).toUpperCase() + p.category.slice(1).toLowerCase();
+      const cat = (p.category || '').trim();
+      if (!cat || SHOP_ONLY_CATEGORIES.includes(cat.toLowerCase())) return;
+      const formattedCat = mapCategoryToTile(cat);
       if (!catMap.has(formattedCat)) {
         const foundBase = DEFAULT_CATEGORIES.find(
           (c) => c.id.toLowerCase() === formattedCat.toLowerCase()
@@ -141,12 +162,16 @@ export default function OrderPage() {
     return Array.from(catMap.values());
   }, [dbProducts]);
 
-  // Dynamically map sub-services
+  // Dynamically map sub-services: start from the static catalog, overlay DB rows.
   const activeSubServices = useMemo(() => {
-    if (dbProducts.length === 0) return DEFAULT_SUB_SERVICES;
     const map: Record<string, string[]> = {};
+    Object.keys(DEFAULT_SUB_SERVICES).forEach((cat) => {
+      map[cat] = [...DEFAULT_SUB_SERVICES[cat]];
+    });
     dbProducts.forEach((p) => {
-      const formattedCat = p.category.charAt(0).toUpperCase() + p.category.slice(1).toLowerCase();
+      const cat = (p.category || '').trim();
+      if (!cat || SHOP_ONLY_CATEGORIES.includes(cat.toLowerCase())) return;
+      const formattedCat = mapCategoryToTile(cat);
       if (!map[formattedCat]) map[formattedCat] = [];
       // Use title or name — some products only have one of the two
       const productName = p.title || (p as any).name || '';
@@ -360,7 +385,17 @@ export default function OrderPage() {
               setCategory(catId);
               setSubService(null);
             }}
-            onSelectSubService={(sub) => setSubService(sub)}
+            onSelectSubService={(sub) => {
+              // Letterheads start at 50 units minimum.
+              if (sub === 'Letterheads') {
+                setSpecs((prev) => ({
+                  ...prev,
+                  paperType: prev.paperType || 'Standard',
+                  quantity: Math.max(50, prev.quantity || 0),
+                }));
+              }
+              setSubService(sub);
+            }}
           />
 
           {subService && (

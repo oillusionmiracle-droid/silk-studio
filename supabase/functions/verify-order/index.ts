@@ -4,6 +4,7 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { edgeRateLimit } from '../_shared/edgeRateLimit.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -16,6 +17,15 @@ serve(async (req) => {
   }
 
   try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Postgres-backed per-IP throttle: blocks paystack_ref enumeration
+    // (30/min/IP). Fails open on limiter error so legit checkout survives.
+    const limited = await edgeRateLimit(supabase, req, 'verify-order', 30, 60 * 1000);
+    if (limited) return limited;
+
     const { paystack_ref } = await req.json();
 
     if (!paystack_ref) {
@@ -32,10 +42,6 @@ serve(async (req) => {
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
-
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // ─── 1. Find existing order in DB ───────────────────
     const { data: order, error: orderFetchError } = await supabase

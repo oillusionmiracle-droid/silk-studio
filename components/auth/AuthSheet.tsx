@@ -1,9 +1,14 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import dynamic from 'next/dynamic';
 import { useAuth } from '@/lib/AuthContext';
+
+const TurnstileWidget = dynamic(() => import('@/components/TurnstileWidget'), {
+  ssr: false,
+});
 import {
   Mail,
   Lock,
@@ -130,9 +135,58 @@ export default function AuthSheet() {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [botField, setBotField] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const turnstileRequired =
+    typeof process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY === 'string' &&
+    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY.length > 0;
   const [formMode, setFormMode] = useState<'sign_in' | 'sign_up'>('sign_up');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [lockoutUntil, setLockoutUntil] = useState<number | null>(null);
+  const [lockoutMsg, setLockoutMsg] = useState<string | null>(null);
+  const failedAttemptsRef = useRef(0);
+
+  // Brute-force throttle: 5 failed email attempts => 60s cooldown.
+  // Supabase still enforces its own server-side limits; this stops casual
+  // rapid guessing from one browser without locking real accounts.
+  const MAX_AUTH_ATTEMPTS = 5;
+  const AUTH_LOCKOUT_MS = 60 * 1000;
+
+  const checkAuthLockout = () => {
+    if (lockoutUntil && Date.now() < lockoutUntil) {
+      const secs = Math.ceil((lockoutUntil - Date.now()) / 1000);
+      setError(`Too many attempts. Try again in ${secs}s.`);
+      return true;
+    }
+    if (lockoutUntil && Date.now() >= lockoutUntil) {
+      setLockoutUntil(null);
+      setLockoutMsg(null);
+      failedAttemptsRef.current = 0;
+    }
+    return false;
+  };
+
+  const recordAuthFailure = () => {
+    failedAttemptsRef.current += 1;
+    if (failedAttemptsRef.current >= MAX_AUTH_ATTEMPTS) {
+      const until = Date.now() + AUTH_LOCKOUT_MS;
+      setLockoutUntil(until);
+      setLockoutMsg('Too many failed attempts. Please wait 60 seconds before trying again.');
+      setError('Too many failed attempts. Please wait 60 seconds before trying again.');
+    }
+  };
+
+  const recordAuthSuccess = () => {
+    failedAttemptsRef.current = 0;
+    setLockoutUntil(null);
+    setLockoutMsg(null);
+  };
+
+  const lockoutSecsLeft =
+    lockoutUntil && Date.now() < lockoutUntil
+      ? Math.ceil((lockoutUntil - Date.now()) / 1000)
+      : 0;
   const [error, setError] = useState<string | null>(null);
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
 
@@ -182,29 +236,56 @@ export default function AuthSheet() {
       return;
     }
 
+    // Client-side brute-force throttle (server Supabase limits still apply).
+    if (checkAuthLockout()) return;
+
+    // Require Turnstile only when a site key is configured; otherwise direct
+    // Supabase auth (Turnstile verification would be skipped server-side too).
+    if (turnstileRequired && !turnstileToken) {
+      setError('Please complete the bot verification check.');
+      return;
+    }
+
     setError(null);
     setSuccessNotice(null);
     setIsLoading(true);
 
     try {
       if (formMode === 'sign_in') {
-        const res = await signInWithEmail(email, password);
-        if (res.error) setError(res.error);
+        const res = await signInWithEmail(email, password, turnstileToken);
+        // Turnstile tokens are single-use: refresh the widget after every
+        // attempt so the next submit gets a fresh token.
+        setTurnstileResetKey((k) => k + 1);
+        if (res.error) {
+          setError(res.error);
+          recordAuthFailure();
+        } else {
+          recordAuthSuccess();
+          setTurnstileToken(null);
+        }
       } else {
         if (!fullName.trim()) {
           setError('Please enter your full name.');
           setIsLoading(false);
           return;
         }
-        const res = await signUpWithEmail(email, password, fullName);
+        const res = await signUpWithEmail(email, password, fullName, turnstileToken);
+        setTurnstileResetKey((k) => k + 1);
         if (res.error) {
           setError(res.error);
+          recordAuthFailure();
         } else if (res.requiresEmailConfirmation) {
+          recordAuthSuccess();
+          setTurnstileToken(null);
           setSuccessNotice('Account created! Check your email to confirm your account.');
+        } else {
+          recordAuthSuccess();
+          setTurnstileToken(null);
         }
       }
     } catch (err: any) {
       setError(err?.message || 'Authentication failed. Please try again.');
+      recordAuthFailure();
     } finally {
       setIsLoading(false);
     }
@@ -650,12 +731,19 @@ export default function AuthSheet() {
                     </AnimatePresence>
                   </div>
 
+                  {/* ── Honeypot + Turnstile bot protection ── */}
+                  <TurnstileWidget onToken={setTurnstileToken} resetKey={turnstileResetKey} />
                   {/* Submit Button */}
+                  {lockoutMsg && lockoutSecsLeft > 0 && (
+                    <p className="text-[12px] font-semibold text-amber-700 bg-amber-50 border border-amber-200/70 rounded-xl px-3 py-2 text-center">
+                      {lockoutMsg} ({lockoutSecsLeft}s)
+                    </p>
+                  )}
                   <motion.button
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.98 }}
                     type="submit"
-                    disabled={isLoading}
+                    disabled={isLoading || lockoutSecsLeft > 0}
                     className="w-full mt-2 py-3 rounded-xl bg-neutral-950 text-white text-[13.5px] font-bold tracking-tight flex items-center justify-center gap-2 shadow-sm hover:bg-neutral-800 disabled:opacity-50 transition-all cursor-pointer"
                     style={{ fontFamily: 'var(--font-jakarta)' }}
                   >

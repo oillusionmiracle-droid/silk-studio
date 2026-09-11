@@ -26,8 +26,17 @@ interface AuthContextType {
   authModalView: 'options' | 'sign_in' | 'sign_up';
   openAuthModal: (view?: 'options' | 'sign_in' | 'sign_up') => void;
   closeAuthModal: () => void;
-  signInWithEmail: (email: string, password: string) => Promise<{ error: string | null }>;
-  signUpWithEmail: (email: string, password: string, fullName: string) => Promise<{ error: string | null; requiresEmailConfirmation?: boolean }>;
+  signInWithEmail: (
+    email: string,
+    password: string,
+    turnstileToken?: string | null
+  ) => Promise<{ error: string | null }>;
+  signUpWithEmail: (
+    email: string,
+    password: string,
+    fullName: string,
+    turnstileToken?: string | null
+  ) => Promise<{ error: string | null; requiresEmailConfirmation?: boolean }>;
   signInWithGoogle: () => Promise<{ error: string | null }>;
   signInWithApple: () => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
@@ -153,8 +162,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [fetchProfile]);
 
-  const signInWithEmail = async (email: string, password: string) => {
+  const verifyBotToken = async (token: string | null) => {
+    // No widget configured (local dev) — skip server check.
+    if (!token) {
+      const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+      if (!siteKey) return true;
+      return false;
+    }
     try {
+      const res = await fetch('/api/verify-turnstile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      });
+      if (!res.ok) return false;
+      const data = await res.json();
+      return data.ok === true;
+    } catch {
+      return false;
+    }
+  };
+
+  const signInWithEmail = async (
+    email: string,
+    password: string,
+    turnstileToken?: string | null
+  ) => {
+    try {
+      const botOk = await verifyBotToken(turnstileToken ?? null);
+      if (!botOk) return { error: 'Bot verification failed. Please try again.' };
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -167,8 +203,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUpWithEmail = async (email: string, password: string, fullName: string) => {
+  const signUpWithEmail = async (
+    email: string,
+    password: string,
+    fullName: string,
+    turnstileToken?: string | null
+  ) => {
     try {
+      const botOk = await verifyBotToken(turnstileToken ?? null);
+      if (!botOk) return { error: 'Bot verification failed. Please try again.' };
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
       const emailRedirectTo = origin ? `${origin}/account` : undefined;
 

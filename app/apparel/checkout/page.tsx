@@ -234,7 +234,10 @@ export default function CheckoutPage() {
   };
 
   /* ── Paystack integration ─────────────────────── */
-  const PAYSTACK_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || 'pk_live_a4cf9b4cda87a899feda2500447f63082be444d3';
+  const PAYSTACK_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+if (!PAYSTACK_PUBLIC_KEY) {
+  throw new Error('Paystack public key not configured. Set NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY in .env.local');
+}
 
   const loadPaystackScript = () => new Promise<void>((resolve, reject) => {
     if (typeof window === 'undefined') return reject(new Error('Window is undefined.'));
@@ -324,9 +327,12 @@ export default function CheckoutPage() {
       // ── Step 2: Verify payment strictly with server ──
       const verifyPayment = async (paymentRef: string) => {
         setStatus('processing');
+        setOrderRef(paymentRef);
 
         try {
-          let verified = false;
+          let verifyErrorMsg =
+            'We could not confirm your payment with Paystack. If you were debited, please contact support with your reference before paying again.';
+
           try {
             const verifyRes = await fetch(`${supabaseUrl}/functions/v1/verify-order`, {
               method: 'POST',
@@ -334,23 +340,45 @@ export default function CheckoutPage() {
               body: JSON.stringify({ paystack_ref: paymentRef }),
             });
 
-            if (verifyRes.ok) {
-              const verifyData = await verifyRes.json();
-              if (verifyData.success) {
-                verified = true;
-              }
+            let verifyData: any = null;
+            try {
+              verifyData = await verifyRes.json();
+            } catch {
+              verifyData = null;
+            }
+
+            if (verifyRes.ok && verifyData?.success) {
+              // Backend confirmed: Paystack says success + amount matches DB order.
+              setStatus('success');
+              clearCart();
+              return;
+            }
+
+            // Backend explicitly rejected the payment — surface its reason.
+            if (verifyData?.error && typeof verifyData.error === 'string') {
+              verifyErrorMsg = verifyData.error;
+            } else if (!verifyRes.ok && verifyRes.status === 404) {
+              verifyErrorMsg =
+                'Order record not found for this payment reference. Please contact support before retrying.';
             }
           } catch (netErr) {
             console.warn('Verify-order function not reached:', netErr);
+            verifyErrorMsg =
+              'Could not reach our verification server. If you were debited, please wait a minute and check your orders page before paying again.';
           }
 
-          // If Paystack inline succeeded and we got here, mark success and clear cart
-          setStatus('success');
-          clearCart();
+          // Verification failed or unreachable: do NOT show success, do NOT clear cart.
+          setIsInitializing(false);
+          setErrorMessage(verifyErrorMsg);
+          setStatus('error');
         } catch (verifyErr: any) {
           console.error('Payment verification handling error:', verifyErr);
-          setStatus('success');
-          clearCart();
+          setIsInitializing(false);
+          setErrorMessage(
+            verifyErr?.message ||
+              'Something went wrong while confirming your payment. If you were debited, please contact support with your reference.'
+          );
+          setStatus('error');
         }
       };
 

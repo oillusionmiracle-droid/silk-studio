@@ -241,12 +241,16 @@ export default function ProductConfiguration({
         {subService === 'ID Cards' && (
           <>
             <SpecField label="Card Type">
-              {['Standard', 'Lanyard + Holder', 'Badge Reel + Holder'].map((opt) => (
+              {[
+                { label: 'Standard', hint: '₦4,500 / card' },
+                { label: 'Lanyard + Holder', hint: '₦8,000 / card' },
+                { label: 'Badge Reel + Holder', hint: '₦10,000 / card' },
+              ].map((opt) => (
                 <Pill
-                  key={opt}
-                  label={opt}
-                  isActive={specs.idType === opt}
-                  onClick={() => onUpdateSpec('idType', opt)}
+                  key={opt.label}
+                  label={`${opt.label} (${opt.hint})`}
+                  isActive={specs.idType === opt.label}
+                  onClick={() => onUpdateSpec('idType', opt.label)}
                 />
               ))}
             </SpecField>
@@ -304,6 +308,69 @@ export default function ProductConfiguration({
               />
             </SpecField>
           </>
+        )}
+
+        {/* LETTERHEADS */}
+        {subService === 'Letterheads' && (
+          <>
+            <SpecField label="Paper Type">
+              {[
+                { label: 'Standard', hint: '₦12,000 / 50' },
+                { label: 'Brown', hint: '₦18,000 / 50' },
+              ].map((opt) => (
+                <Pill
+                  key={opt.label}
+                  label={`${opt.label} (${opt.hint})`}
+                  isActive={specs.paperType === opt.label}
+                  onClick={() => onUpdateSpec('paperType', opt.label)}
+                />
+              ))}
+            </SpecField>
+            <SpecField label="Quantity (min 50)">
+              <QtyInput
+                value={Math.max(50, specs.quantity)}
+                min={50}
+                step={50}
+                onChange={(v) => onUpdateSpec('quantity', Math.max(50, v))}
+                quickVals={[50, 100, 200, 500]}
+              />
+            </SpecField>
+          </>
+        )}
+
+        {/* EVENT MERCH SET — custom brief, no priced specs */}
+        {subService === 'Event Merch Set' && (
+          <div
+            style={{
+              backgroundColor: 'rgba(198,255,51,0.08)',
+              border: '1px solid rgba(198,255,51,0.25)',
+              borderRadius: 12,
+              padding: '14px 16px',
+            }}
+          >
+            <p
+              style={{
+                fontFamily: 'var(--font-jakarta)',
+                fontWeight: 700,
+                fontSize: 14,
+                color: '#C6FF33',
+                margin: '0 0 6px',
+              }}
+            >
+              Custom brief — no fixed price
+            </p>
+            <p
+              style={{
+                fontFamily: 'var(--font-general)',
+                fontSize: 13,
+                color: 'rgba(255,255,255,0.7)',
+                margin: 0,
+                lineHeight: 1.6,
+              }}
+            >
+              Tell us items, sizes and quantities in Details below and we&apos;ll send a quote within 2 hours.
+            </p>
+          </div>
         )}
 
         {/* APPAREL */}

@@ -4,6 +4,7 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { edgeRateLimit } from '../_shared/edgeRateLimit.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -19,6 +20,11 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Postgres-backed per-IP throttle: guest checkout is public, so cap
+    // mass-creation of pending orders (20/hr/IP). Fails open on limiter error.
+    const limited = await edgeRateLimit(supabase, req, 'create-order', 20, 60 * 60 * 1000);
+    if (limited) return limited;
 
     // Optional user authentication via bearer token
     let userId: string | null = null;

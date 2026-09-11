@@ -22,6 +22,7 @@ export interface OrderSpecs {
   idType: string;
   stock: string;
   corners: string;
+  paperType: string;
   apparelSizes: ApparelSizes;
   deadline: string;
   description: string;

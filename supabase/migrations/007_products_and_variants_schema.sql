@@ -22,7 +22,8 @@ ALTER TABLE public.products
   ADD COLUMN IF NOT EXISTS config_schema JSONB NOT NULL DEFAULT '{}'::jsonb,
   ADD COLUMN IF NOT EXISTS display_order INTEGER NOT NULL DEFAULT 0,
   ADD COLUMN IF NOT EXISTS is_featured BOOLEAN NOT NULL DEFAULT false,
-  ADD COLUMN IF NOT EXISTS is_new_arrival BOOLEAN NOT NULL DEFAULT false;
+  ADD COLUMN IF NOT EXISTS is_new_arrival BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT true;
 
 -- Sync title and name columns if one exists
 UPDATE public.products SET title = name WHERE title IS NULL AND name IS NOT NULL;

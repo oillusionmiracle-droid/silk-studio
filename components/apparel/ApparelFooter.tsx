@@ -2,6 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+
+const TurnstileWidget = dynamic(() => import('@/components/TurnstileWidget'), {
+  ssr: false,
+});
 
 /* ─────────────────────────────────────────
    Apparel Footer
@@ -39,12 +44,21 @@ const SOCIAL_LINKS = [
 
 export default function ApparelFooter() {
   const [email, setEmail] = useState('');
+  const [botField, setBotField] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || status === 'loading') return;
+    // Silent honeypot: filled => bot, bail without a network call.
+    if (botField) {
+      setEmail('');
+      setBotField('');
+      return;
+    }
     setStatus('loading');
     setMessage('');
 
@@ -52,13 +66,21 @@ export default function ApparelFooter() {
       const res = await fetch('/api/newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({
+          email,
+          website_url: botField,
+          turnstile_token: turnstileToken,
+        }),
       });
       const data = await res.json();
+      // Turnstile tokens are single-use: refresh the widget after every
+      // attempt so the next submit gets a fresh token.
+      setTurnstileResetKey((k) => k + 1);
       if (!res.ok) throw new Error(data.error || 'Request failed');
       setStatus('success');
       setMessage(data.message || "You're on the list!");
       setEmail('');
+      setTurnstileToken(null);
     } catch (err: any) {
       setStatus('error');
       setMessage(err.message || 'Something went wrong. Try again.');
@@ -83,6 +105,17 @@ export default function ApparelFooter() {
             className="apparel-footer__newsletter-form"
             onSubmit={handleSubscribe}
           >
+            {/* Honeypot bot trap (hidden from real users) */}
+            <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }}>
+              <input
+                type="text"
+                name="website_url"
+                tabIndex={-1}
+                autoComplete="off"
+                value={botField}
+                onChange={(e) => setBotField(e.target.value)}
+              />
+            </div>
             <input
               type="email"
               className="apparel-footer__newsletter-input"
@@ -104,6 +137,8 @@ export default function ApparelFooter() {
               {status === 'loading' ? '...' : 'SUBSCRIBE'}
             </button>
           </form>
+
+          <TurnstileWidget onToken={setTurnstileToken} resetKey={turnstileResetKey} />
 
           {status === 'success' && (
             <p className="apparel-footer__newsletter-status apparel-footer__newsletter-status--success">

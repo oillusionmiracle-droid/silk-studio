@@ -21,6 +21,12 @@ GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated, anon;
 -- Public can ONLY view active products. Admins can view and manage all.
 ALTER TABLE IF EXISTS public.products ENABLE ROW LEVEL SECURITY;
 
+-- Guard: the products table may predate is_active (migration 007 only defines
+-- it in the fresh-create path). The RLS policies below reference it, so make
+-- sure it exists first. Existing rows default to true — nothing gets hidden.
+ALTER TABLE IF EXISTS public.products
+  ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT true;
+
 DROP POLICY IF EXISTS "Public can view active products" ON public.products;
 DROP POLICY IF EXISTS "Public can view products" ON public.products;
 CREATE POLICY "Public can view active products"

@@ -29,17 +29,17 @@ export interface DbVariant {
 
 const DEFAULT_PRODUCTS_MAP: Record<string, Partial<DbProduct>> = {
   'flyers & handbills': { title: 'Flyers & Handbills', slug: 'flyers', category: 'PRINT', price: 120, pricing_type: 'tier' },
-  'banners': { title: 'Banners', slug: 'rollup-banners', category: 'PRINT', price: 15000, pricing_type: 'unit' },
+  'banners': { title: 'Banners', slug: 'rollup-banners', category: 'PRINT', price: 700, pricing_type: 'unit', config_schema: { has_dimensions: true, pricing_unit: 'sqft' } },
   'billboards & flex': { title: 'Billboards & Flex', slug: 'flex-billboards', category: 'PRINT', price: 0, pricing_type: 'custom_quote' },
   'jotters & notepads': { title: 'Jotters & Notepads', slug: 'jotters', category: 'PRINT', price: 850, pricing_type: 'tier' },
   'id cards': { title: 'ID Cards', slug: 'id-cards', category: 'PRINT', price: 4500, pricing_type: 'tier' },
   'business cards': { title: 'Business Cards', slug: 'business-cards', category: 'PRINT', price: 85, pricing_type: 'tier' },
-  'letterheads': { title: 'Letterheads', slug: 'letterheads', category: 'PRINT', price: 520, pricing_type: 'tier' },
+  'letterheads': { title: 'Letterheads', slug: 'letterheads', category: 'PRINT', price: 240, pricing_type: 'tier', config_schema: { min_quantity: 50, paper_types: ['Standard', 'Brown'] } },
   'custom t-shirts': { title: 'Custom T-Shirts', slug: 'custom-tshirts', category: 'APPAREL', price: 9000, pricing_type: 'tier' },
   'sweatshirts': { title: 'Sweatshirts', slug: 'custom-sweatshirts', category: 'APPAREL', price: 14000, pricing_type: 'tier' },
   'grey joggers': { title: 'Grey Joggers', slug: 'custom-joggers', category: 'APPAREL', price: 15000, pricing_type: 'tier' },
   'hoodies': { title: 'Hoodies', slug: 'custom-hoodies', category: 'APPAREL', price: 18000, pricing_type: 'tier' },
-  'event merch set': { title: 'Event Merch Set', slug: 'event-merch', category: 'APPAREL', price: 4500, pricing_type: 'tier' },
+  'event merch set': { title: 'Event Merch Set', slug: 'event-merch', category: 'APPAREL', price: 0, pricing_type: 'custom_quote' },
   'corporate uniforms': { title: 'Corporate Uniforms', slug: 'corporate-uniforms', category: 'APPAREL', price: 0, pricing_type: 'custom_quote' },
   // DESIGN, WEB, BUNDLES — always custom quote. No price shown, customer submits brief.
   'logo & brand identity': { title: 'Logo & Brand Identity', slug: 'logo-brand-identity', category: 'DESIGN', price: 0, pricing_type: 'custom_quote' },
@@ -148,9 +148,11 @@ export function calculateDynamicPricing(params: {
     return { unitPrice: 0, subtotal: 0, isCustomQuote: true };
   }
 
-  // 1. DESIGN, WEB, BUNDLES are ALWAYS custom quote — no price shown, customer submits brief.
-  //    This is a hard code-level guard that works even without the SQL migration being run.
-  const ALWAYS_CUSTOM_QUOTE_CATEGORIES = ['DESIGN', 'WEB', 'BUNDLES'];
+  // 1. DESIGN and BUNDLES are ALWAYS custom quote — no price shown, customer submits brief.
+  //    WEB rows are seeded brief (is_custom_quote = true) but unlockable in admin, so they
+  //    are intentionally NOT in this hard guard.
+  //    This is a code-level guard that works even without the SQL migration being run.
+  const ALWAYS_CUSTOM_QUOTE_CATEGORIES = ['DESIGN', 'BUNDLES'];
   if (ALWAYS_CUSTOM_QUOTE_CATEGORIES.includes(product.category.toUpperCase())) {
     return { unitPrice: 0, subtotal: 0, isCustomQuote: true };
   }
@@ -166,13 +168,21 @@ export function calculateDynamicPricing(params: {
   }
 
   // 2. Check if a matching variant exists in database variants table (e.g. for Apparel or specific Print variants)
+  // Letterhead paperType may be stored as paper_type in DB — normalize for matching.
+  const normalizedSpecs: Record<string, any> = { ...(specs as Record<string, any>) };
+  if (normalizedSpecs.paperType && !normalizedSpecs.paper_type) {
+    normalizedSpecs.paper_type = normalizedSpecs.paperType;
+  }
+  if (normalizedSpecs.paper_type && !normalizedSpecs.paperType) {
+    normalizedSpecs.paperType = normalizedSpecs.paper_type;
+  }
   if (variants && variants.length > 0) {
     const matchedVariant = variants.find(v => {
       if (v.product_id !== product.id) return false;
       if (!v.options) return false;
       // Match all options in variant against user specs
       return Object.entries(v.options).every(([key, val]) => {
-        const specVal = specs[key];
+        const specVal = normalizedSpecs[key];
         if (!specVal) return false;
         return String(specVal).trim().toLowerCase() === String(val).trim().toLowerCase();
       });
@@ -180,7 +190,12 @@ export function calculateDynamicPricing(params: {
 
     if (matchedVariant && matchedVariant.price > 0) {
       const unitPrice = matchedVariant.price;
-      const subtotal = unitPrice * Math.max(1, quantity);
+      // Letterhead variants are per-unit with a 50-unit minimum.
+      const mSlug = (product.slug || '').toLowerCase();
+      const mTitle = (product.title || product.name || '').toLowerCase();
+      const isLetterhead = mSlug === 'letterheads' || mTitle.includes('letterhead');
+      const effQty = isLetterhead ? Math.max(50, quantity) : Math.max(1, quantity);
+      const subtotal = unitPrice * effQty;
       return { unitPrice, subtotal, isCustomQuote: false };
     }
   }
@@ -194,8 +209,9 @@ export function calculateDynamicPricing(params: {
 
   const schema = product.config_schema || {};
 
-  // Flex/Billboard square footage calculation using database product.price as rate per sqft
-  if (schema.has_dimensions || product.slug === 'flex-billboards') {
+  // Banners / Flex square footage: rate per sqft x dimensions (+ eyelets flat fee)
+  const slug = (product.slug || '').toLowerCase();
+  if (schema.has_dimensions || slug === 'flex-billboards' || slug === 'rollup-banners' || slug === 'banners') {
     const width = Number(specs.width) || 1;
     const height = Number(specs.height) || 1;
     const sqft = Math.max(1, width * height);
@@ -203,6 +219,31 @@ export function calculateDynamicPricing(params: {
     const unitPrice = (basePrice * sqft) + eyeletFee;
     const subtotal = unitPrice * Math.max(1, quantity);
     return { unitPrice: Math.round(unitPrice), subtotal: Math.round(subtotal), isCustomQuote: false };
+  }
+
+  // ID Cards fallback by type when no DB variant matched:
+  // Standard 4500 / Lanyard + Holder 8000 / Badge Reel + Holder 10000
+  const prodSlug = (product.slug || '').toLowerCase();
+  const prodTitle = (product.title || product.name || '').toLowerCase();
+  if (prodSlug === 'id-cards' || prodTitle.includes('id card')) {
+    const t = String(specs.idType || 'Standard').trim().toLowerCase();
+    if (t.includes('badge')) basePrice = 10000;
+    else if (t.includes('lanyard')) basePrice = 8000;
+    else basePrice = Number(product.price) > 0 ? Number(product.price) : 4500;
+    const idUnit = Math.round(basePrice);
+    const idSub = idUnit * Math.max(1, quantity);
+    return { unitPrice: idUnit, subtotal: Math.round(idSub), isCustomQuote: false };
+  }
+
+  // Letterheads variant match uses paperType before generic formula.
+  // Standard N240/unit, Brown N360/unit, minimum 50 units.
+  // 50 Standard = N12,000 / 50 Brown = N18,000 (linear beyond 50).
+  if (prodSlug === 'letterheads' || prodTitle.includes('letterhead')) {
+    const p = String((specs as any).paperType || (specs as any).paper_type || 'Standard').trim().toLowerCase();
+    const letterUnit = p.includes('brown') ? 360 : Number(product.price) > 0 ? Number(product.price) : 240;
+    const letterQty = Math.max(50, quantity);
+    const letterSub = letterUnit * letterQty;
+    return { unitPrice: letterUnit, subtotal: Math.round(letterSub), isCustomQuote: false };
   }
 
   // Configurable spec multipliers (Formula layer applied to DB base rate)

@@ -33,6 +33,23 @@ A design, print, and apparel commerce platform — public marketing site, custom
 
 ---
 
+## ⚠️ Pricing — services vs apparel (READ THIS BEFORE EDITING PRICES)
+
+Two pricing surfaces. They are intentionally separate.
+
+| Surface | Where the price lives | How to change it |
+|---|---|---|
+| **Order page services** (`/order` — flyers, banners, ID cards, business cards, letterheads, jotters, custom T-shirts, hoodies, DESIGN/WEB/BUNDLES) | Supabase `products` rows seeded by `supabase/migrations/013_seed_order_services.sql` (`PRINT`/`APPAREL`/`DESIGN`/`WEB`/`BUNDLES` categories) | Edit in the admin dashboard (`/admin/products` → **Order Services** tab). Price changes apply immediately — no redeploy. `lib/pricing.ts` supplies the **formula layer** on top (A4/A3 ×1.8/×3.0, double-sided ×1.5, lamination ×1.2, ID-card Lanyard ₦8,000 / Badge ₦10,000, banner ₦700/sqft, cover/binding/stock adjustments). `DEFAULT_PRODUCTS_MAP` is only a fallback when a row is missing |
+| **Apparel store** (`/apparel`, cart, Paystack checkout) | Supabase: `products.price` + `variants (sku/size/color/stock)` | Edit in the admin dashboard (`/admin/products` → Apparel) or directly in Supabase |
+
+Notes:
+- Migration `013` is **insert-only**: it only adds rows that don't already exist (matched by `lower(name)`), never overwrites, and never touches the lowercase apparel shop rows (`tee/shirt/hoodie/cap`) — those belong to `/apparel` only.
+- DESIGN, WEB and BUNDLES rows are seeded as custom-quote (`is_custom_quote = true`). WEB rows use `pricing_type = 'package'` so you can later untoggle **Custom Quote** in the admin and set a flat package price (Landing Page, Business Website, E-commerce, Event Page). DESIGN and BUNDLES are hard-locked in code (`ALWAYS_CUSTOM_QUOTE_CATEGORIES = ['DESIGN', 'BUNDLES']`) — brief-only, on purpose.
+- The live `variants` table is apparel-shaped (`sku/size/color/stock`) — it has no `name`/`price`/`options`, so old `009`/`010` migrations that target those columns are **guarded no-ops**. Keep them that way.
+- Migrations `001`–`012` (RLS, profiles, admin, schema guards) are applied with `supabase db push`. `009`/`010` are safe to run (they no-op).
+
+---
+
 ## Getting started
 
 ### Prerequisites
@@ -59,7 +76,13 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
 NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY=
+# Cloudflare Turnstile widget (bot protection on auth + newsletter).
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAAEwCPPZFRXnUwIOx
 ```
+
+> Widget already created in dash.cloudflare.com → Turnstile. The site key is
+> public by design (it ships in client HTML). If you rotate the widget later,
+> update the key here, in `.env.local`, and in your hosting provider env vars.
 
 **Server-side only (Next.js API routes — never expose these):**
 ```
@@ -69,6 +92,11 @@ GEMINI_API_KEY=
 MAILCHIMP_API_KEY=
 MAILCHIMP_API_REGION=
 MAILCHIMP_AUDIENCE_ID=
+# Turnstile server secret from the same widget (dash.cloudflare.com → Turnstile
+# → Settings). Required for siteverify — without it, verification is skipped
+# unless TURNSTILE_ENFORCE=true (recommended in production to fail closed).
+TURNSTILE_SECRET_KEY=
+TURNSTILE_ENFORCE=
 ```
 
 **Supabase Edge Functions** (set these via `supabase secrets set`, not in `.env.local` — they run on Supabase's servers, not Next.js):

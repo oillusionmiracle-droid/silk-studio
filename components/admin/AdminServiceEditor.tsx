@@ -4,8 +4,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Check, Info, Loader2, X } from 'lucide-react';
 
-// Categories that are ALWAYS custom quote — no price editing allowed
-export const ALWAYS_CUSTOM_QUOTE_CATEGORIES = ['DESIGN', 'WEB', 'BUNDLES'];
+// Categories that are ALWAYS custom quote — no price editing allowed.
+// WEB rows are seeded as brief (is_custom_quote = true) but can be priced later
+// from this editor, so WEB is intentionally not in this list.
+export const ALWAYS_CUSTOM_QUOTE_CATEGORIES = ['DESIGN', 'BUNDLES'];
 
 export interface ServiceRecord {
   id: string;

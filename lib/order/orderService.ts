@@ -18,6 +18,12 @@ export function formatSpecsText(subService: string, specs: OrderSpecs): string {
   if (subService === 'Business Cards') {
     return `${specs.stock}, ${specs.lamination}, ${specs.corners} Corners`;
   }
+  if (subService === 'Letterheads') {
+    return `${(specs as any).paperType || 'Standard'} Letterhead`;
+  }
+  if (subService === 'Event Merch Set') {
+    return 'Custom Brief';
+  }
   if (['Custom T-Shirts', 'Sweatshirts', 'Grey Joggers'].includes(subService)) {
     const s = specs.apparelSizes;
     return `S(${s.S}) M(${s.M}) L(${s.L}) XL(${s.XL}) XXL(${s.XXL})`;

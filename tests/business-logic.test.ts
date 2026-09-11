@@ -150,6 +150,94 @@ describe('PHASE 12 — PRICING BUSINESS LOGIC TESTS', () => {
     assert.equal(result.unitPrice, 23000);
     assert.equal(result.subtotal, 46000);
   });
+
+  test('banners charge N700 per sqft: 1x1 = 700', () => {
+    const bannerProduct: DbProduct = {
+      id: 'prod-banner-002',
+      title: 'Banners',
+      slug: 'rollup-banners',
+      category: 'PRINT',
+      description: 'Banners',
+      price: 700,
+      pricing_type: 'unit',
+      config_schema: { has_dimensions: true, pricing_unit: 'sqft' },
+      is_active: true,
+    };
+
+    const oneByOne = calculateDynamicPricing({
+      product: bannerProduct,
+      quantity: 1,
+      specs: { width: 1, height: 1, eyelets: 'No' },
+    });
+    assert.equal(oneByOne.unitPrice, 700);
+    assert.equal(oneByOne.subtotal, 700);
+
+    const sevenByThree = calculateDynamicPricing({
+      product: bannerProduct,
+      quantity: 1,
+      specs: { width: 7, height: 3, eyelets: 'No' },
+    });
+    assert.equal(sevenByThree.unitPrice, 14700);
+    assert.equal(sevenByThree.subtotal, 14700);
+  });
+
+  test('letterheads: standard 50 = 12000, brown 50 = 18000, min 50', () => {
+    const letterProduct: DbProduct = {
+      id: 'prod-letter-007',
+      title: 'Letterheads',
+      slug: 'letterheads',
+      category: 'PRINT',
+      description: 'Letterheads',
+      price: 240,
+      pricing_type: 'tier',
+      config_schema: { min_quantity: 50 },
+      is_active: true,
+    };
+
+    const standard50 = calculateDynamicPricing({
+      product: letterProduct,
+      quantity: 50,
+      specs: { paperType: 'Standard' },
+    });
+    assert.equal(standard50.unitPrice, 240);
+    assert.equal(standard50.subtotal, 12000);
+
+    const brown50 = calculateDynamicPricing({
+      product: letterProduct,
+      quantity: 50,
+      specs: { paperType: 'Brown' },
+    });
+    assert.equal(brown50.unitPrice, 360);
+    assert.equal(brown50.subtotal, 18000);
+
+    const belowMin = calculateDynamicPricing({
+      product: letterProduct,
+      quantity: 1,
+      specs: { paperType: 'Standard' },
+    });
+    assert.equal(belowMin.subtotal, 12000);
+  });
+
+  test('event merch set is custom quote (brief only)', () => {
+    const merchProduct: DbProduct = {
+      id: 'prod-merch-005',
+      title: 'Event Merch Set',
+      slug: 'event-merch',
+      category: 'APPAREL',
+      description: 'Merch',
+      price: 0,
+      pricing_type: 'custom_quote',
+      is_active: true,
+    };
+
+    const result = calculateDynamicPricing({
+      product: merchProduct,
+      quantity: 10,
+      specs: {},
+    });
+    assert.equal(result.isCustomQuote, true);
+    assert.equal(result.subtotal, 0);
+  });
 });
 
 describe('PHASE 12 — ORDER VALIDATION & AUTHORITY LOGIC TESTS', () => {
@@ -372,8 +460,16 @@ describe('PHASE 15 — DATA MODEL CONSISTENCY TESTS', () => {
       product_id: 'prod-idcard-01',
       name: 'ID Card with Custom Lanyard & Holder',
       sku: 'IDC-LANYARD',
-      price: 7500,
+      price: 8000,
       options: { idType: 'Lanyard + Holder' },
+    },
+    {
+      id: 'var-idc-reel',
+      product_id: 'prod-idcard-01',
+      name: 'ID Card with Badge Reel & Holder',
+      sku: 'IDC-REEL',
+      price: 10000,
+      options: { idType: 'Badge Reel + Holder' },
     },
   ];
 
@@ -392,8 +488,35 @@ describe('PHASE 15 — DATA MODEL CONSISTENCY TESTS', () => {
       quantity: 10,
       specs: { idType: 'Lanyard + Holder' },
     });
-    assert.equal(resultLanyard.unitPrice, 7500);
-    assert.equal(resultLanyard.subtotal, 75000);
+    assert.equal(resultLanyard.unitPrice, 8000);
+    assert.equal(resultLanyard.subtotal, 80000);
+
+    const resultReel = calculateDynamicPricing({
+      product: dbIdCardProduct,
+      variants: dbIdCardVariants,
+      quantity: 2,
+      specs: { idType: 'Badge Reel + Holder' },
+    });
+    assert.equal(resultReel.unitPrice, 10000);
+    assert.equal(resultReel.subtotal, 20000);
+  });
+
+  test('id card fallback pricing without variants: standard 4500 / lanyard 8000 / reel 10000', () => {
+    const lanyard = calculateDynamicPricing({
+      product: dbIdCardProduct,
+      variants: [],
+      quantity: 1,
+      specs: { idType: 'Lanyard + Holder' },
+    });
+    assert.equal(lanyard.unitPrice, 8000);
+
+    const reel = calculateDynamicPricing({
+      product: dbIdCardProduct,
+      variants: [],
+      quantity: 1,
+      specs: { idType: 'Badge Reel + Holder' },
+    });
+    assert.equal(reel.unitPrice, 10000);
   });
 
   test('formula engine reliably computes base price when variant is absent', () => {
