@@ -17,6 +17,7 @@ A design, print, and apparel commerce platform — public marketing site, custom
 | **Admin dashboard** | Customer list, order list/detail, order status management |
 | **AI assistant** | Chat widget backed by Google Gemini with Silk Studio–specific context |
 | **File uploads** | Cloudinary-backed reference file uploads for custom orders (images, PDF, PSD, AI/EPS) |
+| **SEO** | Per-page metadata (title, description, keywords, canonical, OpenGraph, Twitter card) on all public routes |
 
 ---
 
@@ -119,10 +120,15 @@ supabase db push
 ```
 Migrations live in `supabase/migrations/` and include schema, RLS policies, and the admin-role protection trigger. Read them in numeric order if you want to understand the auth/authorization model.
 
+> **Manual column:** The `orders` table requires an `email` column (`text`, nullable) that is not included in any migration file. Add it manually:
+> ```sql
+> ALTER TABLE orders ADD COLUMN IF NOT EXISTS email text;
+> ```
+
 ### 4. Deploy the Edge Functions
 ```bash
-supabase functions deploy create-order
-supabase functions deploy verify-order
+supabase functions deploy create-order --no-verify-jwt
+supabase functions deploy verify-order --no-verify-jwt
 ```
 
 ### 5. Run the dev server
@@ -157,10 +163,12 @@ app/                  Next.js App Router pages & API routes
   |- api/              Route handlers (chat, cloudinary-sign, newsletter)
 components/           Shared UI + feature components (apparel/, auth/)
 lib/                  Client utilities, pricing logic, Supabase client
+  |- order/            orderService.ts — Paystack launch + order submission
+  |- validation/       orderValidation.ts — client-side form validation
 supabase/
   |- migrations/       Versioned SQL schema + RLS policies
-  |- functions/        Edge Functions (create-order, verify-order)
-public/               Static assets - being migrated to Cloudinary
+  |- functions/        Edge Functions (create-order, verify-order, paystack-webhook)
+public/               Static assets — being migrated to Cloudinary
 ```
 
 ---
@@ -169,11 +177,32 @@ public/               Static assets - being migrated to Cloudinary
 
 1. Customer configures a custom order or adds apparel to cart.
 2. Order is created via the `create-order` Edge Function, which validates product/variant data and computes the price **server-side**.
-3. Paystack checkout is initiated with the server-computed amount.
-4. On payment, the `verify-order` Edge Function re-verifies the transaction directly against Paystack's API, checks the paid amount against the order total, and updates order status.
-5. Confirmation email is sent; inventory is decremented.
+3. If the Edge Function fails, the submission stops immediately — no partial or phantom orders are created.
+4. Paystack checkout is initiated with the server-computed amount.
+5. On payment, the `verify-order` Edge Function re-verifies the transaction directly against Paystack's API, checks the paid amount against the order total, and updates order status.
+6. Confirmation email is sent; inventory is decremented.
 
-> The custom-order form (`app/order/page.tsx`) currently writes directly to Supabase from the client instead of going through `create-order`. This is a known gap — see below.
+> The custom-order form (`app/order/page.tsx`) currently routes through `create-order` for order creation. Paystack is only launched after a valid server reference is returned — if the Edge Function returns no reference, the flow aborts with a clear error message.
+
+---
+
+## SEO
+
+All public-facing pages have per-page metadata configured in their `layout.tsx` files using Next.js `generateMetadata` / static `Metadata` exports:
+
+| Page | Canonical |
+|---|---|
+| Home | `/` |
+| About | `/about` |
+| Services | `/services` |
+| Portfolio | `/portfolio` |
+| Apparel | `/apparel` |
+| Contact | `/contact` |
+| Order | `/order` |
+| Privacy | `/privacy` |
+| Terms | `/terms` |
+
+Each page has a unique `title`, `description`, `keywords` array, `alternates.canonical`, `robots` with Googlebot directives, full OpenGraph tags, and Twitter card metadata.
 
 ---
 
@@ -181,7 +210,6 @@ public/               Static assets - being migrated to Cloudinary
 
 This project is **not production-hardened yet**. Current priorities, roughly in order:
 
-- [ ] Route the custom-order flow through `create-order` instead of a direct client-side insert
 - [ ] Remove the client-price fallback in `create-order` when a variant isn't found (currently defaults to a hardcoded price — should reject instead)
 - [ ] Add auth check + rate limiting to the Cloudinary upload signing route
 - [ ] Remove the hardcoded Paystack public key fallback in the apparel checkout
@@ -190,6 +218,7 @@ This project is **not production-hardened yet**. Current priorities, roughly in 
 - [ ] Add tests (unit tests for pricing logic and auth, E2E for the full order-to-payment-to-verification flow)
 - [ ] Add CI (lint, typecheck, build on every push)
 - [ ] Remove the dead admin self-escalation UI (DB-side RLS already blocks it, but the button still exists)
+- [ ] Add OG images (`/public/og-*.jpg`, 1200×630px) for all pages to enable rich social share previews
 
 ---
 
@@ -198,7 +227,8 @@ This project is **not production-hardened yet**. Current priorities, roughly in 
 - Row Level Security is enabled on all customer-data tables; policies are defined in `supabase/migrations/`.
 - Admin role changes are protected by a `BEFORE UPDATE` trigger that silently reverts unauthorized role modifications — admin roles should only be granted manually via the Supabase dashboard.
 - Payment verification happens server-side in `verify-order`, never trusting client-reported payment status.
-- If you find a security issue, please don't open a public GitHub issue — contact [add your contact here] instead.
+- The `create-order` function is rate-limited to 20 requests/hour/IP via a Postgres-backed throttle to prevent spam order creation.
+- If you find a security issue, please don't open a public GitHub issue — contact us privately instead.
 
 ---
 
