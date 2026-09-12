@@ -235,76 +235,92 @@ export default function OrderPage() {
     setDeposit(0);
   }, [subService, specs, totalApparelQty, dbProducts, dbVariants]);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Order submission
   const handleSubmit = async () => {
+    if (isSubmitting) return;
+
     const validation = validateOrderSubmission(contact, subService, isCustomQuote);
     if (!validation.isValid) {
       alert(validation.error);
       return;
     }
 
-    const fallbackOrderRef = `SLK-CUST-${Math.floor(1000 + Math.random() * 9000)}`;
-    setSubmittedRef(fallbackOrderRef);
+    setIsSubmitting(true);
 
-    const specsText = formatSpecsText(subService!, specs);
-    const isApparel = ['Custom T-Shirts', 'Sweatshirts', 'Grey Joggers', 'Hoodies'].includes(
-      subService!
-    );
-    const orderQty = isApparel ? totalApparelQty : specs.quantity;
+    try {
+      const fallbackOrderRef = `SLK-CUST-${Math.floor(1000 + Math.random() * 9000)}`;
+      setSubmittedRef(fallbackOrderRef);
 
-    const currentProduct = matchProductForSubService(subService, dbProducts);
+      const specsText = formatSpecsText(subService!, specs);
+      const isApparel = ['Custom T-Shirts', 'Sweatshirts', 'Grey Joggers', 'Hoodies'].includes(
+        subService!
+      );
+      const orderQty = isApparel ? totalApparelQty : specs.quantity;
 
-    const authoritativeRef = (await submitServerOrder({
-      userId: user?.id,
-      contact,
-      subService: subService!,
-      specsText,
-      quantity: orderQty,
-      specs,
-      referenceFileUrl,
-      currentProduct,
-      isCustomQuote,
-      total,
-      deposit,
-      payFull,
-      fallbackOrderRef,
-    })) || fallbackOrderRef;
+      const currentProduct = matchProductForSubService(subService, dbProducts);
 
-    setSubmittedRef(authoritativeRef);
+      const authoritativeRef = (await submitServerOrder({
+        userId: user?.id,
+        contact,
+        subService: subService!,
+        specsText,
+        quantity: orderQty,
+        specs,
+        referenceFileUrl,
+        currentProduct,
+        isCustomQuote,
+        total,
+        deposit,
+        payFull,
+        fallbackOrderRef,
+      })) || fallbackOrderRef;
 
-    const msg = formatOrderMessage({
-      orderRef: authoritativeRef,
-      subService: subService!,
-      specsText,
-      quantity: orderQty,
-      specs,
-      referenceFileUrl,
-      contact,
-      isCustomQuote,
-      total,
-      deposit,
-    });
+      setSubmittedRef(authoritativeRef);
 
-    if (isCustomQuote) {
-      window.open(`https://wa.me/2347064829776?text=${encodeURIComponent(msg)}`, '_blank');
-      setIsSubmitted(true);
-      return;
-    }
+      const msg = formatOrderMessage({
+        orderRef: authoritativeRef,
+        subService: subService!,
+        specsText,
+        quantity: orderQty,
+        specs,
+        referenceFileUrl,
+        contact,
+        isCustomQuote,
+        total,
+        deposit,
+      });
 
-    await launchPaystackPayment({
-      orderRef: authoritativeRef,
-      orderMessage: msg,
-      contact,
-      amount: payFull ? total : deposit,
-      onSuccess: (paystackRef) => {
-        const paidMsg = msg.replace(
-          'Price:* Total: ₦',
-          `Price:* Paid deposit via Paystack (Ref: ${paystackRef})\nTotal: ₦`
-        );
-        window.open(`https://wa.me/2347064829776?text=${encodeURIComponent(paidMsg)}`, '_blank');
+      if (isCustomQuote) {
+        window.open(`https://wa.me/2347064829776?text=${encodeURIComponent(msg)}`, '_blank');
         setIsSubmitted(true);
-      },
-    });
+        setIsSubmitting(false);
+        return;
+      }
+
+      await launchPaystackPayment({
+        orderRef: authoritativeRef,
+        orderMessage: msg,
+        contact,
+        amount: payFull ? total : deposit,
+        onSuccess: (paystackRef) => {
+          const paidMsg = msg.replace(
+            'Price:* Total: ₦',
+            `Price:* Paid deposit via Paystack (Ref: ${paystackRef})\nTotal: ₦`
+          );
+          window.open(`https://wa.me/2347064829776?text=${encodeURIComponent(paidMsg)}`, '_blank');
+          setIsSubmitted(true);
+          setIsSubmitting(false);
+        },
+        onCancel: () => {
+          setIsSubmitting(false);
+        },
+      });
+    } catch (err) {
+      console.error('Error submitting order:', err);
+      setIsSubmitting(false);
+    }
   };
 
   if (isSubmitted) {

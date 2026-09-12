@@ -80,11 +80,28 @@ export const loadPaystackScript = (): Promise<void> =>
   new Promise((resolve, reject) => {
     if (typeof window === 'undefined') return reject(new Error('Window is undefined.'));
     if ((window as any).PaystackPop) return resolve();
+
+    const timer = setTimeout(() => {
+      reject(
+        new Error(
+          'Paystack script loading timed out after 20 seconds. Please check your internet connection or adblocker.'
+        )
+      );
+    }, 20000);
+
     const script = document.createElement('script');
     script.src = 'https://js.paystack.co/v1/inline.js';
     script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error('Failed to load Paystack script.'));
+    script.onload = () => {
+      clearTimeout(timer);
+      resolve();
+    };
+    script.onerror = () => {
+      clearTimeout(timer);
+      reject(
+        new Error('Failed to load Paystack script. Please check your adblocker or connection.')
+      );
+    };
     document.body.appendChild(script);
   });
 
@@ -106,43 +123,53 @@ export async function launchPaystackPayment({
 }: LaunchPaystackParams) {
   const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
   if (!publicKey) {
-    alert('Paystack public key is missing.');
+    alert('Paystack public key is missing from environment config.');
+    if (onCancel) onCancel();
     return;
   }
+
   try {
     await loadPaystackScript();
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    alert('Unable to load Paystack. Please try again later.');
+    alert(error?.message || 'Unable to load Paystack. Please check your connection and try again.');
+    if (onCancel) onCancel();
     return;
   }
 
-  const handler = (window as any).PaystackPop.setup({
-    key: publicKey,
-    email: contact.email || `${contact.whatsapp.replace(/\D/g, '')}@silk.studio`,
-    amount: Math.round(amount * 100),
-    currency: 'NGN',
-    ref: orderRef,
-    metadata: {
-      custom_fields: [
-        { display_name: 'Customer Name', variable_name: 'customer_name', value: `${contact.firstName} ${contact.lastName}`.trim() },
-        { display_name: 'WhatsApp', variable_name: 'whatsapp', value: contact.whatsapp },
-      ],
-    },
-    onClose: () => {
-      if (onCancel) onCancel();
-      else alert('Payment was cancelled. Your order was not submitted.');
-    },
-    callback: (response: { reference: string; status: string }) => {
-      if (response.status === 'success') {
-        onSuccess(response.reference);
-      } else {
-        alert('Payment was not completed. Please try again.');
-      }
-    },
-  });
+  try {
+    const handler = (window as any).PaystackPop.setup({
+      key: publicKey,
+      email: contact.email || `${contact.whatsapp.replace(/\D/g, '')}@silk.studio`,
+      amount: Math.round(amount * 100),
+      currency: 'NGN',
+      ref: orderRef,
+      metadata: {
+        custom_fields: [
+          { display_name: 'Customer Name', variable_name: 'customer_name', value: `${contact.firstName} ${contact.lastName}`.trim() },
+          { display_name: 'WhatsApp', variable_name: 'whatsapp', value: contact.whatsapp },
+        ],
+      },
+      onClose: () => {
+        if (onCancel) onCancel();
+        else alert('Payment was cancelled. Your order was not submitted.');
+      },
+      callback: (response: { reference: string; status: string }) => {
+        if (response.status === 'success') {
+          onSuccess(response.reference);
+        } else {
+          alert('Payment was not completed. Please try again.');
+          if (onCancel) onCancel();
+        }
+      },
+    });
 
-  handler.openIframe();
+    handler.openIframe();
+  } catch (err) {
+    console.error('Error opening Paystack iframe:', err);
+    alert('Error initializing Paystack gateway. Please try again.');
+    if (onCancel) onCancel();
+  }
 }
 
 export async function submitServerOrder({
@@ -195,12 +222,21 @@ export async function submitServerOrder({
       reference_files: referenceFileUrl ? [referenceFileUrl] : [],
     };
 
-    const { data: functionData, error: fnError } = await supabase.functions.invoke('create-order', {
-      body: payload,
-    });
+    // 15-second timeout for server order creation
+    const timeoutPromise = new Promise<{ data: null; error: Error }>((resolve) =>
+      setTimeout(
+        () => resolve({ data: null, error: new Error('Server order creation timed out after 15s') }),
+        15000
+      )
+    );
+
+    const { data: functionData, error: fnError } = await Promise.race([
+      supabase.functions.invoke('create-order', { body: payload }),
+      timeoutPromise,
+    ]);
 
     if (fnError) {
-      console.warn('Edge Function invoke notice (falling back to direct client):', fnError);
+      console.warn('Edge Function notice (falling back to client reference):', fnError.message);
       await supabase.from('orders').insert({
         user_id: userId || null,
         type: 'custom',
