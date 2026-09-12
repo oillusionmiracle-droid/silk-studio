@@ -200,7 +200,7 @@ export async function submitServerOrder({
   deposit: number;
   payFull: boolean;
   fallbackOrderRef: string;
-}): Promise<string> {
+}): Promise<string | null> {
   let orderRef = fallbackOrderRef;
 
   try {
@@ -220,6 +220,9 @@ export async function submitServerOrder({
         description: specs.description,
       },
       reference_files: referenceFileUrl ? [referenceFileUrl] : [],
+      client_total: total,
+      pay_full: payFull,
+      is_custom_quote: isCustomQuote,
     };
 
     // 15-second timeout for server order creation
@@ -236,35 +239,18 @@ export async function submitServerOrder({
     ]);
 
     if (fnError) {
-      console.warn('Edge Function notice (falling back to client reference):', fnError.message);
-      await supabase.from('orders').insert({
-        user_id: userId || null,
-        type: 'custom',
-        customer_name: payload.customer_name,
-        phone: payload.phone,
-        email: payload.email,
-        address: payload.address,
-        area: payload.area,
-        subtotal: isCustomQuote ? 0 : total,
-        delivery_fee: 0,
-        total: isCustomQuote ? 0 : (payFull ? total : deposit),
-        status: isCustomQuote ? 'quote_requested' : 'pending',
-        paystack_ref: orderRef,
-        specs: payload.specs,
-        reference_files: payload.reference_files,
-        status_history: [
-          {
-            status: isCustomQuote ? 'quote_requested' : 'pending',
-            timestamp: new Date().toISOString(),
-            note: isCustomQuote ? 'Quote requested via Studio Form' : 'Order initiated for deposit payment',
-          },
-        ],
-      });
-    } else if (functionData?.paystack_ref) {
+      console.error('create-order Edge Function failed — refusing to proceed:', fnError.message);
+      return null;
+    }
+    if (functionData?.paystack_ref) {
       orderRef = functionData.paystack_ref;
+    } else {
+      console.error('create-order returned no reference — refusing to proceed.');
+      return null;
     }
   } catch (err) {
     console.error('Error in submitServerOrder:', err);
+    return null;
   }
 
   return orderRef;
