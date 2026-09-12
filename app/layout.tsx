@@ -32,23 +32,72 @@ const dmMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Silk Studio — Design, Print & Digital | Lagos",
+  title: "Silk Studio — Lagos Design, Print & Digital Studio",
   description:
-    "One Brief. Fast & Smooth Delivery. Lagos-based design, print, and digital brand. Flyers, banners, logos, websites, event packages — fast turnaround.",
-  keywords: "design studio Lagos, print Lagos, branding Nigeria, event package, web design Lagos",
+    "Silk Studio is Lagos' go-to creative studio for fast, premium design, printing, and digital services. Flyers, banners, logos, custom apparel, websites, and event packages — delivered in 24–48 hrs.",
+  keywords: [
+    "design studio Lagos",
+    "print shop Lagos",
+    "branding agency Nigeria",
+    "graphic design Lagos",
+    "flyer printing Lagos",
+    "banner printing Nigeria",
+    "custom t-shirt printing Lagos",
+    "logo design Nigeria",
+    "web design Lagos",
+    "event packages Lagos",
+    "Silk Studio",
+    "silk studios Lagos",
+  ],
+  authors: [{ name: "Silk Studio", url: "https://silkstudios.com.ng" }],
+  creator: "Silk Studio",
+  publisher: "Silk Studio",
+  category: "Creative Services",
   manifest: "/manifest.json",
+  metadataBase: new URL("https://silkstudios.com.ng"),
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "Silk Studio",
   },
   openGraph: {
-    title: "Silk Studio — Design, Print & Digital",
-    description: "One Brief. Fast & Smooth Delivery.",
+    title: "Silk Studio — Lagos Design, Print & Digital Studio",
+    description:
+      "Fast, premium creative services from Lagos. One brief. Flyers, banners, logos, custom apparel, websites — delivered in 24–48 hrs.",
     url: "https://silkstudios.com.ng",
     siteName: "Silk Studio",
     locale: "en_NG",
     type: "website",
+    images: [
+      {
+        url: "/og-home.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Silk Studio — Lagos Design, Print & Digital Studio",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Silk Studio — Lagos Design, Print & Digital Studio",
+    description:
+      "Fast, premium creative services from Lagos. Flyers, banners, logos, custom apparel, websites — delivered in 24–48 hrs.",
+    images: ["/og-home.jpg"],
+    creator: "@silkstudiong",
   },
 };
 
