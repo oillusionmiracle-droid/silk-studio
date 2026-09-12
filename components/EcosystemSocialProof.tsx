@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -24,20 +24,10 @@ const FALLBACK_TESTIMONIALS: Testimonial[] = [
     testimonial:
       'Finding a reliable print shop in Lagos used to be a gamble for our event planning business. Silk Studio delivered our entire batch of branded souvenirs and conference materials in under 48 hours, and the quality was top-tier.',
     photo_url:
-      'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=900&q=80',
+      'https://res.cloudinary.com/dagqxe3fh/image/upload/v1788824778/167512330_1788823471570893_j4rnpp.jpg',
   },
   {
     id: 'fallback-2',
-    customer_name: 'Babajide O.',
-    role: 'Head of Brand',
-    brand: 'STUDIO TRACE',
-    testimonial:
-      'They handle our high-volume production with total precision. From large-format event billboards to corporate apparel, their 48-hour dispatch system is something Lagos commerce has needed for years.',
-    photo_url:
-      'https://res.cloudinary.com/dagqxe3fh/image/upload/v1788824778/510267066_1788823516534214_xexcun.jpg',
-  },
-  {
-    id: 'fallback-3',
     customer_name: 'Chidinma E.',
     role: 'Founder',
     brand: 'LUMINA',
@@ -45,6 +35,16 @@ const FALLBACK_TESTIMONIALS: Testimonial[] = [
       'Beyond the physical prints, having them handle our web design and automated customer workflows changed how our brand operates online. They bridge the gap between creative design and serious tech.',
     photo_url:
       'https://res.cloudinary.com/dagqxe3fh/image/upload/v1788824777/912323983_1788823117159588_e0cnx9.jpg',
+  },
+  {
+    id: 'fallback-3',
+    customer_name: 'Babajide O.',
+    role: 'Head of Brand',
+    brand: 'STUDIO TRACE',
+    testimonial:
+      'They handle our high-volume production with total precision. From large-format event billboards to corporate apparel, their 48-hour dispatch system is something Lagos commerce has needed for years.',
+    photo_url:
+      'https://res.cloudinary.com/dagqxe3fh/image/upload/v1788824778/510267066_1788823516534214_xexcun.jpg',
   },
 ];
 
@@ -135,16 +135,28 @@ export default function EcosystemSocialProof() {
     async function loadTestimonials() {
       const { data, error } = await supabase
         .from('testimonials')
-        .select('id, customer_name, role, testimonial, photo_url')
+        .select('id, customer_name, role, testimonial, photo_url, display_order')
         .eq('published', true)
-        .order('display_order', { ascending: true })
-        .limit(3);
+        .order('display_order', { ascending: true });
 
       if (!error && data && data.length > 0) {
-        // Map Supabase testimonials with fallback photos/brands
-        const mapped = data.map((t, idx) => {
-          const fallback = FALLBACK_TESTIMONIALS[idx % FALLBACK_TESTIMONIALS.length];
-          // Extract brand if role contains "at <Brand>"
+        // Deduplicate rows by customer_name to prevent double rendering of the same client
+        const seenNames = new Set<string>();
+        const uniqueData: typeof data = [];
+        for (const item of data) {
+          const nameKey = (item.customer_name || '').trim().toLowerCase();
+          if (nameKey && seenNames.has(nameKey)) continue;
+          if (nameKey) seenNames.add(nameKey);
+          uniqueData.push(item);
+        }
+
+        const mapped = uniqueData.map((t, idx) => {
+          const firstName = (t.customer_name || '').trim().toLowerCase().split(' ')[0];
+          const fallbackByName = FALLBACK_TESTIMONIALS.find((f) =>
+            f.customer_name.toLowerCase().startsWith(firstName)
+          );
+          const fallback = fallbackByName || FALLBACK_TESTIMONIALS[idx % FALLBACK_TESTIMONIALS.length];
+
           let roleTitle = t.role || fallback.role || '';
           let brandName = fallback.brand || 'CLIENT';
           if (roleTitle.includes(' at ')) {
@@ -166,7 +178,25 @@ export default function EcosystemSocialProof() {
             photo_url: t.photo_url || fallback.photo_url,
           };
         });
-        setTestimonials(mapped);
+
+        // Ensure 3 distinct cards are present
+        const result = [...mapped];
+        for (const fb of FALLBACK_TESTIMONIALS) {
+          if (result.length >= 3) break;
+          const fbFirstName = fb.customer_name.toLowerCase().split(' ')[0];
+          if (!result.some((r) => r.customer_name.toLowerCase().includes(fbFirstName))) {
+            result.push({
+              id: fb.id,
+              customer_name: fb.customer_name,
+              role: fb.role || 'Verified Client',
+              brand: fb.brand || 'CLIENT',
+              testimonial: fb.testimonial,
+              photo_url: fb.photo_url || '',
+            });
+          }
+        }
+
+        setTestimonials(result.slice(0, 3));
       }
     }
     void loadTestimonials();
@@ -514,7 +544,9 @@ export default function EcosystemSocialProof() {
                     className="testimonial-photo"
                     src={
                       t.photo_url ||
-                      FALLBACK_TESTIMONIALS[idx % FALLBACK_TESTIMONIALS.length].photo_url
+                      (FALLBACK_TESTIMONIALS.find((f) =>
+                        f.customer_name.toLowerCase().startsWith((t.customer_name || '').trim().toLowerCase().split(' ')[0])
+                      ) || FALLBACK_TESTIMONIALS[idx % FALLBACK_TESTIMONIALS.length]).photo_url
                     }
                     alt={t.customer_name}
                     onError={(e) => {

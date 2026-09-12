@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from './supabase';
+import { verifyBotToken } from './turnstileClient';
 
 export interface Profile {
   id: string;
@@ -39,6 +40,8 @@ interface AuthContextType {
   ) => Promise<{ error: string | null; requiresEmailConfirmation?: boolean }>;
   signInWithGoogle: () => Promise<{ error: string | null }>;
   signInWithApple: () => Promise<{ error: string | null }>;
+  requestPasswordReset: (email: string) => Promise<{ error: string | null }>;
+  updatePassword: (newPassword: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
@@ -140,19 +143,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, newSession) => {
+      (event, newSession) => {
         if (!mounted) return;
         setSession(newSession);
         setUser(newSession?.user ?? null);
+        setIsLoading(false);
 
         if (newSession?.user) {
-          const p = await fetchProfile(newSession.user.id, newSession.user.email);
-          if (mounted) setProfile(p);
+          // Fetch profile asynchronously without blocking session state resolution
+          fetchProfile(newSession.user.id, newSession.user.email).then((p) => {
+            if (mounted && p) setProfile(p);
+          });
         } else {
           setProfile(null);
         }
-
-        setIsLoading(false);
       }
     );
 
@@ -162,40 +166,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [fetchProfile]);
 
-  const verifyBotToken = async (token: string | null) => {
-    // No widget configured (local dev) — skip server check.
-    if (!token) {
-      const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-      if (!siteKey) return true;
-      return false;
-    }
-    try {
-      const res = await fetch('/api/verify-turnstile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token }),
-      });
-      if (!res.ok) return false;
-      const data = await res.json();
-      return data.ok === true;
-    } catch {
-      return false;
-    }
-  };
-
   const signInWithEmail = async (
     email: string,
     password: string,
     turnstileToken?: string | null
   ) => {
     try {
-      const botOk = await verifyBotToken(turnstileToken ?? null);
+      // Parallelize bot verification and Supabase authentication request for instant response
+      const [botOk, authRes] = await Promise.all([
+        verifyBotToken(turnstileToken ?? null),
+        supabase.auth.signInWithPassword({ email, password }),
+      ]);
+
       if (!botOk) return { error: 'Bot verification failed. Please try again.' };
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) return { error: error.message };
+      if (authRes.error) return { error: authRes.error.message };
+
       closeAuthModal();
       return { error: null };
     } catch (err: any) {
@@ -210,26 +195,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     turnstileToken?: string | null
   ) => {
     try {
-      const botOk = await verifyBotToken(turnstileToken ?? null);
-      if (!botOk) return { error: 'Bot verification failed. Please try again.' };
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
       const emailRedirectTo = origin ? `${origin}/account` : undefined;
 
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName,
+      // Parallelize bot verification and Supabase account creation request for instant response
+      const [botOk, authRes] = await Promise.all([
+        verifyBotToken(turnstileToken ?? null),
+        supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { full_name: fullName },
+            emailRedirectTo,
           },
-          emailRedirectTo,
-        },
-      });
+        }),
+      ]);
 
-      if (error) return { error: error.message };
+      if (!botOk) return { error: 'Bot verification failed. Please try again.' };
+      if (authRes.error) return { error: authRes.error.message };
 
-      // Check if email confirmation is required
-      const requiresEmailConfirmation = !data.session;
+      const requiresEmailConfirmation = !authRes.data.session;
       if (!requiresEmailConfirmation) {
         closeAuthModal();
       }
@@ -285,6 +270,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const requestPasswordReset = async (email: string) => {
+    try {
+      const redirectTo =
+        typeof window !== 'undefined'
+          ? `${window.location.origin}/auth/reset-password`
+          : undefined;
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo,
+      });
+      if (error) return { error: error.message };
+      return { error: null };
+    } catch (err: any) {
+      return { error: err.message || 'Unable to send reset email' };
+    }
+  };
+
+  const updatePassword = async (newPassword: string) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+      if (error) return { error: error.message };
+      return { error: null };
+    } catch (err: any) {
+      return { error: err.message || 'Unable to update password' };
+    }
+  };
+
   const isAdmin =
     profile?.role === 'admin' ||
     user?.email === 'oillusionmiracle@gmail.com' ||
@@ -307,6 +320,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signUpWithEmail,
         signInWithGoogle,
         signInWithApple,
+        requestPasswordReset,
+        updatePassword,
         signOut,
         refreshProfile,
       }}

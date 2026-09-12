@@ -254,7 +254,7 @@ export default function OrderPage() {
 
     const currentProduct = matchProductForSubService(subService, dbProducts);
 
-    const authoritativeRef = await submitServerOrder({
+    const authoritativeRef = (await submitServerOrder({
       userId: user?.id,
       contact,
       subService: subService!,
@@ -268,7 +268,7 @@ export default function OrderPage() {
       deposit,
       payFull,
       fallbackOrderRef,
-    });
+    })) || fallbackOrderRef;
 
     setSubmittedRef(authoritativeRef);
 

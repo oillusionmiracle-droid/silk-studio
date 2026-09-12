@@ -6,6 +6,7 @@ import FinalCTA from '@/components/FinalCTA';
 import GSAPTitle from '@/components/GSAPTitle';
 import { usePageContent } from '@/lib/usePageContent';
 
+
 function ScrambleText({ finalNumber, suffix }: { finalNumber: number; suffix: string }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-50px' });

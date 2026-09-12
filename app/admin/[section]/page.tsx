@@ -130,12 +130,15 @@ export default function AdminSectionPage() {
     async function loadRows() {
       setIsLoading(true);
       setError(null);
+      const isDisplayOrderTable = config.table === 'testimonials' || config.table === 'faq_items';
       const orderColumn = config.table === 'page_content'
         ? 'updated_at'
         : config.table === 'newsletter_subscribers'
           ? 'subscribed_at'
-          : 'created_at';
-      let request = supabase.from(config.table).select('*').order(orderColumn, { ascending: false });
+          : isDisplayOrderTable
+            ? 'display_order'
+            : 'created_at';
+      let request = supabase.from(config.table).select('*').order(orderColumn, { ascending: isDisplayOrderTable });
       if (config.page) request = request.eq('page', config.page);
       const { data, error: queryError } = await request;
       if (queryError) setError(queryError.message);
@@ -174,18 +177,18 @@ export default function AdminSectionPage() {
             published: true,
           },
           {
-            customer_name: 'Babajide O.',
-            role: 'Head of Brand at Studio Trace',
-            testimonial: 'They handle our high-volume production with total precision. From large-format event billboards to corporate apparel, their 48-hour dispatch system is something Lagos commerce has needed for years.',
-            photo_url: 'https://res.cloudinary.com/dagqxe3fh/image/upload/v1788824778/510267066_1788823516534214_xexcun.jpg',
-            display_order: 2,
-            published: true,
-          },
-          {
             customer_name: 'Chidinma E.',
             role: 'Founder at Lumina Brands',
             testimonial: 'Beyond the physical prints, having them handle our web design and automated customer workflows changed how our brand operates online. They bridge the gap between creative design and serious tech.',
             photo_url: 'https://res.cloudinary.com/dagqxe3fh/image/upload/v1788824777/912323983_1788823117159588_e0cnx9.jpg',
+            display_order: 2,
+            published: true,
+          },
+          {
+            customer_name: 'Babajide O.',
+            role: 'Head of Brand at Studio Trace',
+            testimonial: 'They handle our high-volume production with total precision. From large-format event billboards to corporate apparel, their 48-hour dispatch system is something Lagos commerce has needed for years.',
+            photo_url: 'https://res.cloudinary.com/dagqxe3fh/image/upload/v1788824778/510267066_1788823516534214_xexcun.jpg',
             display_order: 3,
             published: true,
           },
