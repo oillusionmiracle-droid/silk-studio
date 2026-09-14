@@ -85,24 +85,56 @@ export default function Footer() {
 
   useEffect(() => {
     let ctx: any;
+    let fallbackTimer: NodeJS.Timeout;
     const load = async () => {
-      const { default: gsap } = await import('gsap');
-      const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-      gsap.registerPlugin(ScrollTrigger);
-      ctx = gsap.context(() => {
-        if (!colsRef.current) return;
-        gsap.fromTo(
-          colsRef.current.querySelectorAll<HTMLElement>('.footer-col'),
-          { opacity: 0, y: 24 },
-          {
-            opacity: 1, y: 0, duration: 0.65, stagger: 0.1, ease: 'power3.out',
-            scrollTrigger: { trigger: colsRef.current, start: 'top 90%', once: true },
-          }
-        );
-      });
+      try {
+        const { default: gsap } = await import('gsap');
+        const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+        gsap.registerPlugin(ScrollTrigger);
+        ctx = gsap.context(() => {
+          if (!colsRef.current) return;
+          const cols = colsRef.current.querySelectorAll<HTMLElement>('.footer-col');
+          gsap.fromTo(
+            cols,
+            { opacity: 0, y: 24 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.65,
+              stagger: 0.1,
+              ease: 'power3.out',
+              scrollTrigger: { trigger: colsRef.current, start: 'top 95%', once: true },
+            }
+          );
+          setTimeout(() => ScrollTrigger.refresh(), 500);
+        });
+      } catch (err) {
+        // Fallback if GSAP fails to load
+        if (colsRef.current) {
+          const cols = colsRef.current.querySelectorAll<HTMLElement>('.footer-col');
+          cols.forEach(el => { el.style.opacity = '1'; el.style.transform = 'none'; });
+        }
+      }
     };
     load();
-    return () => ctx?.revert();
+
+    // Safety fallback timer to ensure footer columns never remain permanently hidden (opacity 0)
+    fallbackTimer = setTimeout(() => {
+      if (colsRef.current) {
+        const cols = colsRef.current.querySelectorAll<HTMLElement>('.footer-col');
+        cols.forEach(el => {
+          if (getComputedStyle(el).opacity === '0') {
+            el.style.opacity = '1';
+            el.style.transform = 'none';
+          }
+        });
+      }
+    }, 1500);
+
+    return () => {
+      ctx?.revert();
+      clearTimeout(fallbackTimer);
+    };
   }, []);
 
   // Hide main footer on apparel routes — apparel has its own footer

@@ -21,7 +21,7 @@ import ProductConfiguration from '@/components/order/ProductConfiguration';
 import OrderDetailsForm from '@/components/order/OrderDetailsForm';
 import PricingSummary from '@/components/order/PricingSummary';
 import OrderConfirmation from '@/components/order/OrderConfirmation';
-import { Package } from 'lucide-react';
+import { Package, Sun, Moon } from 'lucide-react';
 
 const INITIAL_SPECS: OrderSpecs = {
   size: 'A5',
@@ -53,6 +53,7 @@ const INITIAL_CONTACT: ContactInfo = {
 
 export default function OrderPage() {
   const { user, profile, openAuthModal } = useAuth();
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedRef, setSubmittedRef] = useState('');
   const [category, setCategory] = useState<string | null>(null);
@@ -99,11 +100,6 @@ export default function OrderPage() {
   // Fetch active database catalog
   useEffect(() => {
     async function loadDbCatalog() {
-      // NOTE: Using .neq('is_active', false) instead of .eq('is_active', true)
-      // because the is_active column may be NULL on many products (it was added
-      // via CREATE TABLE but the table already existed, so the column defaulted
-      // to NULL rather than true for existing rows).
-      // neq(false) matches both TRUE and NULL — so all real products are included.
       const { data: productsData } = await supabase
         .from('products')
         .select('*')
@@ -122,13 +118,9 @@ export default function OrderPage() {
     void loadDbCatalog();
   }, []);
 
-  // Shop-apparel categories (lowercase single-word) belong ONLY to the /apparel
-  // store. They must never appear as tiles or sub-services on the /order page.
+  // Shop-apparel categories belong ONLY to /apparel
   const SHOP_ONLY_CATEGORIES = ['tee', 'shirt', 'hoodie', 'cap'];
 
-  // Map uppercase DB service categories onto the canonical default tiles so the
-  // seeded order-service rows (PRINT/APPAREL/DESIGN/WEB/BUNDLES) fold into the
-  // existing Print/Apparel/Design/Web/Bundle tiles instead of creating duplicates.
   const DB_CATEGORY_TO_TILE: Record<string, string> = {
     PRINT: 'Print',
     APPAREL: 'Apparel',
@@ -136,11 +128,11 @@ export default function OrderPage() {
     WEB: 'Web',
     BUNDLES: 'Bundle',
   };
-  const mapCategoryToTile = (category: string) =>
-    DB_CATEGORY_TO_TILE[category.toUpperCase()] ||
-    category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+  const mapCategoryToTile = (cat: string) =>
+    DB_CATEGORY_TO_TILE[cat.toUpperCase()] ||
+    cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase();
 
-  // Dynamically map categories: start from the static catalog, overlay DB rows.
+  // Dynamically map categories
   const activeCategories = useMemo(() => {
     const catMap = new Map<string, OrderCategoryItem>();
     DEFAULT_CATEGORIES.forEach((c) => catMap.set(c.id, c));
@@ -162,7 +154,7 @@ export default function OrderPage() {
     return Array.from(catMap.values());
   }, [dbProducts]);
 
-  // Dynamically map sub-services: start from the static catalog, overlay DB rows.
+  // Dynamically map sub-services
   const activeSubServices = useMemo(() => {
     const map: Record<string, string[]> = {};
     Object.keys(DEFAULT_SUB_SERVICES).forEach((cat) => {
@@ -173,7 +165,6 @@ export default function OrderPage() {
       if (!cat || SHOP_ONLY_CATEGORIES.includes(cat.toLowerCase())) return;
       const formattedCat = mapCategoryToTile(cat);
       if (!map[formattedCat]) map[formattedCat] = [];
-      // Use title or name — some products only have one of the two
       const productName = p.title || (p as any).name || '';
       if (productName && !map[formattedCat].includes(productName)) {
         map[formattedCat].push(productName);
@@ -339,76 +330,86 @@ export default function OrderPage() {
     );
   }
 
+  const isDark = theme === 'dark';
+
   return (
     <div
       style={{
         minHeight: '100vh',
+        backgroundColor: isDark ? '#09090b' : '#f4f4f6',
+        color: isDark ? '#ffffff' : '#111827',
         position: 'relative',
-        background: 'url(/images/order-bg.jpg) center/cover no-repeat',
-        overflow: 'hidden',
+        transition: 'background-color 0.25s ease, color 0.25s ease',
       }}
     >
       <div
         style={{
-          position: 'absolute',
-          inset: 0,
-          backdropFilter: 'blur(12px)',
-          backgroundColor: 'rgba(13,13,13,0.85)',
-          zIndex: 0,
-        }}
-      />
-      <div
-        style={{
+          maxWidth: 1040,
+          margin: '0 auto',
+          padding: isMobile ? '80px 16px 140px' : '110px 24px 120px',
           position: 'relative',
           zIndex: 1,
-          maxWidth: isMobile ? '100%' : 1200,
-          margin: '0 auto',
-          padding: isMobile ? '100px 16px 80px' : '140px 24px 60px',
         }}
       >
-        {/* HEADER */}
-        <div style={{ marginBottom: isMobile ? 32 : 60, textAlign: 'center' }}>
+        {/* TOP HEADER - CLEAN "What do you need?" & THEME TOGGLE */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: isMobile ? 24 : 36,
+          }}
+        >
           <h1
             style={{
-              fontFamily: 'var(--font-jakarta)',
-              fontWeight: 900,
-              fontSize: isMobile ? 36 : 56,
-              lineHeight: 1.1,
-              letterSpacing: '-1px',
-              color: '#ffffff',
-              marginBottom: 16,
+              fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+              fontWeight: 800,
+              fontSize: isMobile ? 28 : 42,
+              letterSpacing: '-1.5px',
+              color: isDark ? '#ffffff' : '#000000',
+              margin: 0,
             }}
           >
-            Tell us what you need.
+            What do you need?
           </h1>
-          <p
+
+          {/* Theme Toggle Button */}
+          <button
+            type="button"
+            aria-label="Toggle theme"
+            onClick={() => setTheme(isDark ? 'light' : 'dark')}
             style={{
-              fontFamily: 'var(--font-general)',
-              fontSize: 16,
-              color: 'rgba(255,255,255,0.7)',
-              lineHeight: 1.6,
-              maxWidth: 600,
-              margin: '0 auto',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+              border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)'}`,
+              color: isDark ? '#ffffff' : '#000000',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
             }}
           >
-            Fill this in and we&apos;ll reach out within 2 hours. Deposit locks your slot.
-          </p>
+            {isDark ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
         </div>
 
-        {/* MAIN FORM */}
-        <div style={{ maxWidth: isMobile ? '100%' : 800, margin: isMobile ? '0' : '0 auto' }}>
+        {/* ORDER BUILDER FORM */}
+        <div>
           <ProductSelector
             categories={activeCategories}
             subServices={activeSubServices}
             category={category}
             subService={subService}
             isMobile={isMobile}
+            theme={theme}
             onSelectCategory={(catId) => {
               setCategory(catId);
               setSubService(null);
             }}
             onSelectSubService={(sub) => {
-              // Letterheads start at 50 units minimum.
               if (sub === 'Letterheads') {
                 setSpecs((prev) => ({
                   ...prev,
@@ -426,6 +427,7 @@ export default function OrderPage() {
                 subService={subService}
                 specs={specs}
                 isMobile={isMobile}
+                theme={theme}
                 totalApparelQty={totalApparelQty}
                 onUpdateSpec={updateSpec}
                 onUpdateApparelSize={updateApparelSize}
@@ -435,6 +437,7 @@ export default function OrderPage() {
                 specs={specs}
                 contact={contact}
                 isMobile={isMobile}
+                theme={theme}
                 onUpdateSpec={updateSpec}
                 onUpdateContact={updateContact}
                 onUploadReference={(url) => setReferenceFileUrl(url)}
@@ -455,6 +458,7 @@ export default function OrderPage() {
         totalApparelQty={totalApparelQty}
         contact={contact}
         summaryOpen={summaryOpen}
+        theme={theme}
         setSummaryOpen={setSummaryOpen}
         setPayFull={setPayFull}
         onSubmit={handleSubmit}

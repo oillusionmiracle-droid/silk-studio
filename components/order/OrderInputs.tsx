@@ -1,34 +1,59 @@
 'use client';
 
 import React from 'react';
+import { motion } from 'framer-motion';
+
+interface ThemeProps {
+  theme?: 'dark' | 'light';
+}
 
 export function SpecField({
   label,
   children,
   flex,
+  badge,
+  theme = 'dark',
 }: {
   label: string;
   children: React.ReactNode;
   flex?: boolean;
+  badge?: string;
+  theme?: 'dark' | 'light';
 }) {
+  const isDark = theme === 'dark';
   return (
-    <div style={{ flex: flex ? '1' : 'auto' }}>
-      <p
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10,
-          letterSpacing: 3,
-          textTransform: 'uppercase',
-          color: '#888',
-          marginBottom: 10,
-          margin: 0,
-        }}
-      >
-        {label}
-      </p>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 10 }}>
-        {children}
+    <div style={{ flex: flex ? '1 1 200px' : '1 1 100%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <p
+          style={{
+            fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+            fontSize: 12,
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            letterSpacing: 1,
+            color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)',
+            margin: 0,
+          }}
+        >
+          {label}
+        </p>
+        {badge && (
+          <span
+            style={{
+              fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+              fontSize: 11,
+              fontWeight: 600,
+              color: isDark ? '#ffffff' : '#000000',
+              backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)',
+              padding: '2px 8px',
+              borderRadius: 6,
+            }}
+          >
+            {badge}
+          </span>
+        )}
       </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>{children}</div>
     </div>
   );
 }
@@ -37,30 +62,63 @@ export function Pill({
   label,
   isActive,
   onClick,
+  subtitle,
+  theme = 'dark',
 }: {
   label: string;
   isActive: boolean;
   onClick: () => void;
+  subtitle?: string;
+  theme?: 'dark' | 'light';
 }) {
+  const isDark = theme === 'dark';
+
+  let bg = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)';
+  let border = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)';
+  let color = isDark ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.8)';
+
+  if (isActive) {
+    bg = isDark ? '#ffffff' : '#000000';
+    border = isDark ? '#ffffff' : '#000000';
+    color = isDark ? '#000000' : '#ffffff';
+  }
+
   return (
-    <button
+    <motion.button
       type="button"
+      whileTap={{ scale: 0.96 }}
       onClick={onClick}
       style={{
-        padding: '10px 16px',
+        padding: subtitle ? '8px 16px' : '10px 18px',
         borderRadius: 100,
-        border: `1px solid ${isActive ? '#C6FF33' : 'rgba(255,255,255,0.15)'}`,
-        backgroundColor: isActive ? 'rgba(198,255,51,0.12)' : 'rgba(255,255,255,0.05)',
-        color: isActive ? '#C6FF33' : 'rgba(255,255,255,0.7)',
-        fontFamily: 'var(--font-general)',
+        border: `1.5px solid ${border}`,
+        backgroundColor: bg,
+        color: color,
+        fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
         fontSize: 13,
-        fontWeight: isActive ? 600 : 400,
+        fontWeight: isActive ? 700 : 500,
         cursor: 'pointer',
-        transition: 'all 0.2s',
+        transition: 'all 0.2s ease',
+        display: 'inline-flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        outline: 'none',
       }}
     >
-      {label}
-    </button>
+      <span>{label}</span>
+      {subtitle && (
+        <span
+          style={{
+            fontSize: 10,
+            opacity: 0.75,
+            marginTop: 2,
+          }}
+        >
+          {subtitle}
+        </span>
+      )}
+    </motion.button>
   );
 }
 
@@ -70,13 +128,17 @@ export function QtyInput({
   step,
   onChange,
   quickVals,
+  theme = 'dark',
 }: {
   value: number;
   min: number;
   step: number;
   onChange: (v: number) => void;
   quickVals?: number[];
+  theme?: 'dark' | 'light';
 }) {
+  const isDark = theme === 'dark';
+
   return (
     <div style={{ width: '100%' }}>
       <div
@@ -85,24 +147,36 @@ export function QtyInput({
           alignItems: 'center',
           gap: 0,
           width: 'fit-content',
-          marginBottom: quickVals ? 12 : 0,
+          backgroundColor: isDark ? '#17171a' : '#ffffff',
+          borderRadius: 12,
+          border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`,
+          overflow: 'hidden',
+          marginBottom: quickVals ? 10 : 0,
+          boxShadow: isDark ? 'none' : '0 2px 8px rgba(0,0,0,0.04)',
         }}
       >
         <button
           type="button"
           onClick={() => onChange(Math.max(min, value - step))}
           style={{
-            width: 38,
-            height: 38,
-            borderRadius: '8px 0 0 8px',
-            border: '1px solid rgba(255,255,255,0.15)',
-            borderRight: 'none',
-            backgroundColor: 'rgba(255,255,255,0.05)',
+            width: 44,
+            height: 44,
+            border: 'none',
+            backgroundColor: 'transparent',
             cursor: 'pointer',
-            fontFamily: 'var(--font-jakarta)',
-            fontSize: 18,
-            color: '#fff',
+            fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+            fontSize: 20,
+            fontWeight: 700,
+            color: isDark ? '#ffffff' : '#000000',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'background-color 0.15s',
           }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)')
+          }
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
         >
           −
         </button>
@@ -111,19 +185,19 @@ export function QtyInput({
           min={min}
           step={step}
           value={value}
-          onChange={(e) => onChange(Math.max(min, parseInt(e.target.value) || min))}
+          onChange={(e) => onChange(Math.max(min, parseInt(e.target.value, 10) || min))}
           style={{
-            width: 80,
+            width: 90,
             textAlign: 'center',
-            padding: '8px 6px',
-            border: '1px solid rgba(255,255,255,0.15)',
-            borderLeft: 'none',
-            borderRight: 'none',
-            backgroundColor: 'rgba(255,255,255,0.05)',
-            color: '#ffffff',
-            fontFamily: 'var(--font-jakarta)',
+            padding: '10px 8px',
+            border: 'none',
+            borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+            borderRight: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+            backgroundColor: 'transparent',
+            color: isDark ? '#ffffff' : '#000000',
+            fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
             fontWeight: 700,
-            fontSize: 15,
+            fontSize: 16,
             outline: 'none',
           }}
         />
@@ -131,43 +205,75 @@ export function QtyInput({
           type="button"
           onClick={() => onChange(value + step)}
           style={{
-            width: 38,
-            height: 38,
-            borderRadius: '0 8px 8px 0',
-            border: '1px solid rgba(255,255,255,0.15)',
-            borderLeft: 'none',
-            backgroundColor: 'rgba(255,255,255,0.05)',
+            width: 44,
+            height: 44,
+            border: 'none',
+            backgroundColor: 'transparent',
             cursor: 'pointer',
-            fontFamily: 'var(--font-jakarta)',
-            fontSize: 18,
-            color: '#fff',
+            fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+            fontSize: 20,
+            fontWeight: 700,
+            color: isDark ? '#ffffff' : '#000000',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'background-color 0.15s',
           }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)')
+          }
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
         >
           +
         </button>
       </div>
+
       {quickVals && (
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {quickVals.map((q) => (
-            <button
-              key={q}
-              type="button"
-              onClick={() => onChange(q)}
-              style={{
-                padding: '6px 12px',
-                borderRadius: 100,
-                border: `1px solid ${value === q ? '#C6FF33' : 'rgba(255,255,255,0.15)'}`,
-                backgroundColor: value === q ? 'rgba(198,255,51,0.12)' : 'rgba(255,255,255,0.05)',
-                color: value === q ? '#C6FF33' : 'rgba(255,255,255,0.7)',
-                fontFamily: 'var(--font-general)',
-                fontSize: 12,
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-              }}
-            >
-              {q.toLocaleString()}
-            </button>
-          ))}
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {quickVals.map((q) => {
+            const isSelected = value === q;
+            return (
+              <button
+                key={q}
+                type="button"
+                onClick={() => onChange(q)}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: 100,
+                  border: `1px solid ${
+                    isSelected
+                      ? isDark
+                        ? '#ffffff'
+                        : '#000000'
+                      : isDark
+                      ? 'rgba(255,255,255,0.1)'
+                      : 'rgba(0,0,0,0.1)'
+                  }`,
+                  backgroundColor: isSelected
+                    ? isDark
+                      ? '#ffffff'
+                      : '#000000'
+                    : isDark
+                    ? 'rgba(255,255,255,0.04)'
+                    : 'rgba(0,0,0,0.03)',
+                  color: isSelected
+                    ? isDark
+                      ? '#000000'
+                      : '#ffffff'
+                    : isDark
+                    ? 'rgba(255,255,255,0.7)'
+                    : 'rgba(0,0,0,0.7)',
+                  fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+                  fontSize: 11,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {q.toLocaleString()}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
@@ -179,25 +285,32 @@ export function FormInput({
   value,
   onChange,
   type = 'text',
+  placeholder = '',
   flex,
+  theme = 'dark',
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   type?: string;
+  placeholder?: string;
   flex?: boolean;
+  theme?: 'dark' | 'light';
 }) {
+  const isDark = theme === 'dark';
+
   return (
-    <div style={{ flex: flex ? '1 1 160px' : '1 1 100%' }}>
+    <div style={{ flex: flex ? '1 1 200px' : '1 1 100%' }}>
       <label
         style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10,
-          letterSpacing: 3,
+          fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+          fontSize: 12,
+          fontWeight: 600,
           textTransform: 'uppercase',
-          color: '#888',
+          letterSpacing: 1,
+          color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)',
           display: 'block',
-          marginBottom: 10,
+          marginBottom: 8,
         }}
       >
         {label}
@@ -205,27 +318,26 @@ export function FormInput({
       <input
         type={type}
         value={value}
+        placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        style={
-          {
-            width: '100%',
-            padding: '12px 14px',
-            backgroundColor: 'rgba(255,255,255,0.05)',
-            border: '1px solid rgba(255,255,255,0.15)',
-            borderRadius: 10,
-            color: '#ffffff',
-            fontFamily: 'var(--font-general)',
-            fontSize: 14,
-            outline: 'none',
-            boxSizing: 'border-box',
-            transition: 'border-color 0.2s',
-          } as React.CSSProperties
-        }
+        style={{
+          width: '100%',
+          padding: '12px 16px',
+          backgroundColor: isDark ? '#17171a' : '#ffffff',
+          border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`,
+          borderRadius: 12,
+          color: isDark ? '#ffffff' : '#000000',
+          fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+          fontSize: 14,
+          outline: 'none',
+          boxSizing: 'border-box',
+          transition: 'border-color 0.2s, box-shadow 0.2s',
+        }}
         onFocus={(e) => {
-          (e.currentTarget as HTMLInputElement).style.borderColor = '#C6FF33';
+          e.currentTarget.style.borderColor = isDark ? '#ffffff' : '#000000';
         }}
         onBlur={(e) => {
-          (e.currentTarget as HTMLInputElement).style.borderColor = 'rgba(255,255,255,0.15)';
+          e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)';
         }}
       />
     </div>

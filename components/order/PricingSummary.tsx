@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ContactInfo, OrderSpecs } from '@/lib/order/types';
-import { SERVICE_ICONS } from './ProductSelector';
+import { X, ArrowRight } from 'lucide-react';
 
 interface PricingSummaryProps {
   isMobile: boolean;
@@ -16,6 +16,7 @@ interface PricingSummaryProps {
   totalApparelQty: number;
   contact: ContactInfo;
   summaryOpen: boolean;
+  theme?: 'dark' | 'light';
   setSummaryOpen: (open: boolean) => void;
   setPayFull: (payFull: boolean) => void;
   onSubmit: () => void;
@@ -32,53 +33,89 @@ export default function PricingSummary({
   totalApparelQty,
   contact,
   summaryOpen,
+  theme = 'dark',
   setSummaryOpen,
   setPayFull,
   onSubmit,
 }: PricingSummaryProps) {
   if (!subService) return null;
 
+  const isDark = theme === 'dark';
+  const isFormComplete = Boolean(contact.firstName?.trim() && contact.whatsapp?.trim());
+
+  const getQuantityText = () => {
+    if (['Custom T-Shirts', 'Sweatshirts', 'Grey Joggers', 'Hoodies'].includes(subService)) {
+      return `${totalApparelQty} pcs`;
+    }
+    if (subService === 'Banners') {
+      return `${specs.quantity} unit(s) • ${(specs.width * specs.height).toFixed(1)} sq ft`;
+    }
+    return `${specs.quantity.toLocaleString()} units`;
+  };
+
   return (
     <>
-      {/* MOBILE SUMMARY SHEET */}
+      {/* MOBILE FLOATING CTA BAR - WHITE CLEAN BUTTON */}
       {isMobile && (
         <>
-          {/* Floating Button */}
           <div
             style={{
               position: 'fixed',
-              bottom: 24,
+              bottom: 'calc(80px + env(safe-area-inset-bottom, 0px))',
               left: '50%',
               transform: 'translateX(-50%)',
-              zIndex: 50,
+              zIndex: 8001,
               width: 'calc(100% - 32px)',
-              maxWidth: 320,
+              maxWidth: 400,
             }}
           >
             <motion.button
               type="button"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => setSummaryOpen(true)}
               style={{
                 width: '100%',
-                padding: '12px 24px',
-                backgroundColor: '#0D0D0D',
-                color: '#C6FF33',
+                padding: '16px 22px',
+                backgroundColor: isDark ? '#ffffff' : '#000000',
+                color: isDark ? '#000000' : '#ffffff',
                 border: 'none',
                 borderRadius: 100,
-                fontFamily: 'var(--font-jakarta)',
+                fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
                 fontWeight: 700,
-                fontSize: 14,
+                fontSize: 15,
                 cursor: 'pointer',
-                boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                boxShadow: isDark
+                  ? '0 12px 32px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.3)'
+                  : '0 12px 32px rgba(0,0,0,0.18)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
               }}
             >
-              View Order Summary
+              <div>
+                <span style={{ letterSpacing: '-0.3px', fontWeight: 800 }}>
+                  {isCustomQuote ? 'Order Summary' : `Deposit: ₦${deposit.toLocaleString()}`}
+                </span>
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  opacity: 0.8,
+                }}
+              >
+                <span>Details</span>
+                <ArrowRight size={14} strokeWidth={2.5} />
+              </div>
             </motion.button>
           </div>
 
-          {/* Modal Sheet */}
+          {/* MOBILE BOTTOM SHEET MODAL */}
           <AnimatePresence>
             {summaryOpen && (
               <>
@@ -91,401 +128,288 @@ export default function PricingSummary({
                   style={{
                     position: 'fixed',
                     inset: 0,
-                    zIndex: 55,
-                    backgroundColor: 'rgba(0,0,0,0.4)',
+                    zIndex: 9000,
+                    backgroundColor: 'rgba(0,0,0,0.75)',
+                    backdropFilter: 'blur(8px)',
                   }}
                 />
 
-                {/* Sheet */}
+                {/* Sheet Content */}
                 <motion.div
                   initial={{ y: '100%' }}
                   animate={{ y: 0 }}
                   exit={{ y: '100%' }}
-                  transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                  transition={{ type: 'spring', damping: 28, stiffness: 320 }}
                   style={{
                     position: 'fixed',
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    zIndex: 56,
-                    backgroundColor: '#111111',
-                    borderTop: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: '20px 20px 0 0',
-                    padding: 24,
-                    maxHeight: '85vh',
+                    zIndex: 9001,
+                    backgroundColor: isDark ? '#141416' : '#ffffff',
+                    borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)'}`,
+                    borderRadius: '24px 24px 0 0',
+                    padding: '20px 20px calc(30px + env(safe-area-inset-bottom, 0px))',
+                    maxHeight: '90vh',
                     overflowY: 'auto',
-                    boxShadow: '0 -4px 24px rgba(0,0,0,0.08)',
+                    boxShadow: '0 -10px 40px rgba(0,0,0,0.5)',
                   }}
                 >
-                  {/* Handle bar + Close button */}
+                  {/* Handle bar & Close */}
                   <div
                     style={{
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      marginBottom: 20,
+                      marginBottom: 18,
                     }}
                   >
                     <div
                       style={{
-                        width: 40,
+                        width: 44,
                         height: 4,
-                        backgroundColor: '#e0e0e0',
-                        borderRadius: 2,
+                        backgroundColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+                        borderRadius: 4,
+                        margin: '0 auto',
+                        transform: 'translateX(16px)',
                       }}
                     />
                     <button
                       type="button"
+                      aria-label="Close summary"
                       onClick={() => setSummaryOpen(false)}
                       style={{
-                        background: 'none',
+                        background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
                         border: 'none',
                         cursor: 'pointer',
-                        fontSize: 24,
-                        color: '#999',
-                        padding: '0 8px',
-                        height: 32,
+                        color: isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)',
                         width: 32,
+                        height: 32,
+                        borderRadius: '50%',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
                     >
-                      ✕
+                      <X size={16} />
                     </button>
                   </div>
 
-                  <p
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                      letterSpacing: 3,
-                      textTransform: 'uppercase',
-                      color: '#999',
-                      marginBottom: 18,
-                      margin: 0,
-                    }}
-                  >
-                    ORDER SUMMARY
-                  </p>
+                  <div style={{ marginBottom: 16 }}>
+                    <p
+                      style={{
+                        fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+                        fontWeight: 700,
+                        fontSize: 18,
+                        color: isDark ? '#ffffff' : '#000000',
+                        margin: 0,
+                      }}
+                    >
+                      {subService}
+                    </p>
+                  </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                    <div>
-                      <p
+                  {/* Pricing Display */}
+                  {!isCustomQuote ? (
+                    <div
+                      style={{
+                        backgroundColor: isDark ? '#1a1a1e' : '#f9fafb',
+                        border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+                        borderRadius: 18,
+                        padding: 18,
+                        marginBottom: 16,
+                      }}
+                    >
+                      <div
                         style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 9,
-                          letterSpacing: 2,
-                          textTransform: 'uppercase',
-                          color: '#aaa',
-                          margin: 0,
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginBottom: 12,
+                          paddingBottom: 12,
+                          borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
                         }}
                       >
-                        Service
-                      </p>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
-                        <span style={{ fontSize: 20 }}>{SERVICE_ICONS[subService] || '✨'}</span>
-                        <p
+                        <span
                           style={{
-                            fontFamily: 'var(--font-general)',
-                            fontSize: 15,
-                            fontWeight: 600,
-                            color: '#ffffff',
-                            margin: 0,
+                            fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+                            fontSize: 13,
+                            color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)',
                           }}
                         >
-                          {subService}
-                        </p>
+                          Quantity
+                        </span>
+                        <span
+                          style={{
+                            fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+                            fontSize: 13,
+                            fontWeight: 700,
+                            color: isDark ? '#ffffff' : '#000000',
+                          }}
+                        >
+                          {getQuantityText()}
+                        </span>
                       </div>
-                    </div>
 
-                    {!isCustomQuote && (
-                      <>
-                        <div style={{ borderTop: '1px solid #e0e0e0', paddingTop: 12 }}>
-                          <p
-                            style={{
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 9,
-                              letterSpacing: 2,
-                              textTransform: 'uppercase',
-                              color: '#aaa',
-                              margin: 0,
-                            }}
-                          >
-                            Quantity
-                          </p>
-                          <p
-                            style={{
-                              fontFamily: 'var(--font-general)',
-                              fontSize: 15,
-                              color: '#333',
-                              margin: '6px 0 0 0',
-                            }}
-                          >
-                            {['Custom T-Shirts', 'Sweatshirts', 'Grey Joggers', 'Hoodies'].includes(
-                              subService
-                            )
-                              ? `${totalApparelQty} pcs`
-                              : `${specs.quantity}`}
-                          </p>
-                        </div>
-
-                        <div
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'baseline',
+                          marginBottom: 8,
+                        }}
+                      >
+                        <span
                           style={{
-                            backgroundColor: 'rgba(255,255,255,0.05)',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            borderRadius: 12,
-                            padding: '16px',
-                            textAlign: 'center',
+                            fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+                            fontSize: 13,
+                            color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)',
                           }}
                         >
-                          <p
-                            style={{
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 10,
-                              letterSpacing: 2,
-                              textTransform: 'uppercase',
-                              color: '#999',
-                              margin: 0,
-                            }}
-                          >
-                            Total
-                          </p>
-                          <p
-                            style={{
-                              fontFamily: 'var(--font-jakarta)',
-                              fontWeight: 700,
-                              fontSize: 28,
-                              color: '#ffffff',
-                              margin: '6px 0 0 0',
-                            }}
-                          >
-                            ₦{total.toLocaleString()}
-                          </p>
-                        </div>
-
-                        <div
+                          Total
+                        </span>
+                        <span
                           style={{
-                            backgroundColor: payFull ? 'rgba(255,255,255,0.05)' : '#C6FF33',
-                            borderRadius: 12,
-                            padding: '12px',
-                            textAlign: 'center',
-                            border: payFull ? '1px solid rgba(255,255,255,0.1)' : 'none',
+                            fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+                            fontWeight: 800,
+                            fontSize: 20,
+                            color: isDark ? '#ffffff' : '#000000',
                           }}
                         >
-                          <div
-                            style={{
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                              alignItems: 'center',
-                              marginBottom: 4,
-                            }}
-                          >
-                            <p
-                              style={{
-                                fontFamily: 'var(--font-mono)',
-                                fontSize: 10,
-                                letterSpacing: 2,
-                                textTransform: 'uppercase',
-                                color: payFull ? '#aaa' : '#0D0D0D',
-                                margin: 0,
-                              }}
-                            >
-                              Deposit (75%)
-                            </p>
-                            <label
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 4,
-                                cursor: 'pointer',
-                                fontFamily: 'var(--font-general)',
-                                fontSize: 12,
-                                color: payFull ? '#aaa' : '#0D0D0D',
-                              }}
-                            >
-                              <input
-                                type="checkbox"
-                                checked={payFull}
-                                onChange={(e) => setPayFull(e.target.checked)}
-                                style={{ accentColor: payFull ? '#C6FF33' : '#000' }}
-                              />{' '}
-                              Pay full
-                            </label>
-                          </div>
+                          ₦{total.toLocaleString()}
+                        </span>
+                      </div>
+
+                      {/* Deposit Box */}
+                      <div
+                        style={{
+                          marginTop: 12,
+                          padding: '14px 16px',
+                          borderRadius: 14,
+                          backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+                          border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                        }}
+                      >
+                        <div>
                           <p
                             style={{
-                              fontFamily: 'var(--font-jakarta)',
+                              fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+                              fontSize: 11,
+                              fontWeight: 600,
+                              letterSpacing: 1,
+                              textTransform: 'uppercase',
+                              color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)',
+                              margin: '0 0 2px',
+                            }}
+                          >
+                            Due Today (75% Deposit)
+                          </p>
+                          <p
+                            style={{
+                              fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
                               fontWeight: 900,
                               fontSize: 24,
-                              color: payFull ? 'rgba(255,255,255,0.3)' : '#0D0D0D',
-                              margin: 0,
+                              color: isDark
+                                ? payFull
+                                  ? 'rgba(255,255,255,0.3)'
+                                  : '#ffffff'
+                                : payFull
+                                ? 'rgba(0,0,0,0.3)'
+                                : '#000000',
                               textDecoration: payFull ? 'line-through' : 'none',
-                              textAlign: 'left',
+                              margin: 0,
                             }}
                           >
                             ₦{deposit.toLocaleString()}
                           </p>
                         </div>
-                      </>
-                    )}
 
-                    {isCustomQuote && (
-                      <div
-                        style={{
-                          backgroundColor: '#f0f0f0',
-                          borderRadius: 12,
-                          padding: '12px',
-                          textAlign: 'center',
-                        }}
-                      >
-                        <p
+                        <label
                           style={{
-                            fontFamily: 'var(--font-general)',
-                            fontSize: 13,
-                            color: '#666',
-                            lineHeight: 1.5,
-                            margin: 0,
-                          }}
-                        >
-                          Custom quote — we&apos;ll send pricing within 2hrs.
-                        </p>
-                      </div>
-                    )}
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
-                      {[
-                        '75% deposit required',
-                        '1 free revision',
-                        'WhatsApp updates',
-                        'Within 2 hours',
-                      ].map((line) => (
-                        <div
-                          key={line}
-                          style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13 }}
-                        >
-                          <div
-                            style={{
-                              width: 16,
-                              height: 16,
-                              borderRadius: '50%',
-                              backgroundColor: '#C6FF33',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              flexShrink: 0,
-                            }}
-                          >
-                            <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-                              <polyline
-                                points="2 6 5 9 10 3"
-                                stroke="#0D0D0D"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </div>
-                          <span
-                            style={{
-                              fontFamily: 'var(--font-general)',
-                              fontSize: 13,
-                              color: 'rgba(255,255,255,0.7)',
-                            }}
-                          >
-                            {line}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {contact.firstName && contact.whatsapp && (
-                      <motion.button
-                        type="button"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        onClick={() => {
-                          onSubmit();
-                          setSummaryOpen(false);
-                        }}
-                        style={{
-                          width: '100%',
-                          padding: '16px 24px',
-                          backgroundColor: '#0D0D0D',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: 12,
-                          fontFamily: 'var(--font-jakarta)',
-                          fontWeight: 700,
-                          fontSize: 15,
-                          cursor: 'pointer',
-                          marginTop: 12,
-                          transition: 'all 0.2s',
-                        }}
-                        onMouseEnter={(e) => {
-                          (e.currentTarget as HTMLButtonElement).style.opacity = '0.9';
-                        }}
-                        onMouseLeave={(e) => {
-                          (e.currentTarget as HTMLButtonElement).style.opacity = '1';
-                        }}
-                      >
-                        {isCustomQuote
-                          ? 'Submit Brief →'
-                          : payFull
-                          ? 'Pay Full Amount →'
-                          : 'Pay Deposit →'}
-                      </motion.button>
-                    )}
-
-                    {(!contact.firstName || !contact.whatsapp) && (
-                      <div
-                        style={{
-                          backgroundColor: 'rgba(255, 193, 7, 0.1)',
-                          borderRadius: 12,
-                          padding: '12px',
-                          textAlign: 'center',
-                        }}
-                      >
-                        <p
-                          style={{
-                            fontFamily: 'var(--font-general)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            cursor: 'pointer',
+                            backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                            padding: '6px 12px',
+                            borderRadius: 100,
                             fontSize: 12,
-                            color: '#ffc107',
-                            margin: 0,
+                            fontWeight: 600,
+                            color: isDark ? '#ffffff' : '#000000',
+                            fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
                           }}
                         >
-                          Complete your info to submit
-                        </p>
+                          <input
+                            type="checkbox"
+                            checked={payFull}
+                            onChange={(e) => setPayFull(e.target.checked)}
+                          />
+                          Pay 100%
+                        </label>
                       </div>
-                    )}
+                    </div>
+                  ) : null}
 
-                    <button
+                  {/* Action CTA */}
+                  {isFormComplete ? (
+                    <motion.button
                       type="button"
-                      onClick={() => setSummaryOpen(false)}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        setSummaryOpen(false);
+                        onSubmit();
+                      }}
                       style={{
                         width: '100%',
-                        padding: '12px 24px',
-                        backgroundColor: 'rgba(255,255,255,0.05)',
-                        color: 'rgba(255,255,255,0.7)',
+                        padding: '16px 24px',
+                        backgroundColor: isDark ? '#ffffff' : '#000000',
+                        color: isDark ? '#000000' : '#ffffff',
                         border: 'none',
-                        borderRadius: 12,
-                        fontFamily: 'var(--font-jakarta)',
-                        fontWeight: 600,
-                        fontSize: 14,
+                        borderRadius: 14,
+                        fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+                        fontWeight: 800,
+                        fontSize: 15,
                         cursor: 'pointer',
-                        marginTop: 8,
-                        transition: 'all 0.2s',
-                      }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#e0e0e0';
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#f5f5f5';
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                       }}
                     >
-                      ← Back to Edit
-                    </button>
-                  </div>
+                      <span>
+                        {isCustomQuote
+                          ? 'Send Brief to Studio'
+                          : payFull
+                          ? `Pay Full ₦${total.toLocaleString()}`
+                          : `Pay Deposit ₦${deposit.toLocaleString()}`}
+                      </span>
+                    </motion.button>
+                  ) : (
+                    <div
+                      style={{
+                        backgroundColor: isDark ? 'rgba(255, 193, 7, 0.1)' : 'rgba(255, 193, 7, 0.15)',
+                        border: '1px solid rgba(255, 193, 7, 0.3)',
+                        borderRadius: 12,
+                        padding: '12px 16px',
+                        textAlign: 'center',
+                      }}
+                    >
+                      <p
+                        style={{
+                          fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+                          fontSize: 13,
+                          color: '#d97706',
+                          margin: 0,
+                          fontWeight: 600,
+                        }}
+                      >
+                        Please enter your Name and WhatsApp to continue
+                      </p>
+                    </div>
+                  )}
                 </motion.div>
               </>
             )}
@@ -493,200 +417,189 @@ export default function PricingSummary({
         </>
       )}
 
-      {/* DESKTOP STICKY SUMMARY */}
+      {/* DESKTOP FLOATING DOCK */}
       {!isMobile && (
         <div
           style={{
             position: 'fixed',
-            bottom: 0,
+            bottom: 24,
             left: 0,
             right: 0,
-            width: '100%',
             zIndex: 40,
-            padding: '16px',
+            padding: '0 24px',
+            pointerEvents: 'none',
           }}
         >
           <div
             style={{
-              backgroundColor: 'rgba(25,25,25,0.6)',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 20,
-              padding: 24,
-              boxShadow: '0 -4px 24px rgba(0,0,0,0.08)',
-              maxWidth: 1200,
+              maxWidth: 1000,
               margin: '0 auto',
+              backgroundColor: isDark ? 'rgba(20, 20, 24, 0.94)' : 'rgba(255, 255, 255, 0.94)',
+              backdropFilter: 'blur(20px)',
+              border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)'}`,
+              borderRadius: 20,
+              padding: '14px 24px',
+              boxShadow: isDark ? '0 20px 50px rgba(0,0,0,0.7)' : '0 20px 50px rgba(0,0,0,0.12)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 20,
+              pointerEvents: 'auto',
             }}
           >
-            <div
-              style={{
-                display: 'flex',
-                gap: 24,
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <div>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    letterSpacing: 2,
-                    textTransform: 'uppercase',
-                    color: '#aaa',
-                    margin: 0,
-                  }}
-                >
-                  Service
-                </p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
-                  <span style={{ fontSize: 20 }}>{SERVICE_ICONS[subService] || '✨'}</span>
+            {/* Left: Service pill */}
+            <div>
+              <p
+                style={{
+                  fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+                  fontWeight: 700,
+                  fontSize: 15,
+                  color: isDark ? '#ffffff' : '#000000',
+                  margin: '0 0 2px',
+                }}
+              >
+                {subService}
+              </p>
+              <p
+                style={{
+                  fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+                  fontSize: 12,
+                  color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
+                  margin: 0,
+                }}
+              >
+                {getQuantityText()}
+              </p>
+            </div>
+
+            {/* Middle: Pricing Breakdown */}
+            {!isCustomQuote ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+                <div>
                   <p
                     style={{
-                      fontFamily: 'var(--font-general)',
-                      fontSize: 15,
-                      fontWeight: 600,
-                      color: '#ffffff',
+                      fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+                      fontSize: 11,
+                      letterSpacing: 1,
+                      textTransform: 'uppercase',
+                      color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
+                      margin: '0 0 2px',
+                    }}
+                  >
+                    Total
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+                      fontWeight: 700,
+                      fontSize: 16,
+                      color: isDark ? '#ffffff' : '#000000',
                       margin: 0,
                     }}
                   >
-                    {subService}
+                    ₦{total.toLocaleString()}
                   </p>
                 </div>
-              </div>
 
-              {!isCustomQuote && (
-                <>
-                  <div>
+                <div
+                  style={{
+                    width: 1,
+                    height: 28,
+                    backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                  }}
+                />
+
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
                     <p
                       style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 9,
-                        letterSpacing: 2,
+                        fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+                        fontSize: 11,
+                        letterSpacing: 1,
                         textTransform: 'uppercase',
-                        color: '#aaa',
+                        color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
                         margin: 0,
+                        fontWeight: 600,
                       }}
                     >
-                      Total
+                      {payFull ? 'Full Payment' : '75% Deposit'}
                     </p>
-                    <p
-                      style={{
-                        fontFamily: 'var(--font-jakarta)',
-                        fontWeight: 900,
-                        fontSize: 20,
-                        color: payFull ? '#C6FF33' : '#ffffff',
-                        margin: '6px 0 0 0',
-                      }}
-                    >
-                      ₦{total.toLocaleString()}
-                    </p>
-                  </div>
-                  <div>
-                    <div
+                    <label
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 8,
-                        marginBottom: 6,
+                        gap: 4,
+                        cursor: 'pointer',
+                        fontSize: 11,
+                        color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)',
+                        fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
                       }}
                     >
-                      <p
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 9,
-                          letterSpacing: 2,
-                          textTransform: 'uppercase',
-                          color: '#aaa',
-                          margin: 0,
-                        }}
-                      >
-                        Deposit (75%)
-                      </p>
-                      <label
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 4,
-                          cursor: 'pointer',
-                          fontFamily: 'var(--font-general)',
-                          fontSize: 12,
-                          color: '#aaa',
-                        }}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={payFull}
-                          onChange={(e) => setPayFull(e.target.checked)}
-                          style={{ accentColor: '#C6FF33' }}
-                        />{' '}
-                        Pay full
-                      </label>
-                    </div>
-                    <p
-                      style={{
-                        fontFamily: 'var(--font-jakarta)',
-                        fontWeight: 900,
-                        fontSize: 20,
-                        color: payFull ? '#aaa' : '#C6FF33',
-                        margin: '0',
-                        textDecoration: payFull ? 'line-through' : 'none',
-                      }}
-                    >
-                      ₦{deposit.toLocaleString()}
-                    </p>
+                      <input
+                        type="checkbox"
+                        checked={payFull}
+                        onChange={(e) => setPayFull(e.target.checked)}
+                      />
+                      100%
+                    </label>
                   </div>
-                </>
-              )}
+                  <p
+                    style={{
+                      fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+                      fontWeight: 800,
+                      fontSize: 20,
+                      color: isDark ? '#ffffff' : '#000000',
+                      margin: 0,
+                    }}
+                  >
+                    ₦{(payFull ? total : deposit).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            ) : null}
 
-              {isCustomQuote && (
-                <p
-                  style={{
-                    fontFamily: 'var(--font-general)',
-                    fontSize: 13,
-                    color: '#666',
-                    margin: 0,
-                    flex: 1,
-                    textAlign: 'center',
-                  }}
-                >
-                  Custom quote incoming
-                </p>
-              )}
-
-              {contact.firstName && contact.whatsapp && (
-                <button
-                  type="button"
-                  onClick={onSubmit}
-                  style={{
-                    padding: '12px 28px',
-                    backgroundColor: '#0D0D0D',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 12,
-                    fontFamily: 'var(--font-jakarta)',
-                    fontWeight: 700,
-                    fontSize: 14,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    whiteSpace: 'nowrap',
-                    flexShrink: 0,
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.opacity = '0.9';
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.opacity = '1';
-                  }}
-                >
-                  {isCustomQuote
-                    ? 'Submit Brief →'
-                    : payFull
-                    ? 'Pay Full Amount →'
-                    : 'Pay Deposit →'}
-                </button>
-              )}
-            </div>
+            {/* Right: Submit Button */}
+            {isFormComplete ? (
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={onSubmit}
+                style={{
+                  padding: '12px 28px',
+                  backgroundColor: isDark ? '#ffffff' : '#000000',
+                  color: isDark ? '#000000' : '#ffffff',
+                  border: 'none',
+                  borderRadius: 12,
+                  fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+                  fontWeight: 700,
+                  fontSize: 14,
+                  cursor: 'pointer',
+                  boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.4)' : '0 4px 20px rgba(0,0,0,0.1)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {isCustomQuote
+                  ? 'Submit Brief'
+                  : payFull
+                  ? `Pay Full ₦${total.toLocaleString()}`
+                  : `Pay Deposit ₦${deposit.toLocaleString()}`}
+              </motion.button>
+            ) : (
+              <span
+                style={{
+                  fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
+                  fontSize: 12,
+                  color: '#d97706',
+                  backgroundColor: isDark ? 'rgba(255, 193, 7, 0.08)' : 'rgba(255, 193, 7, 0.12)',
+                  padding: '8px 16px',
+                  borderRadius: 10,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Enter Name & WhatsApp to submit
+              </span>
+            )}
           </div>
         </div>
       )}
