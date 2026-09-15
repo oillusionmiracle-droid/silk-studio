@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UploadCloud, FileText, CheckCircle2, AlertCircle, X, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '@/lib/AuthContext';
 
 interface ReferenceUploadProps {
   onUpload: (url: string) => void;
@@ -11,6 +12,7 @@ interface ReferenceUploadProps {
 }
 
 export default function ReferenceUpload({ onUpload, currentUrls = [] }: ReferenceUploadProps) {
+  const { user, openAuthModal } = useAuth();
   const [files, setFiles] = useState<{ name: string; url: string; size?: number }[]>(
     currentUrls.map((url, idx) => ({ name: `Reference ${idx + 1}`, url }))
   );
@@ -19,8 +21,23 @@ export default function ReferenceUpload({ onUpload, currentUrls = [] }: Referenc
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const handleContainerClick = () => {
+    if (isUploading) return;
+    if (!user) {
+      openAuthModal('sign_up');
+      return;
+    }
+    fileInputRef.current?.click();
+  };
+
   const handleFileSelect = async (fileList: FileList | null) => {
     if (!fileList || fileList.length === 0) return;
+
+    if (!user) {
+      openAuthModal('sign_up');
+      return;
+    }
+
     const file = fileList[0];
 
     // Client-side validation: 20MB limit
@@ -51,6 +68,11 @@ export default function ReferenceUpload({ onUpload, currentUrls = [] }: Referenc
       });
 
       const data = await res.json();
+
+      if (res.status === 401) {
+        openAuthModal('sign_up');
+        return;
+      }
 
       if (!res.ok || !data.secure_url) {
         throw new Error(data.error || 'Upload failed. Please try again.');
@@ -94,7 +116,7 @@ export default function ReferenceUpload({ onUpload, currentUrls = [] }: Referenc
       <motion.div
         whileHover={{ scale: 1.005 }}
         whileTap={{ scale: 0.995 }}
-        onClick={() => !isUploading && fileInputRef.current?.click()}
+        onClick={handleContainerClick}
         onDragOver={(e) => {
           e.preventDefault();
           setIsDragging(true);
@@ -103,6 +125,10 @@ export default function ReferenceUpload({ onUpload, currentUrls = [] }: Referenc
         onDrop={(e) => {
           e.preventDefault();
           setIsDragging(false);
+          if (!user) {
+            openAuthModal('sign_up');
+            return;
+          }
           handleFileSelect(e.dataTransfer.files);
         }}
         className={`relative w-full rounded-2xl border-2 border-dashed p-8 text-center cursor-pointer transition-colors duration-200 backdrop-blur-xl ${

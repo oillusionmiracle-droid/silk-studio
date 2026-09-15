@@ -54,7 +54,7 @@ export const SERVICE_IMAGE_MAP: Record<string, { primary: string; fallbacks: str
     primary: '/images/services/id-cards.png',
     fallbacks: ['/images/services/id-cards.jpg', '/images/id-cards.png'],
     subtitle: 'Durable PVC & RFID corporate cards',
-    startingPrice: 'From ₦1,500/pc',
+    startingPrice: 'From ₦4,500/pc',
   },
   'Business Cards': {
     primary: '/images/services/business-cards.png',
