@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ContactInfo, OrderSpecs } from '@/lib/order/types';
 import { X, ArrowRight } from 'lucide-react';
 
+import LiquidGlassButton from './LiquidGlassButton';
+
 interface PricingSummaryProps {
   isMobile: boolean;
   subService: string | null;
@@ -55,47 +57,32 @@ export default function PricingSummary({
 
   return (
     <>
-      {/* MOBILE FLOATING CTA BAR - WHITE CLEAN BUTTON */}
+      {/* MOBILE FLOATING CTA BAR - LIQUID FLUID GLASS */}
       {isMobile && (
         <>
           <div
             style={{
               position: 'fixed',
-              bottom: 'calc(80px + env(safe-area-inset-bottom, 0px))',
+              bottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
               left: '50%',
               transform: 'translateX(-50%)',
               zIndex: 8001,
               width: 'calc(100% - 32px)',
-              maxWidth: 400,
+              maxWidth: 420,
             }}
           >
-            <motion.button
-              type="button"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              whileTap={{ scale: 0.97 }}
+            <LiquidGlassButton
               onClick={() => setSummaryOpen(true)}
+              theme={theme}
+              isDark={isDark}
               style={{
-                width: '100%',
-                padding: '16px 22px',
-                backgroundColor: isDark ? '#ffffff' : '#000000',
-                color: isDark ? '#000000' : '#ffffff',
-                border: 'none',
-                borderRadius: 100,
                 fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
                 fontWeight: 700,
                 fontSize: 15,
-                cursor: 'pointer',
-                boxShadow: isDark
-                  ? '0 12px 32px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.3)'
-                  : '0 12px 32px rgba(0,0,0,0.18)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
               }}
             >
               <div>
-                <span style={{ letterSpacing: '-0.3px', fontWeight: 800 }}>
+                <span style={{ letterSpacing: '-0.3px', fontWeight: 800, fontSize: 15 }}>
                   {isCustomQuote ? 'Order Summary' : `Deposit: ₦${deposit.toLocaleString()}`}
                 </span>
               </div>
@@ -103,16 +90,19 @@ export default function PricingSummary({
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 4,
+                  gap: 6,
                   fontSize: 13,
-                  fontWeight: 600,
-                  opacity: 0.8,
+                  fontWeight: 700,
+                  backgroundColor: isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.08)',
+                  padding: '6px 14px',
+                  borderRadius: 100,
+                  border: isDark ? '1px solid rgba(255,255,255,0.25)' : '1px solid rgba(0,0,0,0.12)',
                 }}
               >
-                <span>Details</span>
+                <span>Checkout</span>
                 <ArrowRight size={14} strokeWidth={2.5} />
               </div>
-            </motion.button>
+            </LiquidGlassButton>
           </div>
 
           {/* MOBILE BOTTOM SHEET MODAL */}

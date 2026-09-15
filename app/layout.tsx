@@ -5,6 +5,7 @@ import "@/app/globals.css";
 import { AuthProvider } from '@/lib/AuthContext';
 import { CartProvider } from '@/lib/CartContext';
 import { WishlistProvider } from '@/lib/WishlistContext';
+import { OrderThemeProvider } from '@/lib/OrderThemeContext';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -128,16 +129,18 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
-              <LoadingScreen />
-              <Navbar />
-              {children}
-              <AuthSheet />
-              <Footer />
-              <WhatsAppButton />
-              <CustomCursor />
-              <MobileBottomNav />
-              <GeminiAssistant />
-              <SpeedInsights />
+              <OrderThemeProvider>
+                <LoadingScreen />
+                <Navbar />
+                {children}
+                <AuthSheet />
+                <Footer />
+                <WhatsAppButton />
+                <CustomCursor />
+                <MobileBottomNav />
+                <GeminiAssistant />
+                <SpeedInsights />
+              </OrderThemeProvider>
             </WishlistProvider>
           </CartProvider>
         </AuthProvider>

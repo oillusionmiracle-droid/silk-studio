@@ -5,8 +5,8 @@ import { usePathname } from 'next/navigation';
 export default function WhatsAppButton() {
   const pathname = usePathname();
 
-  // Hide on apparel section per user request
-  if (pathname?.startsWith('/apparel')) {
+  // Hide on apparel and order sections to prevent UI obstruction
+  if (pathname?.startsWith('/apparel') || pathname?.startsWith('/order')) {
     return null;
   }
 

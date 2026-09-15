@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Sun, Moon } from 'lucide-react';
 import AccountMenu from '@/components/auth/AccountMenu';
+import { useOrderTheme } from '@/lib/OrderThemeContext';
 
 const navLinks = [
   { label: 'Home', href: '/' },
@@ -18,6 +20,9 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const { orderTheme, toggleOrderTheme } = useOrderTheme();
+  const isOrderPage = pathname === '/order';
+  const isOrderLight = isOrderPage && orderTheme === 'light';
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -50,11 +55,21 @@ export default function Navbar() {
           right: 0,
           zIndex: 1000,
           height: 64,
-          backgroundColor: scrolled ? 'rgba(13, 13, 13, 0.92)' : 'transparent',
-          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
-          backdropFilter: scrolled ? 'blur(20px)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
-          transition: 'background-color 0.5s ease, border-color 0.5s ease, backdrop-filter 0.5s ease',
+          backgroundColor: isOrderLight
+            ? scrolled
+              ? 'rgba(255, 255, 255, 0.94)'
+              : 'rgba(244, 244, 246, 0.85)'
+            : scrolled
+            ? 'rgba(13, 13, 13, 0.92)'
+            : 'transparent',
+          borderBottom: isOrderLight
+            ? '1px solid rgba(0, 0, 0, 0.08)'
+            : scrolled
+            ? '1px solid rgba(255, 255, 255, 0.08)'
+            : '1px solid transparent',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          transition: 'background-color 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease',
           display: 'flex',
           alignItems: 'center',
           padding: '0 clamp(20px, 5vw, 48px)',
@@ -66,14 +81,22 @@ export default function Navbar() {
             src="/logo-white.svg"
             alt="Silk Studio"
             height={34}
-            style={{ height: 34, width: 'auto', display: 'block', flexShrink: 0 }}
+            style={{
+              height: 34,
+              width: 'auto',
+              display: 'block',
+              flexShrink: 0,
+              filter: isOrderLight ? 'invert(1)' : 'none',
+              transition: 'filter 0.3s ease',
+            }}
           />
           <span style={{
             fontFamily: 'var(--font-jakarta)',
             fontSize: 17,
             fontWeight: 700,
-            color: '#ffffff',
+            color: isOrderLight ? '#000000' : '#ffffff',
             letterSpacing: '-0.3px',
+            transition: 'color 0.3s ease',
           }}>
             Silk Studio
           </span>
@@ -100,13 +123,13 @@ export default function Navbar() {
                 fontFamily: 'var(--font-jakarta)',
                 fontSize: 14,
                 fontWeight: 500,
-                color: 'rgba(255,255,255,0.6)',
+                color: isOrderLight ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.6)',
                 textDecoration: 'none',
                 letterSpacing: '0.2px',
                 transition: 'color 0.25s ease',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = '#ffffff')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
+              onMouseEnter={(e) => (e.currentTarget.style.color = isOrderLight ? '#000000' : '#ffffff')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = isOrderLight ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.6)')}
             >
               {link.label}
             </Link>
@@ -115,41 +138,73 @@ export default function Navbar() {
 
         {/* Right CTA */}
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* Light/Dark Mode Toggle on Navbar - ONLY for /order page */}
+          {isOrderPage && (
+            <button
+              type="button"
+              aria-label="Toggle theme"
+              onClick={toggleOrderTheme}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 38,
+                height: 38,
+                borderRadius: '50%',
+                backgroundColor: isOrderLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)',
+                border: `1px solid ${isOrderLight ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.14)'}`,
+                color: isOrderLight ? '#000000' : '#ffffff',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.08)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+            >
+              {orderTheme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+            </button>
+          )}
+
           <AccountMenu />
-          <Link
-            href="/order"
-            className="hidden md:inline-flex"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              padding: '10px 28px',
-              fontSize: 13,
-              fontFamily: 'var(--font-jakarta)',
-              fontWeight: 700,
-              color: '#0D0D0D',
-              background: 'linear-gradient(180deg, #D4FF4D 0%, #C6FF33 100%)',
-              borderRadius: 100,
-              textDecoration: 'none',
-              border: 'none',
-              transition: 'transform 0.2s ease, box-shadow 0.3s ease, background 0.2s ease',
-              whiteSpace: 'nowrap',
-              letterSpacing: '0.3px',
-            }}
-            onMouseEnter={(e) => {
-              const el = e.currentTarget as HTMLElement;
-              el.style.transform = 'scale(1.05)';
-              el.style.boxShadow = '0 8px 32px rgba(198,255,51,0.4)';
-              el.style.background = 'linear-gradient(180deg, #E5FF80 0%, #D4FF4D 100%)';
-            }}
-            onMouseLeave={(e) => {
-              const el = e.currentTarget as HTMLElement;
-              el.style.transform = 'scale(1)';
-              el.style.boxShadow = 'none';
-              el.style.background = 'linear-gradient(180deg, #D4FF4D 0%, #C6FF33 100%)';
-            }}
-          >
-            Start Your Order
-          </Link>
+          {!isOrderPage && (
+            <Link
+              href="/order"
+              className="hidden md:inline-flex"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '10px 28px',
+                fontSize: 13,
+                fontFamily: 'var(--font-jakarta)',
+                fontWeight: 700,
+                color: '#0D0D0D',
+                background: 'linear-gradient(180deg, #D4FF4D 0%, #C6FF33 100%)',
+                borderRadius: 100,
+                textDecoration: 'none',
+                border: 'none',
+                transition: 'transform 0.2s ease, box-shadow 0.3s ease, background 0.2s ease',
+                whiteSpace: 'nowrap',
+                letterSpacing: '0.3px',
+              }}
+              onMouseEnter={(e) => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.transform = 'scale(1.05)';
+                el.style.boxShadow = '0 8px 32px rgba(198,255,51,0.4)';
+                el.style.background = 'linear-gradient(180deg, #E5FF80 0%, #D4FF4D 100%)';
+              }}
+              onMouseLeave={(e) => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.transform = 'scale(1)';
+                el.style.boxShadow = 'none';
+                el.style.background = 'linear-gradient(180deg, #D4FF4D 0%, #C6FF33 100%)';
+              }}
+            >
+              Start Your Order
+            </Link>
+          )}
 
           {/* Hamburger */}
           <button
@@ -166,8 +221,8 @@ export default function Navbar() {
             }}
             aria-label="Toggle menu"
           >
-            <span style={{ width: 22, height: 2, background: menuOpen ? '#C6FF33' : '#fff', display: 'block', transition: 'transform 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6)', transform: menuOpen ? 'translateY(3.5px) rotate(45deg)' : 'none' }} />
-            <span style={{ width: 22, height: 2, background: menuOpen ? '#C6FF33' : '#fff', display: 'block', transition: 'transform 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6)', transform: menuOpen ? 'translateY(-3.5px) rotate(-45deg)' : 'none' }} />
+            <span style={{ width: 22, height: 2, background: menuOpen ? '#C6FF33' : isOrderLight ? '#000' : '#fff', display: 'block', transition: 'transform 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6)', transform: menuOpen ? 'translateY(3.5px) rotate(45deg)' : 'none' }} />
+            <span style={{ width: 22, height: 2, background: menuOpen ? '#C6FF33' : isOrderLight ? '#000' : '#fff', display: 'block', transition: 'transform 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6)', transform: menuOpen ? 'translateY(-3.5px) rotate(-45deg)' : 'none' }} />
           </button>
         </div>
       </nav>

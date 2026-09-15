@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { calculateDynamicPricing, matchProductForSubService, type DbProduct, type DbVariant } from '@/lib/pricing';
@@ -21,7 +21,8 @@ import ProductConfiguration from '@/components/order/ProductConfiguration';
 import OrderDetailsForm from '@/components/order/OrderDetailsForm';
 import PricingSummary from '@/components/order/PricingSummary';
 import OrderConfirmation from '@/components/order/OrderConfirmation';
-import { Package, Sun, Moon } from 'lucide-react';
+import { Package } from 'lucide-react';
+import { useOrderTheme } from '@/lib/OrderThemeContext';
 
 const INITIAL_SPECS: OrderSpecs = {
   size: 'A5',
@@ -53,11 +54,13 @@ const INITIAL_CONTACT: ContactInfo = {
 
 export default function OrderPage() {
   const { user, profile, openAuthModal } = useAuth();
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const { orderTheme, setOrderTheme } = useOrderTheme();
+  const theme = orderTheme;
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedRef, setSubmittedRef] = useState('');
   const [category, setCategory] = useState<string | null>(null);
   const [subService, setSubService] = useState<string | null>(null);
+  const configSectionRef = useRef<HTMLDivElement>(null);
   const [referenceFileUrl, setReferenceFileUrl] = useState('');
   const [isMobile, setIsMobile] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(false);
@@ -351,49 +354,27 @@ export default function OrderPage() {
           zIndex: 1,
         }}
       >
-        {/* TOP HEADER - CLEAN "What do you need?" & THEME TOGGLE */}
+        {/* TOP HEADER - CENTRALIZED "What would you like to order?" */}
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: isMobile ? 24 : 36,
+            textAlign: 'center',
+            marginBottom: isMobile ? 28 : 44,
           }}
         >
           <h1
             style={{
               fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
               fontWeight: 800,
-              fontSize: isMobile ? 28 : 42,
+              fontSize: isMobile ? 30 : 44,
               letterSpacing: '-1.5px',
               color: isDark ? '#ffffff' : '#000000',
               margin: 0,
+              textAlign: 'center',
+              transition: 'color 0.2s ease',
             }}
           >
-            What do you need?
+            What would you like to order?
           </h1>
-
-          {/* Theme Toggle Button */}
-          <button
-            type="button"
-            aria-label="Toggle theme"
-            onClick={() => setTheme(isDark ? 'light' : 'dark')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 40,
-              height: 40,
-              borderRadius: '50%',
-              backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-              border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)'}`,
-              color: isDark ? '#ffffff' : '#000000',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            {isDark ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
         </div>
 
         {/* ORDER BUILDER FORM */}
@@ -418,11 +399,14 @@ export default function OrderPage() {
                 }));
               }
               setSubService(sub);
+              setTimeout(() => {
+                configSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }, 120);
             }}
           />
 
           {subService && (
-            <>
+            <div ref={configSectionRef} style={{ scrollMarginTop: 90 }}>
               <ProductConfiguration
                 subService={subService}
                 specs={specs}
@@ -442,7 +426,7 @@ export default function OrderPage() {
                 onUpdateContact={updateContact}
                 onUploadReference={(url) => setReferenceFileUrl(url)}
               />
-            </>
+            </div>
           )}
         </div>
       </div>

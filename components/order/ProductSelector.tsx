@@ -121,6 +121,16 @@ export default function ProductSelector({
   onSelectSubService,
 }: ProductSelectorProps) {
   const isDark = theme === 'dark';
+  const subServiceContainerRef = React.useRef<HTMLDivElement>(null);
+
+  const handleCategoryClick = (catId: string) => {
+    onSelectCategory(catId);
+    if (catId) {
+      setTimeout(() => {
+        subServiceContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+  };
 
   return (
     <div
@@ -189,7 +199,7 @@ export default function ProductSelector({
               whileHover={{ y: -4, scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
               transition={{ duration: 0.25, ease: 'easeOut' }}
-              onClick={() => onSelectCategory(cat.id)}
+              onClick={() => handleCategoryClick(cat.id)}
               style={{
                 position: 'relative',
                 padding: 0,
@@ -295,6 +305,7 @@ export default function ProductSelector({
         {category && subServices[category] && (
           <motion.div
             key={category}
+            ref={subServiceContainerRef}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
