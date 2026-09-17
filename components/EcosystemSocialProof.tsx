@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -247,7 +247,7 @@ export default function EcosystemSocialProof() {
               margin: '0 auto clamp(40px, 6vw, 64px) auto',
             }}
           >
-            Trusted by leading teams &amp; brands across Lagos
+            Powered by this trusted platforms engineered for Nigerians
           </h2>
 
           {/* 4 UP */}

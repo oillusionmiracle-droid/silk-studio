@@ -190,10 +190,13 @@ function HeroSection({ loaded, content }: { loaded: boolean; content: typeof HOM
           {/* Subtext */}
           <div className="hero-anim">
             <p style={{
-              fontFamily: 'var(--font-general)',
-              fontSize: 14,
-              color: 'rgba(255, 255, 255, 0.9)',
+              fontFamily: 'var(--font-jakarta)',
+              fontSize: 'clamp(16px, 2.2vw, 19px)',
+              fontWeight: 500,
+              letterSpacing: '-0.2px',
+              color: 'rgba(255, 255, 255, 0.95)',
               margin: '0 auto',
+              maxWidth: '680px',
             }}>
               {content.subtext}
             </p>
