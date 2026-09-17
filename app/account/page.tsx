@@ -39,6 +39,7 @@ import {
   Award,
   Bookmark,
   Zap,
+  Settings,
 } from 'lucide-react';
 
 interface OrderSummary {
