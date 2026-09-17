@@ -48,10 +48,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA] text-neutral-800">
+      <div className="min-h-screen flex items-center justify-center bg-[#F4F5F9] text-neutral-800 font-sans">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-7 w-7 animate-spin text-neutral-400 stroke-[2]" />
-          <p className="text-[13px] font-semibold text-neutral-500">
+          <Loader2 className="h-7 w-7 animate-spin text-neutral-500 stroke-[2]" />
+          <p className="text-[13px] font-semibold text-neutral-600">
             Validating Administrator Privileges...
           </p>
         </div>
@@ -61,17 +61,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (!user || !isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA] px-5 py-20 font-sans">
+      <div className="min-h-screen flex items-center justify-center bg-[#F4F5F9] px-5 py-20 font-sans">
         <motion.div
-          initial={{ scale: 0.85, opacity: 0, y: 15 }}
+          initial={{ scale: 0.9, opacity: 0, y: 15 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
-          transition={{ type: 'spring', damping: 18, stiffness: 280 }}
+          transition={{ type: 'spring', damping: 20, stiffness: 300 }}
           className="max-w-md w-full text-center rounded-[28px] border border-neutral-200/80 bg-white p-8 sm:p-10 shadow-xl"
         >
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-neutral-100 text-neutral-900 mb-5 shadow-inner">
-            <Lock className="h-6 w-6 stroke-[1.8]" />
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-50 text-[#5E17EB] mb-5 shadow-inner">
+            <Lock className="h-6 w-6 stroke-[2]" />
           </div>
-          <h2 className="text-[22px] font-bold tracking-tight text-neutral-900 mb-2">
+          <h2
+            style={{ fontFamily: 'var(--font-jakarta)' }}
+            className="text-[24px] font-extrabold text-neutral-900 tracking-tight mb-2"
+          >
             Admin Console Access
           </h2>
           <p className="text-[14px] text-neutral-500 leading-relaxed mb-6">
@@ -87,26 +90,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   const event = new CustomEvent('open-auth-modal', { detail: 'sign_in' });
                   window.dispatchEvent(event);
                 }}
-                className="w-full py-3.5 px-5 rounded-2xl bg-neutral-950 text-white text-[14px] font-bold tracking-tight hover:bg-neutral-800 transition-colors shadow-md cursor-pointer"
+                className="w-full py-3.5 px-5 rounded-2xl bg-[#5E17EB] hover:bg-[#4700D8] text-white text-[14px] font-bold tracking-tight transition-all shadow-md cursor-pointer"
               >
                 Sign In as Admin
               </button>
             ) : (
-              <p className="text-[13px] text-amber-600 font-medium bg-amber-50 rounded-xl p-3 border border-amber-200/60">
-                This account does not have administrator privileges. Please contact an existing studio administrator to grant access.
+              <p className="text-[13px] text-amber-700 font-semibold bg-amber-50 rounded-xl p-3 border border-amber-200">
+                This account does not have administrator privileges. Contact a studio admin to grant access.
               </p>
             )}
             <Link
               href="/account"
-              className="block w-full py-3 px-5 rounded-2xl border border-neutral-200 bg-neutral-50 text-neutral-700 text-[13px] font-semibold hover:bg-neutral-100 transition-colors"
+              className="block w-full py-3 px-5 rounded-2xl border border-neutral-200 bg-neutral-50 text-neutral-800 text-[13px] font-semibold hover:bg-neutral-100 transition-colors"
             >
               Go to Customer Profile
-            </Link>
-            <Link
-              href="/"
-              className="block text-[13px] font-medium text-neutral-400 hover:text-neutral-900 transition-colors"
-            >
-              ← Return to Storefront
             </Link>
           </div>
         </motion.div>
@@ -115,31 +112,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-[#07090E] text-neutral-100 font-sans antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
-      {/* ── Background Scrim & Glow ── */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-0 right-1/3 w-[700px] h-[700px] bg-cyan-600/10 rounded-full blur-[150px]" />
-        <div className="absolute bottom-10 left-10 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[150px]" />
-      </div>
-
+    <div className="min-h-screen bg-[#F4F5F9] text-neutral-900 font-sans antialiased">
       {/* ── Top Command Bar ── */}
-      <div className="sticky top-0 z-40 bg-[#090D14]/85 backdrop-blur-2xl border-b border-white/[0.08]">
+      <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-neutral-200/80">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 text-neutral-950 shadow-lg shadow-cyan-500/20">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#5E17EB] text-white shadow-md shadow-purple-600/20">
               <ShieldCheck className="h-5.5 w-5.5 stroke-[2.5]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-[15px] font-bold text-white tracking-tight">
+                <h1
+                  style={{ fontFamily: 'var(--font-jakarta)' }}
+                  className="text-[16px] font-extrabold text-neutral-900 tracking-tight"
+                >
                   Silk Command Center
                 </h1>
-                <span className="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
                   Live System
                 </span>
               </div>
-              <p className="text-[12px] text-neutral-400 hidden sm:block">
+              <p className="text-[12px] text-neutral-400 font-medium hidden sm:block">
                 {user.email}
               </p>
             </div>
@@ -148,13 +142,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex items-center gap-3">
             <Link
               href="/account"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-white/10 bg-white/5 text-[12px] font-semibold text-neutral-300 hover:bg-white/10 hover:text-white transition-all"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-neutral-200 bg-white text-[12px] font-semibold text-neutral-700 hover:bg-neutral-50 transition-all shadow-xs"
             >
               <span>Customer Profile</span>
             </Link>
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-neutral-950 text-[12px] font-bold hover:brightness-110 transition-all shadow-md shadow-cyan-500/15"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-neutral-950 text-white text-[12px] font-bold hover:bg-neutral-800 transition-all shadow-sm"
             >
               <ArrowLeft className="h-3.5 w-3.5 stroke-[2.5]" />
               <span className="hidden sm:inline">Exit to Storefront</span>
@@ -165,10 +159,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </div>
 
       {/* ── Main Command Container ── */}
-      <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Navigation Tabs (Scrollable Command Pills) */}
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Navigation Tabs (Scrollable Segmented Pills) */}
         <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar">
-          <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl shadow-2xl">
+          <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-white border border-neutral-200/80 shadow-sm">
             {ADMIN_NAV.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -176,21 +170,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-200 whitespace-nowrap ${
+                  className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 whitespace-nowrap ${
                     isActive
-                      ? 'text-white font-semibold'
-                      : 'text-neutral-400 hover:text-white hover:bg-white/[0.04]'
+                      ? 'text-[#5E17EB] font-bold'
+                      : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-50'
                   }`}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="admin-nav-pill"
-                      className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+                      className="absolute inset-0 rounded-xl bg-purple-50 border border-purple-100 shadow-xs"
                       transition={{ type: 'spring', stiffness: 450, damping: 35 }}
                     />
                   )}
                   <span className="relative z-10 flex items-center gap-2">
-                    <Icon className={`h-4 w-4 stroke-[1.8] ${isActive ? 'text-cyan-400' : 'text-neutral-400'}`} />
+                    <Icon className={`h-4 w-4 stroke-[2] ${isActive ? 'text-[#5E17EB]' : 'text-neutral-400'}`} />
                     <span>{item.label}</span>
                   </span>
                 </Link>

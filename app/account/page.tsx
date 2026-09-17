@@ -35,6 +35,10 @@ import {
   CreditCard,
   Building,
   Sliders,
+  Bell,
+  Award,
+  Bookmark,
+  Zap,
 } from 'lucide-react';
 
 interface OrderSummary {
@@ -77,38 +81,38 @@ function getMilestoneIndex(status: string): number {
   }
 }
 
-/* ── Circular Progress Meter (Peerlist style) ── */
+/* ── Circular Progress Meter (Plum / Bing style) ── */
 function RadialProgress({ percentage }: { percentage: number }) {
-  const radius = 28;
+  const radius = 26;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
     <div className="relative flex items-center justify-center">
-      <svg className="w-16 h-16 -rotate-90" viewBox="0 0 72 72">
+      <svg className="w-16 h-16 -rotate-90" viewBox="0 0 68 68">
         <circle
-          cx="36"
-          cy="36"
+          cx="34"
+          cy="34"
           r={radius}
           stroke="currentColor"
           strokeWidth="5"
-          className="text-white/10"
+          className="text-neutral-100"
           fill="transparent"
         />
         <circle
-          cx="36"
-          cy="36"
+          cx="34"
+          cy="34"
           r={radius}
           stroke="currentColor"
           strokeWidth="5"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          className="text-cyan-400 transition-all duration-1000 ease-out"
+          className="text-[#5E17EB] transition-all duration-1000 ease-out"
           fill="transparent"
         />
       </svg>
-      <span className="absolute text-[13px] font-extrabold tracking-tight text-white">
+      <span className="absolute text-[13px] font-extrabold tracking-tight text-neutral-900">
         {percentage}%
       </span>
     </div>
@@ -164,7 +168,11 @@ export default function AccountOverviewPage() {
     .toUpperCase();
   const handle = displayName.toLowerCase().replace(/\s+/g, '_');
 
-  // Peerlist-style profile completion steps
+  // Greeting based on time of day
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Morning' : hour < 18 ? 'Afternoon' : 'Evening';
+
+  // Account setup completion steps
   const completionSteps = useMemo(() => {
     const hasName = Boolean(profile?.full_name || user?.user_metadata?.full_name);
     const hasPhone = Boolean(profile?.phone);
@@ -178,133 +186,151 @@ export default function AccountOverviewPage() {
     ];
     const completedCount = steps.filter((s) => s.completed).length;
     const percentage = Math.round((completedCount / steps.length) * 100);
-    return { steps, percentage };
+    return { steps, percentage, completedCount, totalCount: steps.length };
   }, [profile, user, orders]);
 
   return (
-    <div className="font-sans antialiased text-white w-full block">
-      {/* ── Top Profile Header Banner ── */}
-      <div className="relative rounded-[28px] border border-white/[0.08] bg-white/[0.02] backdrop-blur-2xl overflow-hidden shadow-2xl mb-8">
-        {/* Ambient Banner Gradient */}
-        <div className="h-36 w-full bg-gradient-to-r from-cyan-950/40 via-neutral-900 to-indigo-950/40 relative border-b border-white/[0.06]">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(6,182,212,0.18),transparent_60%)]" />
-          <div className="absolute top-4 right-5 flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-[11px] font-medium text-white border border-white/10">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-              Verified Studio Collector
-            </span>
-          </div>
+    <div className="font-sans antialiased text-neutral-900 w-full space-y-8">
+      {/* ── Top Header Greeting (Screenshot 1 "Morning, Alex" Style) ── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1
+            style={{ fontFamily: 'var(--font-jakarta)' }}
+            className="text-[32px] sm:text-[40px] font-extrabold text-neutral-900 tracking-tight leading-tight"
+          >
+            {greeting}, {displayName.split(' ')[0]}
+          </h1>
+          <p className="text-[14px] text-neutral-500 font-medium mt-1">
+            @{handle} • {displayEmail}
+          </p>
         </div>
 
-        {/* Profile details under banner */}
-        <div className="px-6 lg:px-8 pb-7 pt-0 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="flex items-end gap-5 -mt-12">
-            {/* Avatar with Verified Badge */}
-            <div className="relative">
-              <div className="flex h-24 w-24 items-center justify-center rounded-[24px] bg-neutral-950 text-cyan-300 text-2xl font-bold border-4 border-[#08080C] shadow-2xl ring-1 ring-cyan-500/30">
-                {initials}
-              </div>
-              <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-cyan-500 text-neutral-950 border-2 border-[#08080C] shadow-md font-bold">
-                <Check className="w-4 h-4 stroke-[3]" />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2.5">
-                <h1 className="text-[24px] font-bold tracking-tight text-white">
-                  {displayName}
-                </h1>
-                {isAdmin && (
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    Admin
-                  </span>
-                )}
-              </div>
-              <p className="text-[13px] text-neutral-400 font-medium">@{handle} • Lagos, Nigeria</p>
-              <p className="text-[12px] text-neutral-500 mt-0.5">
-                Silk Studio ID: {user?.id.substring(0, 8)}...
-              </p>
-            </div>
+        {/* User Avatar Card (Screenshot 3 "John Mobbin" style) */}
+        <div className="flex items-center gap-3.5 p-2.5 pr-5 rounded-2xl bg-white border border-neutral-200/80 shadow-sm w-fit">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white text-lg font-bold shadow-md">
+            {initials}
           </div>
-
-          {/* Quick Action Buttons */}
-          <div className="flex items-center gap-3">
-            <Link
-              href="/account/settings"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 bg-white/5 text-[13px] font-semibold text-neutral-200 hover:bg-white/10 hover:border-white/20 transition-all shadow-lg"
-            >
-              <User className="w-3.5 h-3.5 stroke-[2]" />
-              <span>Edit Profile</span>
-            </Link>
-            <Link
-              href="/order"
-              className="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-neutral-950 text-[13px] font-bold hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-cyan-500/20"
-            >
-              <Plus className="w-4 h-4 stroke-[3]" />
-              <span>Custom Merch Drop</span>
-            </Link>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[14px] font-bold text-neutral-900">{displayName}</span>
+              <ChevronRight className="h-4 w-4 text-neutral-400 stroke-[2.5]" />
+            </div>
+            <span className="text-[12px] font-medium text-blue-600">VIP Studio Collector</span>
           </div>
         </div>
       </div>
 
-      {/* ── 2-Column Dashboard Layout ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Column (2 spans) */}
-        <div className="lg:col-span-2 space-y-8">
-          {/* Metric counters */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="p-5 rounded-[22px] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl shadow-xl">
-              <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
-                Active Orders
-              </p>
-              <p className="text-[28px] font-extrabold text-white mt-1">
-                {activeOrders.length}
-              </p>
-            </div>
+      {/* ── Plum-Inspired Electric Purple Card (Screenshot 2) ── */}
+      <div className="relative rounded-[28px] bg-gradient-to-br from-[#5E17EB] via-[#6F26FF] to-[#4700D8] p-6 sm:p-8 text-white shadow-xl shadow-purple-600/20 overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="p-5 rounded-[22px] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl shadow-xl">
-              <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
-                Completed
-              </p>
-              <p className="text-[28px] font-extrabold text-emerald-400 mt-1">
-                {completedOrders.length}
-              </p>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="text-[13px] font-semibold text-purple-200">
+                Silk Studio Collector Value ⓘ
+              </span>
             </div>
-
-            <div className="p-5 rounded-[22px] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl shadow-xl">
-              <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
-                Saved Wishlist
-              </p>
-              <p className="text-[28px] font-extrabold text-cyan-400 mt-1">
-                {wishlistCount}
-              </p>
+            <div className="flex items-baseline gap-3">
+              <span
+                style={{ fontFamily: 'var(--font-jakarta)' }}
+                className="text-[42px] sm:text-[52px] font-extrabold tracking-tight text-white leading-none"
+              >
+                {activeOrders.length > 0 ? `${activeOrders.length} Active Jobs` : 'Ready to Drop'}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-[12px] font-bold text-purple-200 pt-1">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-white">
+                ▲ {completedOrders.length} Orders Delivered
+              </span>
+              <span>• Lagos, Nigeria</span>
             </div>
           </div>
 
-          {/* Live Active Order Progress Bar */}
+          <Link
+            href="/order"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white text-[#5E17EB] font-bold text-[14px] hover:bg-purple-50 transition-all shadow-lg active:scale-95 shrink-0"
+          >
+            <Plus className="h-4.5 w-4.5 stroke-[3]" />
+            <span>Create Custom Order</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* ── Bing 3-Column Metric Card (Screenshot 3) ── */}
+      <div className="rounded-[24px] bg-white border border-neutral-200/80 p-5 shadow-sm divide-y sm:divide-y-0 sm:divide-x divide-neutral-100 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-0">
+        <div className="flex flex-col items-center justify-center text-center p-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 text-[#5E17EB] mb-2">
+            <Package className="h-5 w-5 stroke-[2]" />
+          </div>
+          <span
+            style={{ fontFamily: 'var(--font-jakarta)' }}
+            className="text-[28px] font-extrabold text-neutral-900 leading-tight"
+          >
+            {activeOrders.length}
+          </span>
+          <span className="text-[12px] font-semibold text-neutral-500 mt-0.5">Active Production</span>
+        </div>
+
+        <div className="flex flex-col items-center justify-center text-center p-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 mb-2">
+            <Award className="h-5 w-5 stroke-[2]" />
+          </div>
+          <span
+            style={{ fontFamily: 'var(--font-jakarta)' }}
+            className="text-[28px] font-extrabold text-neutral-900 leading-tight"
+          >
+            {completedOrders.length}
+          </span>
+          <span className="text-[12px] font-semibold text-neutral-500 mt-0.5">Completed Orders</span>
+        </div>
+
+        <div className="flex flex-col items-center justify-center text-center p-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 mb-2">
+            <Heart className="h-5 w-5 stroke-[2]" />
+          </div>
+          <span
+            style={{ fontFamily: 'var(--font-jakarta)' }}
+            className="text-[28px] font-extrabold text-neutral-900 leading-tight"
+          >
+            {wishlistCount}
+          </span>
+          <span className="text-[12px] font-semibold text-neutral-500 mt-0.5">Saved Wishlist</span>
+        </div>
+      </div>
+
+      {/* ── 2-Column Main Dashboard Layout ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left / Main Column (2 Spans) */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Active Order Progress Stepper */}
           {activeOrders.length > 0 ? (
-            <div className="p-6 rounded-[24px] bg-white/[0.03] border border-cyan-500/30 backdrop-blur-xl shadow-2xl space-y-4">
-              <div className="flex items-center justify-between">
+            <div className="rounded-[26px] bg-white border border-neutral-200/80 p-6 sm:p-7 shadow-sm space-y-5">
+              <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
                 <div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-                    Live Production Tracking
+                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#5E17EB] flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-[#5E17EB] animate-ping" />
+                    Live Fulfillment Tracking
                   </span>
-                  <h2 className="text-[18px] font-bold text-white mt-1">
+                  <h2
+                    style={{ fontFamily: 'var(--font-jakarta)' }}
+                    className="text-[20px] font-extrabold text-neutral-900 mt-1"
+                  >
                     Order #{activeOrders[0].paystack_ref.substring(0, 14)}
                   </h2>
                 </div>
                 <Link
-                  href={`/account/orders`}
-                  className="text-[13px] font-semibold text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors"
+                  href="/account/orders"
+                  className="text-[13px] font-bold text-[#5E17EB] hover:underline flex items-center gap-1"
                 >
                   <span>View Details</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
+                  <ChevronRight className="w-4 h-4 stroke-[2.5]" />
                 </Link>
               </div>
 
-              {/* Milestone Stepper */}
-              <div className="pt-3">
+              {/* Milestones Stepper */}
+              <div className="pt-2">
                 <div className="grid grid-cols-5 gap-2 text-center">
                   {MILESTONES.map((step, idx) => {
                     const currentIdx = getMilestoneIndex(activeOrders[0].status);
@@ -314,15 +340,15 @@ export default function AccountOverviewPage() {
                         <div
                           className={`h-2.5 w-full rounded-full transition-all duration-500 ${
                             isComplete
-                              ? 'bg-gradient-to-r from-cyan-400 to-blue-500 shadow-[0_0_12px_rgba(6,182,212,0.6)]'
-                              : 'bg-white/10'
+                              ? 'bg-[#5E17EB] shadow-xs'
+                              : 'bg-neutral-100'
                           }`}
                         />
                         <span
-                          className={`text-[12px] font-medium ${
+                          className={`text-[12px] ${
                             isComplete
-                              ? 'text-cyan-300 font-bold'
-                              : 'text-neutral-500'
+                              ? 'text-neutral-900 font-bold'
+                              : 'text-neutral-400 font-medium'
                           }`}
                         >
                           {step.label}
@@ -334,72 +360,76 @@ export default function AccountOverviewPage() {
               </div>
             </div>
           ) : (
-            <div className="p-7 rounded-[24px] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl shadow-xl flex items-center justify-between">
+            <div className="rounded-[26px] bg-white border border-neutral-200/80 p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h2 className="text-[16px] font-bold text-white">
+                <h3
+                  style={{ fontFamily: 'var(--font-jakarta)' }}
+                  className="text-[18px] font-extrabold text-neutral-900"
+                >
                   No active orders in production
-                </h2>
-                <p className="text-[13px] text-neutral-400 mt-1">
-                  Browse the latest studio streetwear collection or request a bespoke drop.
+                </h3>
+                <p className="text-[13px] text-neutral-500 mt-1 leading-relaxed">
+                  Explore our latest streetwear collection or request a bespoke garment run.
                 </p>
               </div>
               <Link
                 href="/apparel"
-                className="px-4 py-2.5 rounded-xl bg-white text-neutral-950 text-[13px] font-bold hover:bg-neutral-200 transition-colors shrink-0"
+                className="px-5 py-3 rounded-full bg-neutral-950 text-white font-bold text-[13px] hover:bg-neutral-800 transition-colors shrink-0 text-center"
               >
                 Shop Apparel
               </Link>
             </div>
           )}
 
-          {/* Showcase Cards Grid */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[18px] font-bold text-white">
-                Studio Services & Offerings
-              </h2>
-              <Link
-                href="/services"
-                className="text-[13px] font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
-              >
-                View all →
-              </Link>
-            </div>
+          {/* Studio Services Cards (Plum / Future Pro Grid Style) */}
+          <div className="space-y-4">
+            <h2
+              style={{ fontFamily: 'var(--font-jakarta)' }}
+              className="text-[20px] font-extrabold text-neutral-900"
+            >
+              Studio Services & Drops
+            </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Link href="/order" className="group block">
-                <div className="p-5 rounded-[22px] bg-white/[0.02] border border-white/[0.08] hover:border-cyan-500/40 hover:bg-white/[0.04] transition-all shadow-xl space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Link href="/order" className="block group">
+                <div className="rounded-[24px] bg-white border border-neutral-200/80 p-6 shadow-sm hover:shadow-md hover:border-purple-200 transition-all space-y-3">
                   <div className="flex items-center justify-between">
-                    <div className="h-10 w-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center border border-cyan-500/20">
-                      <Sparkles className="h-5 w-5" />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-50 text-[#5E17EB]">
+                      <Sparkles className="h-6 w-6 stroke-[2]" />
                     </div>
-                    <ChevronRight className="h-4 w-4 text-neutral-500 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all" />
+                    <ChevronRight className="h-5 w-5 text-neutral-300 group-hover:text-[#5E17EB] group-hover:translate-x-1 transition-all" />
                   </div>
                   <div>
-                    <h3 className="text-[15px] font-bold text-white group-hover:text-cyan-300 transition-colors">
-                      Custom Streetwear Drops
+                    <h3
+                      style={{ fontFamily: 'var(--font-jakarta)' }}
+                      className="text-[16px] font-bold text-neutral-900 group-hover:text-[#5E17EB] transition-colors"
+                    >
+                      Custom Apparel Drop
                     </h3>
-                    <p className="text-[12px] text-neutral-400 mt-1 leading-relaxed">
-                      High-density screenprinting, puff prints, embroidered hoodies & custom cut-and-sew blanks.
+                    <p className="text-[13px] text-neutral-500 mt-1 leading-relaxed">
+                      Screenprinting, puff prints, embroidered hoodies & bespoke cut-and-sew blanks.
                     </p>
                   </div>
                 </div>
               </Link>
 
-              <Link href="/account/files" className="group block">
-                <div className="p-5 rounded-[22px] bg-white/[0.02] border border-white/[0.08] hover:border-indigo-500/40 hover:bg-white/[0.04] transition-all shadow-xl space-y-3">
+              <Link href="/account/files" className="block group">
+                <div className="rounded-[24px] bg-white border border-neutral-200/80 p-6 shadow-sm hover:shadow-md hover:border-blue-200 transition-all space-y-3">
                   <div className="flex items-center justify-between">
-                    <div className="h-10 w-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20">
-                      <FolderOpen className="h-5 w-5" />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+                      <FolderOpen className="h-6 w-6 stroke-[2]" />
                     </div>
-                    <ChevronRight className="h-4 w-4 text-neutral-500 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
+                    <ChevronRight className="h-5 w-5 text-neutral-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
                   </div>
                   <div>
-                    <h3 className="text-[15px] font-bold text-white group-hover:text-indigo-300 transition-colors">
-                      Digital Vault & Vectors
+                    <h3
+                      style={{ fontFamily: 'var(--font-jakarta)' }}
+                      className="text-[16px] font-bold text-neutral-900 group-hover:text-blue-600 transition-colors"
+                    >
+                      Digital Asset Vault
                     </h3>
-                    <p className="text-[12px] text-neutral-400 mt-1 leading-relaxed">
-                      Access high-resolution tech packs, design proofs, and asset files associated with your orders.
+                    <p className="text-[13px] text-neutral-500 mt-1 leading-relaxed">
+                      High-resolution vector files, design proofs, and tech packs from your orders.
                     </p>
                   </div>
                 </div>
@@ -408,36 +438,39 @@ export default function AccountOverviewPage() {
           </div>
         </div>
 
-        {/* Sidebar Column (1 span) */}
-        <div className="space-y-8">
-          {/* Peerlist-Style Profile Completion Widget */}
-          <div className="p-6 rounded-[26px] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl shadow-xl space-y-5">
+        {/* Right Sidebar Column (1 Span) */}
+        <div className="space-y-6">
+          {/* Plum / Future Pro Style Setup Progress Card (Screenshot 2) */}
+          <div className="rounded-[26px] bg-white border border-neutral-200/80 p-6 shadow-sm space-y-5">
             <div className="flex items-center gap-4">
               <RadialProgress percentage={completionSteps.percentage} />
               <div>
-                <h3 className="text-[15px] font-bold text-white">
-                  Collector Profile
+                <h3
+                  style={{ fontFamily: 'var(--font-jakarta)' }}
+                  className="text-[16px] font-extrabold text-neutral-900"
+                >
+                  Profile Setup
                 </h3>
-                <p className="text-[12px] text-neutral-400 mt-0.5">
-                  {completionSteps.percentage}% Completed
+                <p className="text-[12px] font-semibold text-purple-600 mt-0.5">
+                  {completionSteps.completedCount} of {completionSteps.totalCount} complete
                 </p>
               </div>
             </div>
 
-            <div className="space-y-2.5 pt-2 border-t border-white/[0.06]">
+            <div className="space-y-3 pt-3 border-t border-neutral-100">
               {completionSteps.steps.map((step) => (
                 <Link key={step.id} href={step.href} className="block group">
-                  <div className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/[0.04] transition-colors">
-                    <div className="flex items-center gap-2.5">
-                      <div className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${step.completed ? 'bg-cyan-500 text-neutral-950 font-bold' : 'border border-white/20 text-transparent'}`}>
+                  <div className="flex items-center justify-between p-2 rounded-xl hover:bg-neutral-50 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className={`h-5 w-5 rounded-full flex items-center justify-center text-[11px] font-bold ${step.completed ? 'bg-purple-100 text-[#5E17EB]' : 'border-2 border-neutral-200 text-transparent'}`}>
                         ✓
                       </div>
-                      <span className={`text-[12.5px] ${step.completed ? 'text-neutral-300 line-through' : 'text-white font-medium group-hover:text-cyan-300'}`}>
+                      <span className={`text-[13px] ${step.completed ? 'text-neutral-400 line-through font-medium' : 'text-neutral-900 font-semibold group-hover:text-[#5E17EB]'}`}>
                         {step.label}
                       </span>
                     </div>
                     {!step.completed && (
-                      <ChevronRight className="h-3.5 w-3.5 text-neutral-500 group-hover:text-cyan-400" />
+                      <ChevronRight className="h-4 w-4 text-neutral-400 group-hover:text-[#5E17EB]" />
                     )}
                   </div>
                 </Link>
@@ -445,31 +478,51 @@ export default function AccountOverviewPage() {
             </div>
           </div>
 
-          {/* Quick Concierge Support Card */}
-          <div className="p-6 rounded-[26px] bg-gradient-to-br from-emerald-950/40 to-teal-950/40 border border-emerald-500/30 backdrop-blur-xl shadow-xl space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
-                <MessageCircle className="h-5 w-5" />
+          {/* Bing Menu Action List (Screenshot 3) */}
+          <div className="rounded-[26px] bg-white border border-neutral-200/80 p-3 shadow-sm divide-y divide-neutral-100">
+            <Link href="/account/orders" className="block">
+              <div className="flex items-center justify-between p-3.5 rounded-xl hover:bg-neutral-50 transition-colors">
+                <div className="flex items-center gap-3.5">
+                  <Package className="h-5 w-5 text-neutral-700 stroke-[1.8]" />
+                  <span className="text-[14px] font-semibold text-neutral-900">Orders & Live Tracking</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-neutral-400" />
               </div>
-              <div>
-                <h3 className="text-[15px] font-bold text-white">
-                  VIP Concierge
-                </h3>
-                <p className="text-[12px] text-emerald-400 font-medium">
-                  Direct WhatsApp Line
-                </p>
+            </Link>
+
+            <Link href="/account/wishlist" className="block">
+              <div className="flex items-center justify-between p-3.5 rounded-xl hover:bg-neutral-50 transition-colors">
+                <div className="flex items-center gap-3.5">
+                  <Heart className="h-5 w-5 text-neutral-700 stroke-[1.8]" />
+                  <span className="text-[14px] font-semibold text-neutral-900">Saved Wishlist</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-neutral-400" />
               </div>
-            </div>
-            <p className="text-[12px] text-neutral-300 leading-relaxed">
-              Need assistance with an active order or custom fabric selection? Chat directly with our Lagos studio team.
-            </p>
+            </Link>
+
+            <Link href="/account/settings" className="block">
+              <div className="flex items-center justify-between p-3.5 rounded-xl hover:bg-neutral-50 transition-colors">
+                <div className="flex items-center gap-3.5">
+                  <Settings className="h-5 w-5 text-neutral-700 stroke-[1.8]" />
+                  <span className="text-[14px] font-semibold text-neutral-900">Delivery & Profile Settings</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-neutral-400" />
+              </div>
+            </Link>
+
             <a
               href="https://wa.me/2347064829776?text=Hi+Silk+Studio%2C+I%27d+like+VIP+concierge+support"
               target="_blank"
               rel="noopener noreferrer"
-              className="block w-full py-2.5 px-4 rounded-xl bg-emerald-500 text-neutral-950 font-bold text-[13px] text-center hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20"
+              className="block"
             >
-              Connect on WhatsApp
+              <div className="flex items-center justify-between p-3.5 rounded-xl hover:bg-neutral-50 transition-colors">
+                <div className="flex items-center gap-3.5">
+                  <MessageCircle className="h-5 w-5 text-emerald-600 stroke-[1.8]" />
+                  <span className="text-[14px] font-semibold text-neutral-900">WhatsApp VIP Concierge</span>
+                </div>
+                <ExternalLink className="h-4 w-4 text-neutral-400" />
+              </div>
             </a>
           </div>
         </div>
