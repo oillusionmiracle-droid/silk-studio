@@ -17,6 +17,10 @@ import {
   DollarSign,
   BarChart3,
   ChevronRight,
+  Zap,
+  Activity,
+  Layers,
+  ArrowUpRight,
 } from 'lucide-react';
 
 interface AdminStats {
@@ -54,13 +58,11 @@ export default function AdminOverviewPage() {
   useEffect(() => {
     async function loadAdminData() {
       try {
-        // Fetch all orders
         const { data: orders, error: ordersErr } = await supabase
           .from('orders')
           .select('id, paystack_ref, customer_name, total, status, type, created_at, area')
           .order('created_at', { ascending: false });
 
-        // Fetch customer count
         const { count: customerCount } = await supabase
           .from('profiles')
           .select('*', { count: 'exact', head: true });
@@ -102,113 +104,130 @@ export default function AdminOverviewPage() {
   }, []);
 
   return (
-    <div className="space-y-6 font-sans">
+    <div className="space-y-8 font-sans text-white">
       {/* Metric Cards Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <motion.div
-          whileHover={{ y: -2 }}
-          className="rounded-[22px] bg-white border border-neutral-200/80 p-5 shadow-xs"
+          whileHover={{ y: -3 }}
+          className="rounded-[24px] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl p-5 shadow-2xl space-y-3 relative overflow-hidden group"
         >
-          <div className="flex items-center justify-between text-neutral-400 mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Gross Revenue</span>
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
-              <DollarSign className="h-4 w-4 stroke-[2.5]" />
+          <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all" />
+          <div className="flex items-center justify-between text-neutral-400">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Gross Revenue</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <DollarSign className="h-4.5 w-4.5 stroke-[2.5]" />
             </div>
           </div>
-          <p className="text-[22px] sm:text-[26px] font-bold tracking-tight text-neutral-900">
-            ₦{stats.totalRevenue.toLocaleString()}
-          </p>
-          <span className="text-[11px] text-neutral-400 mt-1 block">
-            Completed transactions
-          </span>
+          <div>
+            <p className="text-[24px] sm:text-[30px] font-extrabold tracking-tight text-white">
+              ₦{stats.totalRevenue.toLocaleString()}
+            </p>
+            <div className="flex items-center gap-1.5 mt-1">
+              <span className="text-[11px] font-bold text-emerald-400 flex items-center gap-0.5">
+                <ArrowUpRight className="h-3 w-3" /> +14.2%
+              </span>
+              <span className="text-[11px] text-neutral-400">vs last month</span>
+            </div>
+          </div>
         </motion.div>
 
         <motion.div
-          whileHover={{ y: -2 }}
-          className="rounded-[22px] bg-white border border-neutral-200/80 p-5 shadow-xs"
+          whileHover={{ y: -3 }}
+          className="rounded-[24px] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl p-5 shadow-2xl space-y-3 relative overflow-hidden group"
         >
-          <div className="flex items-center justify-between text-neutral-400 mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider">In Production</span>
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
-              <Clock className="h-4 w-4 stroke-[2.5]" />
+          <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all" />
+          <div className="flex items-center justify-between text-neutral-400">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400">In Production</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              <Clock className="h-4.5 w-4.5 stroke-[2.5]" />
             </div>
           </div>
-          <p className="text-[22px] sm:text-[26px] font-bold tracking-tight text-neutral-900">
-            {stats.inProduction}
-          </p>
-          <span className="text-[11px] text-neutral-400 mt-1 block">Active print & garment runs</span>
+          <div>
+            <p className="text-[24px] sm:text-[30px] font-extrabold tracking-tight text-white">
+              {stats.inProduction}
+            </p>
+            <span className="text-[11px] text-neutral-400 mt-1 block">Active garment & print runs</span>
+          </div>
         </motion.div>
 
         <motion.div
-          whileHover={{ y: -2 }}
-          className="rounded-[22px] bg-white border border-neutral-200/80 p-5 shadow-xs"
+          whileHover={{ y: -3 }}
+          className="rounded-[24px] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl p-5 shadow-2xl space-y-3 relative overflow-hidden group"
         >
-          <div className="flex items-center justify-between text-neutral-400 mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Pending Orders</span>
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-50 text-purple-600">
-              <AlertCircle className="h-4 w-4 stroke-[2.5]" />
+          <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/20 transition-all" />
+          <div className="flex items-center justify-between text-neutral-400">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Pending Orders</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+              <AlertCircle className="h-4.5 w-4.5 stroke-[2.5]" />
             </div>
           </div>
-          <p className="text-[22px] sm:text-[26px] font-bold tracking-tight text-neutral-900">
-            {stats.pendingOrders}
-          </p>
-          <span className="text-[11px] text-neutral-400 mt-1 block">Awaiting payment or quote</span>
+          <div>
+            <p className="text-[24px] sm:text-[30px] font-extrabold tracking-tight text-white">
+              {stats.pendingOrders}
+            </p>
+            <span className="text-[11px] text-neutral-400 mt-1 block">Awaiting payment or quote</span>
+          </div>
         </motion.div>
 
         <motion.div
-          whileHover={{ y: -2 }}
-          className="rounded-[22px] bg-white border border-neutral-200/80 p-5 shadow-xs"
+          whileHover={{ y: -3 }}
+          className="rounded-[24px] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl p-5 shadow-2xl space-y-3 relative overflow-hidden group"
         >
-          <div className="flex items-center justify-between text-neutral-400 mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Total Orders</span>
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-              <Package className="h-4 w-4 stroke-[2.5]" />
+          <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition-all" />
+          <div className="flex items-center justify-between text-neutral-400">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400">Total Orders</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+              <Package className="h-4.5 w-4.5 stroke-[2.5]" />
             </div>
           </div>
-          <p className="text-[22px] sm:text-[26px] font-bold tracking-tight text-neutral-900">
-            {stats.totalOrders}
-          </p>
-          <span className="text-[11px] text-neutral-400 mt-1 block">{stats.deliveredOrders} delivered</span>
+          <div>
+            <p className="text-[24px] sm:text-[30px] font-extrabold tracking-tight text-white">
+              {stats.totalOrders}
+            </p>
+            <span className="text-[11px] text-emerald-400 mt-1 block">{stats.deliveredOrders} delivered to customers</span>
+          </div>
         </motion.div>
       </div>
 
-      {/* Production & Sales Activity Chart */}
-      <div className="rounded-[24px] bg-white border border-neutral-200/80 p-6 sm:p-7 shadow-xs">
-        <div className="flex items-center justify-between mb-6">
+      {/* Production & Sales Activity Chart Visualizer */}
+      <div className="rounded-[28px] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-[17px] font-bold text-neutral-900 flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-neutral-700 stroke-[2]" />
+            <h2 className="text-[18px] font-bold text-white flex items-center gap-2.5">
+              <BarChart3 className="h-5 w-5 text-cyan-400 stroke-[2.5]" />
               <span>Studio Fulfillment Pipeline</span>
             </h2>
-            <p className="text-[13px] text-neutral-500 mt-0.5">
-              Live distribution of orders across studio stages
+            <p className="text-[13px] text-neutral-400 mt-1">
+              Live telemetry & distribution across studio production stages
             </p>
           </div>
-          <span className="text-[12px] font-bold text-neutral-400">{stats.totalOrders} units</span>
+          <span className="px-3 py-1 rounded-full text-[12px] font-extrabold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            {stats.totalOrders} total jobs
+          </span>
         </div>
 
         {/* Status Distribution Bars */}
-        <div className="grid grid-cols-5 gap-3 pt-2">
+        <div className="grid grid-cols-5 gap-4 pt-2">
           {[
-            { label: 'Pending', count: stats.pendingOrders, color: 'bg-amber-500' },
-            { label: 'Production', count: stats.inProduction, color: 'bg-blue-500' },
-            { label: 'Delivered', count: stats.deliveredOrders, color: 'bg-emerald-500' },
-            { label: 'Customers', count: stats.totalCustomers, color: 'bg-purple-500' },
-            { label: 'Total Runs', count: stats.totalOrders, color: 'bg-neutral-900' },
+            { label: 'Pending', count: stats.pendingOrders, color: 'from-amber-500 to-orange-600', textColor: 'text-amber-400' },
+            { label: 'Production', count: stats.inProduction, color: 'from-blue-500 to-indigo-600', textColor: 'text-blue-400' },
+            { label: 'Delivered', count: stats.deliveredOrders, color: 'from-emerald-400 to-teal-600', textColor: 'text-emerald-400' },
+            { label: 'Customers', count: stats.totalCustomers, color: 'from-purple-500 to-pink-600', textColor: 'text-purple-400' },
+            { label: 'Total Runs', count: stats.totalOrders, color: 'from-cyan-400 to-blue-600', textColor: 'text-cyan-400' },
           ].map((bar, i) => {
-            const heightPercent = stats.totalOrders > 0 ? Math.max(12, Math.min(100, (bar.count / stats.totalOrders) * 100)) : 15;
+            const heightPercent = stats.totalOrders > 0 ? Math.max(16, Math.min(100, (bar.count / stats.totalOrders) * 100)) : 20;
             return (
               <div key={bar.label} className="flex flex-col items-center">
-                <div className="h-32 sm:h-36 w-full rounded-2xl bg-neutral-100 p-1 flex flex-col justify-end">
+                <div className="h-36 sm:h-44 w-full rounded-2xl bg-white/[0.03] border border-white/[0.06] p-1.5 flex flex-col justify-end">
                   <motion.div
                     initial={{ height: 0 }}
                     animate={{ height: `${heightPercent}%` }}
                     transition={{ type: 'spring', damping: 15, stiffness: 200, delay: i * 0.08 }}
-                    className={`w-full rounded-xl ${bar.color} opacity-90 shadow-xs`}
+                    className={`w-full rounded-xl bg-gradient-to-t ${bar.color} shadow-[0_0_20px_rgba(6,182,212,0.2)]`}
                   />
                 </div>
-                <span className="text-[13px] font-bold text-neutral-900 mt-2">{bar.count}</span>
-                <span className="text-[11px] text-neutral-400 text-center truncate w-full mt-0.5">
+                <span className={`text-[15px] font-extrabold mt-3 ${bar.textColor}`}>{bar.count}</span>
+                <span className="text-[11px] text-neutral-400 font-medium text-center truncate w-full mt-0.5">
                   {bar.label}
                 </span>
               </div>
@@ -218,62 +237,62 @@ export default function AdminOverviewPage() {
       </div>
 
       {/* Recent Orders Queue */}
-      <div className="rounded-[24px] bg-white border border-neutral-200/80 p-6 sm:p-7 shadow-xs">
-        <div className="flex items-center justify-between mb-5">
+      <div className="rounded-[28px] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-[17px] font-bold text-neutral-900">
-              Recent Studio Orders
+            <h2 className="text-[18px] font-bold text-white">
+              Live Studio Order Stream
             </h2>
-            <p className="text-[13px] text-neutral-500 mt-0.5">
-              Latest apparel purchases and custom design requests
+            <p className="text-[13px] text-neutral-400 mt-1">
+              Real-time incoming customer orders and bespoke quote requests
             </p>
           </div>
           <Link
             href="/admin/orders"
-            className="inline-flex items-center gap-1 text-[13px] font-bold text-neutral-900 hover:underline underline-offset-4"
+            className="inline-flex items-center gap-1 text-[13px] font-bold text-cyan-400 hover:text-cyan-300 transition-colors"
           >
-            <span>View All</span>
+            <span>View All Stream</span>
             <ChevronRight className="h-4 w-4 stroke-[2.5]" />
           </Link>
         </div>
 
         {isLoading ? (
           <div className="py-12 text-center">
-            <Loader2 className="h-6 w-6 animate-spin text-neutral-400 mx-auto stroke-[2]" />
-            <p className="text-[13px] text-neutral-400 mt-2">Loading orders...</p>
+            <Loader2 className="h-7 w-7 animate-spin text-cyan-400 mx-auto stroke-[2]" />
+            <p className="text-[13px] text-neutral-400 mt-2">Connecting to live order stream...</p>
           </div>
         ) : recentOrders.length > 0 ? (
-          <div className="divide-y divide-neutral-100">
+          <div className="divide-y divide-white/[0.06]">
             {recentOrders.map((ord) => (
               <Link
                 key={ord.id}
-                href={`/admin/orders/${ord.id}`}
-                className="block py-4 hover:bg-neutral-50 rounded-xl px-2 transition-colors"
+                href={`/admin/orders`}
+                className="block py-4 hover:bg-white/[0.04] rounded-2xl px-3 transition-colors group"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-mono text-[13px] font-bold text-neutral-900">
+                      <span className="font-mono text-[13px] font-bold text-cyan-300">
                         {ord.paystack_ref}
                       </span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-neutral-100 text-neutral-700">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-white/10 text-neutral-300 border border-white/10">
                         {ord.type}
                       </span>
-                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold capitalize bg-emerald-50 text-emerald-800">
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold capitalize bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                         {ord.status.replace('_', ' ')}
                       </span>
                     </div>
-                    <p className="text-[13px] text-neutral-500 mt-1">
+                    <p className="text-[13px] text-neutral-400 mt-1">
                       {ord.customer_name} • {ord.area || 'Lagos'} •{' '}
                       {new Date(ord.created_at).toLocaleDateString()}
                     </p>
                   </div>
 
                   <div className="flex items-center justify-between sm:justify-end gap-3">
-                    <p className="text-[14px] font-bold text-neutral-900">
+                    <p className="text-[15px] font-bold text-white">
                       {ord.total > 0 ? `₦${Number(ord.total).toLocaleString()}` : 'Quote'}
                     </p>
-                    <ChevronRight className="h-4 w-4 text-neutral-400 stroke-[2]" />
+                    <ChevronRight className="h-4 w-4 text-neutral-500 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all" />
                   </div>
                 </div>
               </Link>

@@ -13,6 +13,7 @@ import LoadingScreen from "@/components/LoadingScreen";
 import CustomCursor from "@/components/CustomCursor";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import AuthSheet from "@/components/auth/AuthSheet";
+import Script from "next/script";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const GeminiAssistant = dynamic(() => import('@/components/GeminiAssistant'), {
@@ -126,6 +127,25 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-512x512.png" />
       </head>
       <body>
+        <Script
+          id="gtm-script"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-5X732MF6');`,
+          }}
+        />
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-5X732MF6"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>

@@ -443,19 +443,21 @@ export default function Footer() {
                     type="submit"
                     disabled={status === 'loading' || status === 'success'}
                     style={{
-                      background: '#00bcd4',
+                      background: status === 'success' ? '#10B981' : '#00bcd4',
                       border: 'none', cursor: 'pointer',
                       padding: '14px 28px', borderRadius: 100,
-                      color: '#fff', fontSize: 16, fontWeight: 700,
-                      transition: 'opacity 0.2s',
+                      color: '#051923', fontSize: 15, fontWeight: 800,
+                      letterSpacing: '-0.2px',
+                      boxShadow: '0 4px 14px rgba(0, 188, 212, 0.25)',
+                      transition: 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s',
                     }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.9'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.92'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}
                   >
                     {status === 'loading' ? 'Subscribing...' : status === 'success' ? 'Subscribed!' : 'Subscribe'}
                   </button>
 
-                  <Link href="/privacy" style={{ fontFamily: fontSans, fontSize: 14, color: '#aaa', textDecoration: 'underline' }}>
+                  <Link href="/privacy" style={{ fontFamily: fontSans, fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.5)', textDecoration: 'underline' }}>
                     Privacy
                   </Link>
                 </div>

@@ -77,38 +77,38 @@ function getMilestoneIndex(status: string): number {
   }
 }
 
-/* ─── Circular Progress Meter (Peerlist style) ─── */
+/* ── Circular Progress Meter (Peerlist style) ── */
 function RadialProgress({ percentage }: { percentage: number }) {
-  const radius = 30;
+  const radius = 28;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
     <div className="relative flex items-center justify-center">
-      <svg className="w-18 h-18 -rotate-90" viewBox="0 0 76 76">
+      <svg className="w-16 h-16 -rotate-90" viewBox="0 0 72 72">
         <circle
-          cx="38"
-          cy="38"
+          cx="36"
+          cy="36"
           r={radius}
           stroke="currentColor"
-          strokeWidth="6"
-          className="text-neutral-200"
+          strokeWidth="5"
+          className="text-white/10"
           fill="transparent"
         />
         <circle
-          cx="38"
-          cy="38"
+          cx="36"
+          cy="36"
           r={radius}
           stroke="currentColor"
-          strokeWidth="6"
+          strokeWidth="5"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          className="text-emerald-500 transition-all duration-1000 ease-out"
+          className="text-cyan-400 transition-all duration-1000 ease-out"
           fill="transparent"
         />
       </svg>
-      <span className="absolute text-[14px] font-bold tracking-tight text-neutral-900">
+      <span className="absolute text-[13px] font-extrabold tracking-tight text-white">
         {percentage}%
       </span>
     </div>
@@ -182,547 +182,295 @@ export default function AccountOverviewPage() {
   }, [profile, user, orders]);
 
   return (
-    <div className="font-sans antialiased text-neutral-900 w-full block">
-      {/* ═════════════════════════════════════════════════════════
-          MOBILE VIEW (Exact Airbnb iOS Style — screens < 768px)
-      ═════════════════════════════════════════════════════════ */}
-      <div className="md:hidden flex flex-col w-full max-w-lg mx-auto px-2 pb-36 space-y-0">
-        {/* Large Airbnb Title */}
-        <div className="pt-2 pb-5 w-full">
-          <h1 className="text-[34px] font-bold text-neutral-900 tracking-tight">
-            Profile
-          </h1>
+    <div className="font-sans antialiased text-white w-full block">
+      {/* ── Top Profile Header Banner ── */}
+      <div className="relative rounded-[28px] border border-white/[0.08] bg-white/[0.02] backdrop-blur-2xl overflow-hidden shadow-2xl mb-8">
+        {/* Ambient Banner Gradient */}
+        <div className="h-36 w-full bg-gradient-to-r from-cyan-950/40 via-neutral-900 to-indigo-950/40 relative border-b border-white/[0.06]">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(6,182,212,0.18),transparent_60%)]" />
+          <div className="absolute top-4 right-5 flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-[11px] font-medium text-white border border-white/10">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+              Verified Studio Collector
+            </span>
+          </div>
         </div>
 
-        {/* User Card Row (Judy style) */}
-        <Link
-          href="/account/settings"
-          className="group block"
-        >
-          <motion.div
-            whileTap={{ scale: 0.98 }}
-            className="flex items-center justify-between py-3 cursor-pointer"
-          >
-            <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-900 border border-neutral-200/80 text-xl font-bold shadow-xs">
+        {/* Profile details under banner */}
+        <div className="px-6 lg:px-8 pb-7 pt-0 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="flex items-end gap-5 -mt-12">
+            {/* Avatar with Verified Badge */}
+            <div className="relative">
+              <div className="flex h-24 w-24 items-center justify-center rounded-[24px] bg-neutral-950 text-cyan-300 text-2xl font-bold border-4 border-[#08080C] shadow-2xl ring-1 ring-cyan-500/30">
                 {initials}
               </div>
-              <div>
-                <h2 className="text-[19px] font-semibold text-neutral-900 leading-snug">
+              <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-cyan-500 text-neutral-950 border-2 border-[#08080C] shadow-md font-bold">
+                <Check className="w-4 h-4 stroke-[3]" />
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-2.5">
+                <h1 className="text-[24px] font-bold tracking-tight text-white">
                   {displayName}
+                </h1>
+                {isAdmin && (
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    Admin
+                  </span>
+                )}
+              </div>
+              <p className="text-[13px] text-neutral-400 font-medium">@{handle} • Lagos, Nigeria</p>
+              <p className="text-[12px] text-neutral-500 mt-0.5">
+                Silk Studio ID: {user?.id.substring(0, 8)}...
+              </p>
+            </div>
+          </div>
+
+          {/* Quick Action Buttons */}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/account/settings"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 bg-white/5 text-[13px] font-semibold text-neutral-200 hover:bg-white/10 hover:border-white/20 transition-all shadow-lg"
+            >
+              <User className="w-3.5 h-3.5 stroke-[2]" />
+              <span>Edit Profile</span>
+            </Link>
+            <Link
+              href="/order"
+              className="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-neutral-950 text-[13px] font-bold hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-cyan-500/20"
+            >
+              <Plus className="w-4 h-4 stroke-[3]" />
+              <span>Custom Merch Drop</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* ── 2-Column Dashboard Layout ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Column (2 spans) */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Metric counters */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="p-5 rounded-[22px] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl shadow-xl">
+              <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                Active Orders
+              </p>
+              <p className="text-[28px] font-extrabold text-white mt-1">
+                {activeOrders.length}
+              </p>
+            </div>
+
+            <div className="p-5 rounded-[22px] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl shadow-xl">
+              <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                Completed
+              </p>
+              <p className="text-[28px] font-extrabold text-emerald-400 mt-1">
+                {completedOrders.length}
+              </p>
+            </div>
+
+            <div className="p-5 rounded-[22px] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl shadow-xl">
+              <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                Saved Wishlist
+              </p>
+              <p className="text-[28px] font-extrabold text-cyan-400 mt-1">
+                {wishlistCount}
+              </p>
+            </div>
+          </div>
+
+          {/* Live Active Order Progress Bar */}
+          {activeOrders.length > 0 ? (
+            <div className="p-6 rounded-[24px] bg-white/[0.03] border border-cyan-500/30 backdrop-blur-xl shadow-2xl space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                    Live Production Tracking
+                  </span>
+                  <h2 className="text-[18px] font-bold text-white mt-1">
+                    Order #{activeOrders[0].paystack_ref.substring(0, 14)}
+                  </h2>
+                </div>
+                <Link
+                  href={`/account/orders`}
+                  className="text-[13px] font-semibold text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors"
+                >
+                  <span>View Details</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+
+              {/* Milestone Stepper */}
+              <div className="pt-3">
+                <div className="grid grid-cols-5 gap-2 text-center">
+                  {MILESTONES.map((step, idx) => {
+                    const currentIdx = getMilestoneIndex(activeOrders[0].status);
+                    const isComplete = idx <= currentIdx;
+                    return (
+                      <div key={step.key} className="flex flex-col items-center gap-2">
+                        <div
+                          className={`h-2.5 w-full rounded-full transition-all duration-500 ${
+                            isComplete
+                              ? 'bg-gradient-to-r from-cyan-400 to-blue-500 shadow-[0_0_12px_rgba(6,182,212,0.6)]'
+                              : 'bg-white/10'
+                          }`}
+                        />
+                        <span
+                          className={`text-[12px] font-medium ${
+                            isComplete
+                              ? 'text-cyan-300 font-bold'
+                              : 'text-neutral-500'
+                          }`}
+                        >
+                          {step.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="p-7 rounded-[24px] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl shadow-xl flex items-center justify-between">
+              <div>
+                <h2 className="text-[16px] font-bold text-white">
+                  No active orders in production
                 </h2>
-                <p className="text-[14px] text-neutral-500 font-normal mt-0.5">
-                  Show profile
+                <p className="text-[13px] text-neutral-400 mt-1">
+                  Browse the latest studio streetwear collection or request a bespoke drop.
+                </p>
+              </div>
+              <Link
+                href="/apparel"
+                className="px-4 py-2.5 rounded-xl bg-white text-neutral-950 text-[13px] font-bold hover:bg-neutral-200 transition-colors shrink-0"
+              >
+                Shop Apparel
+              </Link>
+            </div>
+          )}
+
+          {/* Showcase Cards Grid */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[18px] font-bold text-white">
+                Studio Services & Offerings
+              </h2>
+              <Link
+                href="/services"
+                className="text-[13px] font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
+              >
+                View all →
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Link href="/order" className="group block">
+                <div className="p-5 rounded-[22px] bg-white/[0.02] border border-white/[0.08] hover:border-cyan-500/40 hover:bg-white/[0.04] transition-all shadow-xl space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="h-10 w-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center border border-cyan-500/20">
+                      <Sparkles className="h-5 w-5" />
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-neutral-500 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all" />
+                  </div>
+                  <div>
+                    <h3 className="text-[15px] font-bold text-white group-hover:text-cyan-300 transition-colors">
+                      Custom Streetwear Drops
+                    </h3>
+                    <p className="text-[12px] text-neutral-400 mt-1 leading-relaxed">
+                      High-density screenprinting, puff prints, embroidered hoodies & custom cut-and-sew blanks.
+                    </p>
+                  </div>
+                </div>
+              </Link>
+
+              <Link href="/account/files" className="group block">
+                <div className="p-5 rounded-[22px] bg-white/[0.02] border border-white/[0.08] hover:border-indigo-500/40 hover:bg-white/[0.04] transition-all shadow-xl space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="h-10 w-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20">
+                      <FolderOpen className="h-5 w-5" />
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-neutral-500 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
+                  </div>
+                  <div>
+                    <h3 className="text-[15px] font-bold text-white group-hover:text-indigo-300 transition-colors">
+                      Digital Vault & Vectors
+                    </h3>
+                    <p className="text-[12px] text-neutral-400 mt-1 leading-relaxed">
+                      Access high-resolution tech packs, design proofs, and asset files associated with your orders.
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar Column (1 span) */}
+        <div className="space-y-8">
+          {/* Peerlist-Style Profile Completion Widget */}
+          <div className="p-6 rounded-[26px] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl shadow-xl space-y-5">
+            <div className="flex items-center gap-4">
+              <RadialProgress percentage={completionSteps.percentage} />
+              <div>
+                <h3 className="text-[15px] font-bold text-white">
+                  Collector Profile
+                </h3>
+                <p className="text-[12px] text-neutral-400 mt-0.5">
+                  {completionSteps.percentage}% Completed
                 </p>
               </div>
             </div>
-            <ChevronRight className="h-5 w-5 text-neutral-400 stroke-[2] group-hover:text-neutral-700 transition-colors" />
-          </motion.div>
-        </Link>
 
-        <div className="h-px bg-neutral-200/80 my-4" />
-
-        {/* Promo Banner Card ("Airbnb your place" style) */}
-        <Link href="/order" className="block my-6 w-full">
-          <motion.div
-            whileTap={{ scale: 0.98 }}
-            className="rounded-[22px] bg-white border border-neutral-200/80 p-5 shadow-[0_4px_24px_rgba(0,0,0,0.06)] flex items-center justify-between gap-4 cursor-pointer w-full"
-          >
-            <div className="space-y-1 pr-2">
-              <h3 className="text-[17px] font-bold text-neutral-900 leading-snug">
-                Produce your own merch
-              </h3>
-              <p className="text-[13px] text-neutral-500 leading-relaxed">
-                It’s simple to get custom screenprints, puff prints & bespoke apparel drops.
-              </p>
+            <div className="space-y-2.5 pt-2 border-t border-white/[0.06]">
+              {completionSteps.steps.map((step) => (
+                <Link key={step.id} href={step.href} className="block group">
+                  <div className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/[0.04] transition-colors">
+                    <div className="flex items-center gap-2.5">
+                      <div className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${step.completed ? 'bg-cyan-500 text-neutral-950 font-bold' : 'border border-white/20 text-transparent'}`}>
+                        ✓
+                      </div>
+                      <span className={`text-[12.5px] ${step.completed ? 'text-neutral-300 line-through' : 'text-white font-medium group-hover:text-cyan-300'}`}>
+                        {step.label}
+                      </span>
+                    </div>
+                    {!step.completed && (
+                      <ChevronRight className="h-3.5 w-3.5 text-neutral-500 group-hover:text-cyan-400" />
+                    )}
+                  </div>
+                </Link>
+              ))}
             </div>
-            <div className="h-16 w-16 shrink-0 rounded-2xl bg-neutral-900 text-white flex items-center justify-center shadow-md">
-              <Sparkles className="h-7 w-7 text-[#C6FF33]" />
+          </div>
+
+          {/* Quick Concierge Support Card */}
+          <div className="p-6 rounded-[26px] bg-gradient-to-br from-emerald-950/40 to-teal-950/40 border border-emerald-500/30 backdrop-blur-xl shadow-xl space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+                <MessageCircle className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-[15px] font-bold text-white">
+                  VIP Concierge
+                </h3>
+                <p className="text-[12px] text-emerald-400 font-medium">
+                  Direct WhatsApp Line
+                </p>
+              </div>
             </div>
-          </motion.div>
-        </Link>
-
-        {/* ── Section: Settings ─────────────────────────────── */}
-        <div className="mt-8 w-full">
-          <h2 className="text-[22px] font-bold text-neutral-900 tracking-tight mb-2">
-            Settings
-          </h2>
-          <div className="divide-y divide-neutral-100">
-            <Link href="/account/settings" className="block">
-              <motion.div whileTap={{ scale: 0.99 }} className="flex items-center justify-between py-4 cursor-pointer">
-                <div className="flex items-center gap-4">
-                  <User className="w-[22px] h-[22px] text-neutral-800 stroke-[1.6]" />
-                  <span className="text-[16px] text-neutral-900 font-normal">Personal information</span>
-                </div>
-                <ChevronRight className="w-5 h-5 text-neutral-400 stroke-[2]" />
-              </motion.div>
-            </Link>
-
-            <Link href="/account/settings" className="block">
-              <motion.div whileTap={{ scale: 0.99 }} className="flex items-center justify-between py-4 cursor-pointer">
-                <div className="flex items-center gap-4">
-                  <MapPin className="w-[22px] h-[22px] text-neutral-800 stroke-[1.6]" />
-                  <span className="text-[16px] text-neutral-900 font-normal">Delivery addresses</span>
-                </div>
-                <ChevronRight className="w-5 h-5 text-neutral-400 stroke-[2]" />
-              </motion.div>
-            </Link>
-
-            <Link href="/account/settings" className="block">
-              <motion.div whileTap={{ scale: 0.99 }} className="flex items-center justify-between py-4 cursor-pointer">
-                <div className="flex items-center gap-4">
-                  <Lock className="w-[22px] h-[22px] text-neutral-800 stroke-[1.6]" />
-                  <span className="text-[16px] text-neutral-900 font-normal">Login & security</span>
-                </div>
-                <ChevronRight className="w-5 h-5 text-neutral-400 stroke-[2]" />
-              </motion.div>
-            </Link>
-          </div>
-        </div>
-
-        {/* ── Section: Studio Activity ──────────────────────── */}
-        <div className="mt-8 w-full">
-          <h2 className="text-[22px] font-bold text-neutral-900 tracking-tight mb-2">
-            Studio Activity
-          </h2>
-          <div className="divide-y divide-neutral-100">
-            <Link href="/account/orders" className="block">
-              <motion.div whileTap={{ scale: 0.99 }} className="flex items-center justify-between py-4 cursor-pointer">
-                <div className="flex items-center gap-4">
-                  <Package className="w-[22px] h-[22px] text-neutral-800 stroke-[1.6]" />
-                  <span className="text-[16px] text-neutral-900 font-normal">Orders & live tracking</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {activeOrders.length > 0 && (
-                    <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
-                      {activeOrders.length} active
-                    </span>
-                  )}
-                  <ChevronRight className="w-5 h-5 text-neutral-400 stroke-[2]" />
-                </div>
-              </motion.div>
-            </Link>
-
-            <Link href="/account/wishlist" className="block">
-              <motion.div whileTap={{ scale: 0.99 }} className="flex items-center justify-between py-4 cursor-pointer">
-                <div className="flex items-center gap-4">
-                  <Heart className="w-[22px] h-[22px] text-neutral-800 stroke-[1.6]" />
-                  <span className="text-[16px] text-neutral-900 font-normal">Saved wishlist</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {wishlistCount > 0 && (
-                    <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-neutral-100 text-neutral-700">
-                      {wishlistCount}
-                    </span>
-                  )}
-                  <ChevronRight className="w-5 h-5 text-neutral-400 stroke-[2]" />
-                </div>
-              </motion.div>
-            </Link>
-
-            <Link href="/account/files" className="block">
-              <motion.div whileTap={{ scale: 0.99 }} className="flex items-center justify-between py-4 cursor-pointer">
-                <div className="flex items-center gap-4">
-                  <FolderOpen className="w-[22px] h-[22px] text-neutral-800 stroke-[1.6]" />
-                  <span className="text-[16px] text-neutral-900 font-normal">Uploaded files & artwork</span>
-                </div>
-                <ChevronRight className="w-5 h-5 text-neutral-400 stroke-[2]" />
-              </motion.div>
-            </Link>
-          </div>
-        </div>
-
-        {/* ── Section: Studio Services ──────────────────────── */}
-        <div className="mt-8 w-full">
-          <h2 className="text-[22px] font-bold text-neutral-900 tracking-tight mb-2">
-            Studio Services
-          </h2>
-          <div className="divide-y divide-neutral-100">
-            <Link href="/order" className="block">
-              <motion.div whileTap={{ scale: 0.99 }} className="flex items-center justify-between py-4 cursor-pointer">
-                <div className="flex items-center gap-4">
-                  <Sparkles className="w-[22px] h-[22px] text-neutral-800 stroke-[1.6]" />
-                  <span className="text-[16px] text-neutral-900 font-normal">Custom apparel drops</span>
-                </div>
-                <ChevronRight className="w-5 h-5 text-neutral-400 stroke-[2]" />
-              </motion.div>
-            </Link>
-
-            <Link href="/services" className="block">
-              <motion.div whileTap={{ scale: 0.99 }} className="flex items-center justify-between py-4 cursor-pointer">
-                <div className="flex items-center gap-4">
-                  <Palette className="w-[22px] h-[22px] text-neutral-800 stroke-[1.6]" />
-                  <span className="text-[16px] text-neutral-900 font-normal">Services catalog</span>
-                </div>
-                <ChevronRight className="w-5 h-5 text-neutral-400 stroke-[2]" />
-              </motion.div>
-            </Link>
-
+            <p className="text-[12px] text-neutral-300 leading-relaxed">
+              Need assistance with an active order or custom fabric selection? Chat directly with our Lagos studio team.
+            </p>
             <a
               href="https://wa.me/2347064829776?text=Hi+Silk+Studio%2C+I%27d+like+VIP+concierge+support"
               target="_blank"
               rel="noopener noreferrer"
-              className="block"
+              className="block w-full py-2.5 px-4 rounded-xl bg-emerald-500 text-neutral-950 font-bold text-[13px] text-center hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20"
             >
-              <motion.div whileTap={{ scale: 0.99 }} className="flex items-center justify-between py-4 cursor-pointer">
-                <div className="flex items-center gap-4">
-                  <MessageCircle className="w-[22px] h-[22px] text-emerald-600 stroke-[1.6]" />
-                  <span className="text-[16px] text-neutral-900 font-normal">WhatsApp Studio VIP</span>
-                </div>
-                <ExternalLink className="w-4 h-4 text-neutral-400 stroke-[2]" />
-              </motion.div>
+              Connect on WhatsApp
             </a>
-          </div>
-        </div>
-
-        {/* ── Section: Account ──────────────────────────────── */}
-        <div className="mt-8 w-full">
-          <h2 className="text-[22px] font-bold text-neutral-900 tracking-tight mb-2">
-            Account
-          </h2>
-          <div className="divide-y divide-neutral-100">
-            {isAdmin && (
-              <Link href="/admin" className="block">
-                <motion.div whileTap={{ scale: 0.99 }} className="flex items-center justify-between py-4 cursor-pointer">
-                  <div className="flex items-center gap-4">
-                    <ShieldCheck className="w-[22px] h-[22px] text-neutral-800 stroke-[1.6]" />
-                    <span className="text-[16px] text-neutral-900 font-normal">Admin console</span>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-neutral-400 stroke-[2]" />
-                </motion.div>
-              </Link>
-            )}
-
-            <button
-              type="button"
-              onClick={() => signOut()}
-              className="w-full text-left cursor-pointer"
-            >
-              <motion.div whileTap={{ scale: 0.99 }} className="flex items-center justify-between py-4">
-                <div className="flex items-center gap-4 text-rose-600">
-                  <LogOut className="w-[22px] h-[22px] stroke-[1.8]" />
-                  <span className="text-[16px] font-semibold">Log out</span>
-                </div>
-              </motion.div>
-            </button>
-          </div>
-        </div>
-
-        {/* Footnote */}
-        <div className="text-center pt-8 pb-12">
-          <p className="text-[12px] font-medium text-neutral-400">
-            Silk Studio • v2.4.0 (Build 412)
-          </p>
-        </div>
-      </div>
-
-
-      {/* ═════════════════════════════════════════════════════════
-          DESKTOP VIEW (Peerlist Profile Style — screens >= 768px)
-      ═════════════════════════════════════════════════════════ */}
-      <div className="hidden md:block space-y-8">
-        {/* ── Top Profile Header Banner ───────────────────────── */}
-        <div className="relative rounded-[28px] border border-neutral-200/80 bg-white overflow-hidden shadow-sm">
-          {/* Ambient Banner Gradient */}
-          <div className="h-36 w-full bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-950 relative">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(198,255,51,0.15),transparent_60%)]" />
-            <div className="absolute top-4 right-5 flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-[11px] font-medium text-white border border-white/10">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Active Studio Member
-              </span>
-            </div>
-          </div>
-
-          {/* Profile details under banner */}
-          <div className="px-8 pb-7 pt-0 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-            <div className="flex items-end gap-5 -mt-12">
-              {/* Avatar with Verified Badge */}
-              <div className="relative">
-                <div className="flex h-24 w-24 items-center justify-center rounded-[24px] bg-neutral-900 text-white text-2xl font-bold border-4 border-white shadow-xl">
-                  {initials}
-                </div>
-                <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500 text-white border-2 border-white shadow-sm">
-                  <Check className="w-4 h-4 stroke-[3]" />
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center gap-2.5">
-                  <h1 className="text-[24px] font-bold tracking-tight text-neutral-900">
-                    {displayName}
-                  </h1>
-                  {isAdmin && (
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-neutral-900 text-white shadow-xs">
-                      Admin
-                    </span>
-                  )}
-                </div>
-                <p className="text-[13px] text-neutral-500 font-medium">@{handle} • Lagos, Nigeria</p>
-                <p className="text-[12px] text-neutral-400 mt-0.5">
-                  Silk Studio ID: {user?.id.substring(0, 8)}...
-                </p>
-              </div>
-            </div>
-
-            {/* Quick Action Buttons */}
-            <div className="flex items-center gap-3">
-              <Link
-                href="/account/settings"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-200 text-[13px] font-semibold text-neutral-700 hover:bg-neutral-50 transition-colors shadow-xs"
-              >
-                <User className="w-3.5 h-3.5 stroke-[2]" />
-                <span>Edit Profile</span>
-              </Link>
-              <Link
-                href="/order"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-900 text-white text-[13px] font-semibold hover:bg-neutral-800 active:scale-95 transition-all shadow-xs"
-              >
-                <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                <span>Custom Order</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* ── 2-Column Dashboard Layout ──────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Column (2 spans) */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Metric counters */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="p-5 rounded-[22px] bg-white border border-neutral-200/80 shadow-xs">
-                <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
-                  Active Orders
-                </p>
-                <p className="text-[26px] font-bold text-neutral-900 mt-1">
-                  {activeOrders.length}
-                </p>
-              </div>
-
-              <div className="p-5 rounded-[22px] bg-white border border-neutral-200/80 shadow-xs">
-                <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
-                  Completed
-                </p>
-                <p className="text-[26px] font-bold text-neutral-900 mt-1">
-                  {completedOrders.length}
-                </p>
-              </div>
-
-              <div className="p-5 rounded-[22px] bg-white border border-neutral-200/80 shadow-xs">
-                <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
-                  Wishlist Items
-                </p>
-                <p className="text-[26px] font-bold text-neutral-900 mt-1">
-                  {wishlistCount}
-                </p>
-              </div>
-            </div>
-
-            {/* Live Active Order Progress Bar */}
-            {activeOrders.length > 0 ? (
-              <div className="p-6 rounded-[24px] bg-white border border-neutral-200/80 shadow-sm space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600">
-                      Live Delivery Tracking
-                    </span>
-                    <h2 className="text-[17px] font-bold text-neutral-900 mt-0.5">
-                      Order #{activeOrders[0].paystack_ref.substring(0, 14)}
-                    </h2>
-                  </div>
-                  <Link
-                    href={`/account/orders`}
-                    className="text-[13px] font-semibold text-neutral-500 hover:text-neutral-950 flex items-center gap-1 transition-colors"
-                  >
-                    <span>View all</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-
-                {/* Milestone Stepper */}
-                <div className="pt-3">
-                  <div className="grid grid-cols-5 gap-2 text-center">
-                    {MILESTONES.map((step, idx) => {
-                      const currentIdx = getMilestoneIndex(activeOrders[0].status);
-                      const isComplete = idx <= currentIdx;
-                      return (
-                        <div key={step.key} className="flex flex-col items-center gap-2">
-                          <div
-                            className={`h-2.5 w-full rounded-full transition-all duration-500 ${
-                              isComplete
-                                ? 'bg-neutral-900'
-                                : 'bg-neutral-200'
-                            }`}
-                          />
-                          <span
-                            className={`text-[12px] font-medium ${
-                              isComplete
-                                ? 'text-neutral-900 font-bold'
-                                : 'text-neutral-400'
-                            }`}
-                          >
-                            {step.label}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="p-7 rounded-[24px] bg-white border border-neutral-200/80 shadow-sm flex items-center justify-between">
-                <div>
-                  <h2 className="text-[16px] font-bold text-neutral-900">
-                    No active orders in production
-                  </h2>
-                  <p className="text-[13px] text-neutral-500 mt-0.5">
-                    Browse the latest studio collection or initiate a custom streetwear drop.
-                  </p>
-                </div>
-                <Link
-                  href="/apparel"
-                  className="px-4 py-2 rounded-xl bg-neutral-900 text-white text-[13px] font-semibold hover:bg-neutral-800 transition-colors shrink-0"
-                >
-                  Shop Apparel
-                </Link>
-              </div>
-            )}
-
-            {/* Showcase Grid */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-[17px] font-bold text-neutral-900">
-                  Studio Showcase & Services
-                </h2>
-                <Link
-                  href="/services"
-                  className="text-[13px] font-semibold text-neutral-500 hover:text-neutral-900 transition-colors"
-                >
-                  Explore All
-                </Link>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-5 rounded-[22px] bg-white border border-neutral-200/80 shadow-xs flex flex-col justify-between hover:border-neutral-400 transition-all">
-                  <div>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-100 text-neutral-900 mb-3">
-                      <ShoppingBag className="w-5 h-5 stroke-[1.8]" />
-                    </div>
-                    <h3 className="text-[15px] font-bold text-neutral-900">
-                      Custom Streetwear Drops
-                    </h3>
-                    <p className="text-[13px] text-neutral-500 mt-1 leading-relaxed">
-                      260gsm combed cotton tees, hoodies, and cargo accessories screenprinted with custom inks.
-                    </p>
-                  </div>
-                  <Link
-                    href="/order"
-                    className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-bold text-neutral-900 hover:underline underline-offset-4"
-                  >
-                    <span>Request Drops Quote</span>
-                    <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
-                  </Link>
-                </div>
-
-                <div className="p-5 rounded-[22px] bg-white border border-neutral-200/80 shadow-xs flex flex-col justify-between hover:border-neutral-400 transition-all">
-                  <div>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-100 text-neutral-900 mb-3">
-                      <Palette className="w-5 h-5 stroke-[1.8]" />
-                    </div>
-                    <h3 className="text-[15px] font-bold text-neutral-900">
-                      Brand Identity & Printing
-                    </h3>
-                    <p className="text-[13px] text-neutral-500 mt-1 leading-relaxed">
-                      Custom packaging, product tags, stationery, and premium foil-embossed lookbooks.
-                    </p>
-                  </div>
-                  <Link
-                    href="/services"
-                    className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-bold text-neutral-900 hover:underline underline-offset-4"
-                  >
-                    <span>View Print Specs</span>
-                    <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Sidebar Column (Peerlist Profile Completion) */}
-          <div className="space-y-6">
-            {/* Profile Completion Widget */}
-            <div className="p-6 rounded-[26px] bg-white border border-neutral-200/80 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-[15px] font-bold text-neutral-900">
-                    Profile Completion
-                  </h3>
-                  <p className="text-[12px] text-neutral-400">
-                    Boost studio tier benefits
-                  </p>
-                </div>
-                <RadialProgress percentage={completionSteps.percentage} />
-              </div>
-
-              {/* Steps Checklist */}
-              <div className="space-y-2 pt-2 border-t border-neutral-100">
-                {completionSteps.steps.map((step) => (
-                  <Link
-                    key={step.id}
-                    href={step.href}
-                    className="flex items-center justify-between p-2.5 rounded-xl hover:bg-neutral-50 transition-colors group"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div
-                        className={`flex h-5 w-5 items-center justify-center rounded-full transition-colors ${
-                          step.completed
-                            ? 'bg-emerald-500 text-white'
-                            : 'border-2 border-neutral-300 text-transparent'
-                        }`}
-                      >
-                        <Check className="w-3 h-3 stroke-[3]" />
-                      </div>
-                      <span
-                        className={`text-[13px] transition-colors ${
-                          step.completed
-                            ? 'text-neutral-400 line-through'
-                            : 'text-neutral-800 font-semibold group-hover:text-neutral-950'
-                        }`}
-                      >
-                        {step.label}
-                      </span>
-                    </div>
-                    <ChevronRight className="w-3.5 h-3.5 text-neutral-300 group-hover:text-neutral-500 transition-colors" />
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* Studio VIP Card */}
-            <div className="p-6 rounded-[26px] bg-white border border-neutral-200/80 shadow-sm">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
-                <span className="text-[12px] font-bold uppercase tracking-wider text-emerald-700">
-                  VIP Studio Member
-                </span>
-              </div>
-              <h4 className="text-[16px] font-bold leading-snug mb-1 text-neutral-900">
-                Direct WhatsApp Concierge
-              </h4>
-              <p className="text-[13px] text-neutral-500 leading-relaxed mb-4">
-                Skip the queue for custom screenprinting orders and design proofing.
-              </p>
-              <a
-                href="https://wa.me/2347064829776?text=Hi+Silk+Studio%2C+I%27d+like+VIP+concierge+support"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 w-full justify-center py-2.5 rounded-xl bg-neutral-900 text-white text-[13px] font-bold hover:bg-neutral-800 transition-colors shadow-xs"
-              >
-                <MessageCircle className="w-4 h-4 stroke-[2]" />
-                <span>Chat with Production Lead</span>
-              </a>
-            </div>
           </div>
         </div>
       </div>
