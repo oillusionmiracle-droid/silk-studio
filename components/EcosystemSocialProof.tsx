@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -54,7 +54,7 @@ const LOGO_PATHS = [
   '/images/clients/client-logo-3.png',
   '/images/clients/client-logo-4.png',
   '/images/clients/client-logo-5.png',
-  '/images/clients/client-logo-6.png',
+  '/images/clients/Meta_Platforms_Inc._logo.svg',
 ];
 
 const BRAND_NAMES = [
@@ -63,7 +63,7 @@ const BRAND_NAMES = [
   'Studio Trace',
   'Pulse Africa',
   'Apex Lagos',
-  'Nexus Labs',
+  'Meta',
 ];
 
 // --- Logo Component with Monogram Fallback ---
