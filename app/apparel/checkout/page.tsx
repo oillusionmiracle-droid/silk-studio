@@ -312,14 +312,16 @@ if (!PAYSTACK_PUBLIC_KEY) {
           activeRef = orderData.paystack_ref;
           verifiedTotalKobo = Math.round(orderData.total * 100);
         } else {
-          // Fallback: generate ref locally if server couldn't initialize order
-          activeRef = `SLK-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
-          verifiedTotalKobo = Math.round(grandTotal * 100);
+          setIsInitializing(false);
+          setErrorMessage('We could not set up your order right now. Please try again in a moment.');
+          setStatus('error');
+          return;
         }
       } else {
-        // Fallback: edge function unavailable or unseeded DB
-        activeRef = `SLK-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
-        verifiedTotalKobo = Math.round(grandTotal * 100);
+        setIsInitializing(false);
+        setErrorMessage('We could not reach our order server right now. Please try again in a moment.');
+        setStatus('error');
+        return;
       }
 
       setOrderRef(activeRef);

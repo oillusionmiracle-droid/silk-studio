@@ -47,6 +47,9 @@ serve(async (req) => {
       type = 'apparel',
       specs = null,
       reference_files = [],
+      client_total = 0,
+      pay_full = true,
+      is_custom_quote = false,
     } = await req.json();
 
     if (!customer_name || !phone || !address || !area) {
@@ -237,6 +240,12 @@ serve(async (req) => {
       // Custom order flow
       const paystackRef = `SLK-CUST-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
 
+      const safeTotal = Number(client_total) > 0 ? Number(client_total) : 0;
+      const requiredAmount = is_custom_quote
+        ? 0
+        : Math.round(pay_full ? safeTotal : safeTotal * 0.75);
+      const orderStatus = is_custom_quote ? 'quote_requested' : 'pending';
+
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
@@ -247,18 +256,21 @@ serve(async (req) => {
           phone,
           address,
           area,
-          subtotal: 0,
+          subtotal: safeTotal,
           delivery_fee: 0,
-          total: 0,
-          status: 'quote_requested',
+          total: safeTotal,
+          server_verified_amount: requiredAmount,
+          status: orderStatus,
           paystack_ref: paystackRef,
           specs: specs || null,
           reference_files: reference_files || [],
           status_history: [
             {
-              status: 'quote_requested',
+              status: orderStatus,
               timestamp: new Date().toISOString(),
-              note: 'Custom design quote requested',
+              note: is_custom_quote
+                ? 'Custom design quote requested'
+                : `Order initiated — ${pay_full ? 'full payment' : 'deposit'} expected`,
             },
           ],
         })
