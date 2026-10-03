@@ -7,9 +7,10 @@ import { Sun, Moon } from 'lucide-react';
 import AccountMenu from '@/components/auth/AccountMenu';
 import { useOrderTheme } from '@/lib/OrderThemeContext';
 
-const navLinks = [
+const navLinks: { label: string; href: string; accent?: string }[] = [
   { label: 'Home', href: '/' },
   { label: 'Services', href: '/services' },
+  { label: 'Moremi', href: '/moremi', accent: '#38BDF8' },
   { label: 'Portfolio', href: '/portfolio' },
   { label: 'Apparel', href: '/apparel' },
   { label: 'About', href: '/about' },
@@ -36,11 +37,12 @@ export default function Navbar() {
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
 
-  // Hide main navbar on apparel, account, and admin routes (they have their own dedicated clean navigation)
+  // Hide main navbar on apparel, account, admin, and moremi routes (they have their own dedicated clean navigation)
   if (
     pathname?.startsWith('/apparel') ||
     pathname?.startsWith('/account') ||
-    pathname?.startsWith('/admin')
+    pathname?.startsWith('/admin') ||
+    pathname?.startsWith('/moremi')
   ) {
     return null;
   }
@@ -114,7 +116,7 @@ export default function Navbar() {
           }}
           className="hidden md:flex"
         >
-          {navLinks.map((link) => (
+          {navLinks.filter((link) => link.label !== 'Moremi').map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -123,13 +125,13 @@ export default function Navbar() {
                 fontFamily: 'var(--font-jakarta)',
                 fontSize: 14,
                 fontWeight: 500,
-                color: isOrderLight ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.6)',
+                color: link.accent || (isOrderLight ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.6)'),
                 textDecoration: 'none',
                 letterSpacing: '0.2px',
                 transition: 'color 0.25s ease',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = isOrderLight ? '#000000' : '#ffffff')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = isOrderLight ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.6)')}
+              onMouseEnter={(e) => (e.currentTarget.style.color = link.accent ? '#7DD3FC' : isOrderLight ? '#000000' : '#ffffff')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = link.accent || (isOrderLight ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.6)'))}
             >
               {link.label}
             </Link>
@@ -266,14 +268,14 @@ export default function Navbar() {
               fontFamily: 'var(--font-jakarta)',
               fontSize: 22,
               fontWeight: 700,
-              color: '#ffffff',
+              color: link.accent || '#ffffff',
               textDecoration: 'none',
               letterSpacing: '-0.5px',
               animationDelay: menuOpen ? `${i * 60}ms` : '0ms',
               opacity: menuOpen ? undefined : 0,
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = '#C6FF33')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = '#ffffff')}
+            onMouseEnter={(e) => (e.currentTarget.style.color = link.accent ? '#7DD3FC' : '#C6FF33')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = link.accent || '#ffffff')}
           >
             {link.label}
           </Link>

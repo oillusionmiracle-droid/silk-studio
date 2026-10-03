@@ -20,6 +20,7 @@ export default function MobileBottomNav() {
   
   // Detect if on apparel page for light mode
   const isApparelPage = pathname.includes('/apparel');
+  const isMoremiPage = pathname.startsWith('/moremi');
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -49,8 +50,8 @@ export default function MobileBottomNav() {
   const isAccountPage = pathname.startsWith('/account');
   const isAdminPage = pathname.startsWith('/admin');
 
-  // Hide entirely on apparel and admin routes
-  if (isApparelPage || isAdminPage) return null;
+  // Hide entirely on apparel, admin, and moremi routes
+  if (isApparelPage || isAdminPage || isMoremiPage) return null;
 
   if (!isMobile) return null;
 

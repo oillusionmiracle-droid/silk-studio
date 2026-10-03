@@ -138,7 +138,7 @@ export default function Footer() {
   }, []);
 
   // Hide main footer on apparel routes — apparel has its own footer
-  if (pathname?.startsWith('/apparel')) return null;
+  if (pathname?.startsWith('/apparel') || pathname?.startsWith('/moremi')) return null;
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();

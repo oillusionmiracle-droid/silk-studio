@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 
 export default function LoadingScreen() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(true);
   const [exiting, setExiting] = useState(false);
   const [animData, setAnimData] = useState<object | null>(null);
@@ -34,6 +36,8 @@ export default function LoadingScreen() {
   };
 
   if (!visible) return null;
+  // Moremi has her own standalone experience — skip the Silk Studio loader there
+  if (pathname?.startsWith('/moremi')) return null;
 
 
 

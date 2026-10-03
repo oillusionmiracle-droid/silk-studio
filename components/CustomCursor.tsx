@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { motion, useSpring, useMotionValue } from 'framer-motion';
 
 export default function CustomCursor() {
+  const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
   const [cursorState, setCursorState] = useState<'default' | 'project' | 'button' | 'image'>('default');
 
@@ -52,6 +54,8 @@ export default function CustomCursor() {
   }, [mouseX, mouseY]);
 
   if (!isVisible) return null;
+  // Moremi has her own standalone experience — no custom cursor there
+  if (pathname?.startsWith('/moremi')) return null;
 
   const variants = {
     default: {
