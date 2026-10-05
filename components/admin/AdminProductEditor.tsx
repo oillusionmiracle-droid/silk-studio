@@ -138,21 +138,21 @@ export default function AdminProductEditor({
               <label className="text-[12px] font-bold text-neutral-700">
                 Primary image URL
                 <input
-                  type="url"
+                  type="text"
                   value={form.image_1_url}
                   onChange={(e) => onUpdateForm('image_1_url', e.target.value)}
                   className="admin-input"
-                  placeholder="https://..."
+                  placeholder="/images/apparel/... or https://..."
                 />
               </label>
               <label className="text-[12px] font-bold text-neutral-700 sm:col-span-2">
                 Secondary image URL
                 <input
-                  type="url"
+                  type="text"
                   value={form.image_2_url}
                   onChange={(e) => onUpdateForm('image_2_url', e.target.value)}
                   className="admin-input"
-                  placeholder="https://..."
+                  placeholder="/images/apparel/... or https://..."
                 />
               </label>
               <label className="text-[12px] font-bold text-neutral-700 sm:col-span-2">
