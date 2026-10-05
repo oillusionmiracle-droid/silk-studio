@@ -51,8 +51,8 @@ const FALLBACK_TESTIMONIALS: Testimonial[] = [
 const LOGO_PATHS = [
   '/images/clients/client-logo-1.png',
   '/images/clients/client-logo-2.png',
-  '/images/clients/client-logo-3.png',
-  '/images/clients/client-logo-4.png',
+  '/images/platforms/cloudflare-white.png',
+  '/images/platforms/supabase-white.png',
   '/images/clients/client-logo-5.png',
   '/images/clients/Meta_Platforms_Inc._logo.svg',
 ];
@@ -60,8 +60,8 @@ const LOGO_PATHS = [
 const BRAND_NAMES = [
   'Vantage',
   'Lumina',
-  'Studio Trace',
-  'Pulse Africa',
+  'Cloudflare',
+  'Supabase',
   'Apex Lagos',
   'Meta',
 ];
