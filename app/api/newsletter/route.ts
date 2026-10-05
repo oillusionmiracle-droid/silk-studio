@@ -11,7 +11,14 @@ import {
   turnstileFailedResponse,
 } from '@/lib/turnstile';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazily constructed: `next build` imports this module to collect page data,
+// and `new Resend()` without a key throws — so never build it at import time.
+// The handler below only runs at request time, where the real key exists.
+let resend: Resend | null = null;
+function getResend(): Resend {
+  if (!resend) resend = new Resend(process.env.RESEND_API_KEY);
+  return resend;
+}
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -100,7 +107,7 @@ export async function POST(req: NextRequest) {
 
     // 2. Add subscriber to Resend
     const { data: contact, error: resendError } =
-      await resend.contacts.create({
+      await getResend().contacts.create({
         email: trimmedEmail,
         unsubscribed: false,
       });
@@ -120,7 +127,7 @@ export async function POST(req: NextRequest) {
     console.log('Newsletter subscriber added to Resend:', contact);
 
     // 3. Trigger the Resend welcome automation
-    const { error: eventError } = await resend.events.send({
+    const { error: eventError } = await getResend().events.send({
       event: 'newsletter.subscribed',
       email: trimmedEmail,
       payload: {

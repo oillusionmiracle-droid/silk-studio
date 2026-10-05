@@ -6,7 +6,14 @@ import {
   rateLimitedResponse,
 } from '@/lib/rateLimit';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Lazily constructed: `next build` imports this module to collect page data,
+// so never build the client at import time. The handler only runs at request
+// time, where the real key exists.
+let ai: GoogleGenAI | null = null;
+function getAi(): GoogleGenAI {
+  if (!ai) ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  return ai;
+}
 
 // Abuse caps: Gemini costs money per token, so keep the window tight.
 const CHAT_LIMIT = 10; // requests
@@ -94,7 +101,7 @@ export async function POST(req: NextRequest) {
       contents.push({ role: m.role, parts: [{ text: m.content }] });
     }
 
-    const responseStream = await ai.models.generateContentStream({
+    const responseStream = await getAi().models.generateContentStream({
       model: 'gemini-3.5-flash',
       contents: contents,
       config: {
