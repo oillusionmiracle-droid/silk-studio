@@ -29,7 +29,7 @@ export interface Product {
  * Lowercase, matching the Apparel admin dropdown.
  * Filters out the PRINT/DESIGN/WEB/BUNDLES/APPAREL order-catalog rows.
  */
-export const APPAREL_CATEGORIES = ['tee', 'shirt', 'hoodie', 'cap'];
+export const APPAREL_CATEGORIES = ['tee', 'shirt', 'jacket', 'cap'];
 
 const FALLBACK_PRODUCTS: Product[] = [
   {
