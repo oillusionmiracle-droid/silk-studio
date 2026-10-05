@@ -239,7 +239,7 @@ interface NewArrivalsGridProps {
 const CATEGORIES = [
   { label: 'ALL PIECES', value: 'all' },
   { label: 'TEES', value: 'tee' },
-  { label: 'HOODIES', value: 'hoodie' },
+  { label: 'JACKETS', value: 'jacket' },
   { label: 'SHIRTS', value: 'shirt' },
   { label: 'HEADWEAR', value: 'cap' },
 ];
