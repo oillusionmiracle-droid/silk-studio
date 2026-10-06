@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2E5AA7">
+<meta name="description" content="Cutout — free background remover. No signup, runs 100% on your device.">
+<title>Cutout — Backgrounds, gone.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..900;1,9..144,500..900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --tile:#2E5AA7;
+    --tile-deep:#1E3F7C;
+    --tile-ink:#12294F;
+    --citrus:#FFA62B;
+    --citrus-soft:#FFC46B;
+    --breeze:#86C5FF;
+    --cream:#F8E6A0;
+    --paper:#FFFDF4;
+    --glass-brd:rgba(255,253,244,.38);
+    --ink-soft:rgba(255,253,244,.78);
+    --ink-faint:rgba(255,253,244,.6);
+    --radius:20px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    font-family:'Instrument Sans',system-ui,-apple-system,sans-serif;
+    color:var(--paper);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.55;
+    background:
+      radial-gradient(1100px 620px at 88% -6%, rgba(255,166,43,.38), transparent 62%),
+      radial-gradient(880px 720px at 6% 22%, rgba(134,197,255,.28), transparent 60%),
+      radial-gradient(1000px 800px at 50% 115%, rgba(134,197,255,.16), transparent 60%),
+      linear-gradient(180deg,#224386 0%, #2E5AA7 32%, #3670BE 64%, #4E86CC 100%);
+    background-attachment:fixed;
+  }
+  /* painted-tile pattern over the sea field */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.07;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='76' height='76' viewBox='0 0 76 76'%3E%3Cg fill='none' stroke='%23FFFDF4' stroke-width='1.4'%3E%3Ccircle cx='38' cy='38' r='13'/%3E%3Cpath d='M38 10v14M38 52v14M10 38h14M52 38h14'/%3E%3Ccircle cx='38' cy='38' r='2.6' fill='%23FFFDF4' stroke='none'/%3E%3C/g%3E%3C/svg%3E");
+    background-size:76px 76px;
+  }
+  .orb{position:fixed;z-index:0;pointer-events:none;border-radius:50%;filter:blur(90px)}
+  .orb-a{width:480px;height:480px;top:-140px;right:-120px;background:radial-gradient(circle,rgba(255,166,43,.5),transparent 70%)}
+  .orb-b{width:560px;height:560px;bottom:-200px;left:-160px;background:radial-gradient(circle,rgba(134,197,255,.4),transparent 70%)}
+  ::selection{background:var(--citrus);color:var(--tile-ink)}
+  :focus-visible{outline:3px solid var(--citrus);outline-offset:3px;border-radius:6px}
+  .hidden{display:none !important}
+  .wrap{position:relative;z-index:1;width:100%;max-width:1060px;margin:0 auto;padding:0 20px}
+
+  .display{font-family:'Fraunces',Georgia,serif}
+
+  /* ---------- top bar ---------- */
+  .topbar{display:flex;justify-content:space-between;align-items:center;padding:24px 0}
+  .wordmark{
+    font-family:'Fraunces',Georgia,serif;font-weight:800;
+    font-size:31px;letter-spacing:-0.015em;color:var(--cream);
+    text-decoration:none;display:inline-flex;align-items:center;gap:1px;
+    text-shadow:0 2px 18px rgba(10,25,60,.45);
+  }
+  .wordmark svg.o{width:.8em;height:.8em;flex:none;transform:translateY(.05em)}
+  .topbar .plain{
+    font-size:13.5px;font-weight:600;color:var(--paper);
+    background:rgba(255,253,244,.14);
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+    border:1px solid var(--glass-brd);border-radius:999px;padding:7px 16px;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{padding:40px 0 12px;max-width:840px}
+  .hero h2{
+    font-family:'Fraunces',Georgia,serif;font-weight:600;
+    font-size:clamp(48px,9.5vw,92px);line-height:1.0;letter-spacing:-0.02em;
+    color:var(--cream);margin-bottom:18px;
+    text-shadow:0 3px 30px rgba(10,25,60,.5);
+  }
+  .hero p{font-size:clamp(16px,2.4vw,19px);color:var(--ink-soft);max-width:54ch;margin-bottom:28px}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:10px;
+    font-family:'Instrument Sans',sans-serif;font-weight:700;font-size:16px;
+    border-radius:999px;cursor:pointer;
+    padding:15px 32px;text-decoration:none;
+    transition:transform .14s ease,box-shadow .14s ease,background .16s ease;
+    border:1px solid transparent;
+  }
+  .btn-primary{
+    background:linear-gradient(180deg,var(--citrus-soft),var(--citrus));
+    color:var(--tile-ink);
+    box-shadow:0 10px 28px -6px rgba(255,166,43,.55), inset 0 1px 0 rgba(255,255,255,.5);
+  }
+  .btn-primary:hover{background:linear-gradient(180deg,#ffd189,var(--citrus));box-shadow:0 14px 34px -6px rgba(255,166,43,.65), inset 0 1px 0 rgba(255,255,255,.5)}
+  .btn-primary:active{transform:translateY(2px);box-shadow:0 4px 14px -4px rgba(255,166,43,.5)}
+  .btn-ghost{
+    background:rgba(255,253,244,.12);color:var(--paper);
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+    border:1px solid var(--glass-brd);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.25);
+  }
+  .btn-ghost:hover{background:rgba(255,253,244,.2)}
+  .btn-ghost:active{transform:translateY(2px)}
+  .btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+  /* ---------- demo sliders ---------- */
+  .demo-sec{padding:36px 0 8px}
+  .demo-featured{margin-bottom:24px}
+  .demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .demo{
+    position:relative;overflow:hidden;border-radius:var(--radius);
+    border:1px solid var(--glass-brd);
+    background:rgba(18,41,79,.35);
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+    box-shadow:0 30px 70px -20px rgba(8,20,48,.6), inset 0 1px 0 rgba(255,255,255,.3);
+    touch-action:pan-y;cursor:ew-resize;user-select:none;-webkit-user-select:none;
+  }
+  .demo-featured .demo{aspect-ratio:16/10}
+  .demo-grid .demo{aspect-ratio:3/2}
+  .demo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+  .demo-afterwrap{position:absolute;top:0;bottom:0;left:0;width:50%;overflow:hidden}
+  .demo-afterwrap img{width:100%;height:100%;object-fit:cover}
+  .demo-handle{position:absolute;top:0;bottom:0;left:50%;width:2px;background:rgba(255,253,244,.9);box-shadow:0 0 12px rgba(10,25,60,.5);pointer-events:none}
+  .demo-knob{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:48px;height:48px;border-radius:50%;
+    background:var(--cream);border:2px solid var(--tile-ink);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 16px rgba(8,20,48,.5);
+  }
+  .demo-knob svg{width:20px;height:20px;stroke:var(--tile-ink);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .chip{
+    position:absolute;top:14px;font-size:12.5px;font-weight:700;letter-spacing:.02em;
+    padding:6px 14px;border-radius:999px;pointer-events:none;
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  }
+  .chip-b{left:14px;background:rgba(255,253,244,.72);border:1px solid rgba(255,255,255,.5);color:var(--tile-ink)}
+  .chip-a{right:14px;background:rgba(18,41,79,.6);border:1px solid var(--glass-brd);color:var(--paper)}
+  .demo-cap{margin-top:12px;font-size:14.5px;font-weight:600;color:var(--ink-soft)}
+  .demo-hint{margin-top:28px;text-align:center;font-size:14px;color:var(--ink-faint);font-weight:500}
+
+  /* ---------- tile divider ---------- */
+  .checker-strip{
+    height:26px;margin:48px 0;opacity:.4;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='76' height='76' viewBox='0 0 76 76'%3E%3Cg fill='none' stroke='%23F8E6A0' stroke-width='2'%3E%3Ccircle cx='38' cy='38' r='13'/%3E%3Cpath d='M38 10v14M38 52v14M10 38h14M52 38h14'/%3E%3Ccircle cx='38' cy='38' r='2.6' fill='%23F8E6A0' stroke='none'/%3E%3C/g%3E%3C/svg%3E");
+    background-size:52px 52px;background-repeat:repeat-x;background-position:center;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);
+  }
+
+  /* ---------- tool ---------- */
+  .tool{max-width:740px;margin:0 auto;padding:6px 0 20px}
+  .tool-head{margin-bottom:24px;text-align:center}
+  .tool-head h3{
+    font-family:'Fraunces',Georgia,serif;font-weight:600;
+    font-size:clamp(30px,5.4vw,44px);letter-spacing:-0.02em;line-height:1.05;
+    color:var(--cream);margin-bottom:10px;
+    text-shadow:0 2px 22px rgba(10,25,60,.5);
+  }
+  .tool-head p{color:var(--ink-soft);font-size:16px}
+  .panel{
+    background:linear-gradient(165deg, rgba(255,253,244,.20), rgba(255,253,244,.07));
+    -webkit-backdrop-filter:blur(26px) saturate(1.3);backdrop-filter:blur(26px) saturate(1.3);
+    border:1px solid var(--glass-brd);border-radius:26px;
+    padding:clamp(22px,4.5vw,36px);
+    box-shadow:0 34px 80px -22px rgba(8,20,48,.65), inset 0 1px 0 rgba(255,255,255,.35);
+  }
+  .dropzone{
+    border:2px dashed rgba(134,197,255,.65);border-radius:var(--radius);
+    background:rgba(255,253,244,.06);
+    padding:clamp(38px,7vw,58px) 20px;text-align:center;cursor:pointer;
+    transition:background .16s,transform .16s,border-color .16s;
+  }
+  .dropzone:hover{background:rgba(255,253,244,.11)}
+  .dropzone.drag{background:rgba(255,166,43,.14);border-color:var(--citrus);border-style:solid;transform:scale(1.01)}
+  .dropzone svg.tray{width:44px;height:44px;stroke:var(--breeze);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;margin-bottom:14px}
+  .dropzone h4{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:clamp(23px,4.8vw,31px);letter-spacing:-0.01em;margin-bottom:10px;color:var(--paper)}
+  .dropzone p{color:var(--ink-soft);font-size:14.5px;font-weight:500}
+  .dropzone .cta{color:var(--citrus-soft);font-weight:700}
+  .engine-status{margin-top:16px;font-size:13.5px;font-weight:500;color:var(--breeze);text-align:center;min-height:20px}
+  .engine-status.ok{color:var(--cream);font-weight:700}
+  .engine-status.bad{color:var(--citrus-soft);font-weight:700}
+  .steps{list-style:none;margin-top:24px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .steps li{
+    display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:600;color:var(--paper);
+    background:rgba(255,253,244,.1);border:1px solid var(--glass-brd);border-radius:999px;padding:8px 16px 8px 9px;
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  }
+  .steps li b{
+    width:24px;height:24px;flex:none;border-radius:50%;
+    background:var(--tile-ink);color:var(--cream);
+    font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  .steps li:nth-child(2) b{background:var(--citrus);color:var(--tile-ink)}
+
+  /* ---------- progress view ---------- */
+  .prog-head{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+  .prog-head img{width:60px;height:60px;object-fit:cover;border-radius:12px;border:1px solid var(--glass-brd);flex:none;background:rgba(18,41,79,.4)}
+  .prog-head .name{font-weight:700;font-size:15px;word-break:break-all;color:var(--paper)}
+  .prog-head .sub{color:var(--ink-soft);font-size:13px;font-weight:500;margin-top:3px}
+  .bar{height:14px;border-radius:999px;background:rgba(255,253,244,.14);border:1px solid var(--glass-brd);overflow:hidden;margin:6px 0 12px}
+  .bar .fill{height:100%;width:0%;background:linear-gradient(90deg,var(--citrus),var(--citrus-soft));transition:width .25s ease}
+  .prog-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+  #progress-label{font-size:14px;font-weight:500;color:var(--ink-soft)}
+  #progress-pct{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:24px;color:var(--cream)}
+  .btn-row{display:flex;gap:14px;margin-top:24px;flex-wrap:wrap}
+  .btn-row .btn{flex:1;min-width:150px}
+
+  /* ---------- result view ---------- */
+  .result-name{font-size:13px;font-weight:600;color:var(--ink-faint);margin-bottom:12px;word-break:break-all}
+  .stage-wrap{
+    border:1px solid var(--glass-brd);border-radius:var(--radius);overflow:hidden;
+    transition:background .2s;background:rgba(18,41,79,.35);
+    box-shadow:inset 0 2px 18px rgba(8,20,48,.35);
+  }
+  .stage-wrap.bg-transparent{
+    background-color:#fdfbf2;
+    background-image:conic-gradient(#dfe9f6 0 25%, #fbf3d8 0 50%, #dfe9f6 0 75%, #fbf3d8 0);
+    background-size:22px 22px;
+  }
+  .stage-wrap.bg-white{background:#ffffff}
+  .stage-wrap.bg-black{background:#101418}
+  .compare{position:relative;user-select:none;-webkit-user-select:none;touch-action:pan-y}
+  .compare img.base{display:block;width:100%;height:auto;max-height:60vh;object-fit:contain;margin:0 auto}
+  .compare img.on-top{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}
+  .divider{position:absolute;top:0;bottom:0;width:2px;background:var(--cream);pointer-events:none;box-shadow:0 0 10px rgba(8,20,48,.5)}
+  .divider .knob{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:44px;height:44px;border-radius:50%;
+    background:var(--cream);border:2px solid var(--tile-ink);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:15px;color:var(--tile-ink);
+    box-shadow:0 3px 14px rgba(8,20,48,.5);
+  }
+  .tag{
+    position:absolute;top:12px;font-size:12.5px;font-weight:700;letter-spacing:.02em;
+    padding:6px 14px;border-radius:999px;pointer-events:none;
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  }
+  .tag-before{left:12px;background:rgba(255,253,244,.72);border:1px solid rgba(255,255,255,.5);color:var(--tile-ink)}
+  .tag-after{right:12px;background:rgba(18,41,79,.6);border:1px solid var(--glass-brd);color:var(--paper)}
+  .compare-slider{margin:22px 4px 4px}
+  .compare-slider label{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:10px;text-align:center}
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;width:100%;height:10px;border-radius:999px;
+    background:rgba(255,253,244,.18);border:1px solid var(--glass-brd);outline:none;cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:28px;height:28px;border-radius:50%;
+    background:linear-gradient(180deg,var(--citrus-soft),var(--citrus));border:2px solid var(--tile-ink);cursor:pointer;
+    box-shadow:0 4px 12px rgba(8,20,48,.5);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:24px;height:24px;border-radius:50%;
+    background:linear-gradient(180deg,var(--citrus-soft),var(--citrus));border:2px solid var(--tile-ink);cursor:pointer;
+  }
+  input[type=range]::-moz-range-track{height:10px;border-radius:999px;background:rgba(255,253,244,.18);border:1px solid var(--glass-brd)}
+  .toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px;flex-wrap:wrap}
+  .seg{
+    display:inline-flex;background:rgba(255,253,244,.1);border:1px solid var(--glass-brd);
+    border-radius:999px;padding:4px;gap:4px;
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  }
+  .seg button{
+    border:none;background:transparent;color:var(--ink-soft);
+    font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:700;
+    padding:9px 16px;border-radius:999px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .seg button.active{background:var(--cream);color:var(--tile-ink)}
+  .seg .swatch{width:15px;height:15px;border-radius:4px;border:1px solid currentColor;flex:none}
+  .swatch.s-transparent{background:conic-gradient(#bcd9f5 0 25%, #fbf3d8 0 50%, #bcd9f5 0 75%, #fbf3d8 0);background-size:8px 8px}
+  .swatch.s-white{background:#fff}
+  .swatch.s-black{background:#111}
+
+  /* ---------- error view ---------- */
+  .error-box{text-align:center;padding:28px 8px}
+  .error-box .mark{
+    width:62px;height:62px;margin:0 auto 18px;border-radius:50%;
+    background:linear-gradient(180deg,var(--citrus-soft),var(--citrus));
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 8px 24px rgba(255,166,43,.4);
+  }
+  .error-box .mark svg{width:28px;height:28px;stroke:var(--tile-ink);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .error-box h4{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:30px;letter-spacing:-0.01em;margin-bottom:10px;color:var(--cream)}
+  .error-box p{color:var(--ink-soft);font-size:14.5px;font-weight:500;line-height:1.65;max-width:42ch;margin:0 auto 24px}
+  .error-box .btn{margin:0 auto}
+
+  footer{margin:60px 0 10px;text-align:center;color:var(--ink-soft);font-size:14px;font-weight:500;line-height:1.75;max-width:62ch;margin-left:auto;margin-right:auto}
+  footer .free{color:var(--cream);font-weight:700}
+  footer .credit{display:block;margin-top:10px;font-size:12.5px;color:var(--ink-faint)}
+
+  @media (max-width:640px){
+    .demo-grid{grid-template-columns:1fr}
+    .demo-featured .demo{aspect-ratio:4/3}
+    .btn-row .btn{min-width:0}
+    .toolbar{flex-direction:column;align-items:stretch}
+    .seg{justify-content:center}
+    .topbar .plain{display:none}
+    .orb-a{width:320px;height:320px}
+    .orb-b{width:360px;height:360px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *{transition:none !important;animation:none !important}
+  }
+</style>
+
+</head>
+<body id="top">
+<div class="orb orb-a" aria-hidden="true"></div>
+<div class="orb orb-b" aria-hidden="true"></div>
+<div class="wrap">
+
+  <header class="topbar">
+    <a class="wordmark" href="#top" aria-label="Cutout home">Cut<svg class="o" viewBox="0 0 32 32" aria-hidden="true"><defs><pattern id="ck" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#F8E6A0"/><rect width="4" height="4" fill="#2E5AA7"/><rect x="4" y="4" width="4" height="4" fill="#2E5AA7"/></pattern></defs><circle cx="16" cy="16" r="14.5" fill="url(#ck)" stroke="#F8E6A0" stroke-width="2.5"/></svg>ut</a>
+    <span class="plain">Free, no signup.</span>
+  </header>
+
+  <section class="hero">
+    <h2>Backgrounds, gone.</h2>
+    <p>Cutout removes photo backgrounds right on your device — no uploads, no accounts. Watch it work below, then try it yourself.</p>
+    <a class="btn btn-primary" href="#tool">Cut a photo</a>
+  </section>
+
+  <section class="demo-sec" aria-label="Before and after examples">
+    <div class="demo-featured">
+      <div class="demo" data-demo role="img" aria-label="Before and after: background removed from a portrait photo">
+        <img src="img/before-portrait.jpg" alt="">
+        <div class="demo-afterwrap"><img src="img/after-portrait.jpg" alt=""></div>
+        <div class="demo-handle"><span class="demo-knob"><svg viewBox="0 0 24 24"><path d="M9 6l-5 6 5 6M15 6l5 6-5 6"/></svg></span></div>
+        <span class="chip chip-b">Before</span>
+        <span class="chip chip-a">After</span>
+      </div>
+      <p class="demo-cap">Portrait — shot on a busy Lagos street, cut clean.</p>
+    </div>
+    <div class="demo-grid">
+      <div>
+        <div class="demo" data-demo role="img" aria-label="Before and after: background removed from a red sneakers product photo">
+          <img src="img/before-sneakers.jpg" alt="">
+          <div class="demo-afterwrap"><img src="img/after-sneakers.jpg" alt=""></div>
+          <div class="demo-handle"><span class="demo-knob"><svg viewBox="0 0 24 24"><path d="M9 6l-5 6 5 6M15 6l5 6-5 6"/></svg></span></div>
+          <span class="chip chip-b">Before</span>
+          <span class="chip chip-a">After</span>
+        </div>
+        <p class="demo-cap">Sneakers — product shots for your store.</p>
+      </div>
+      <div>
+        <div class="demo" data-demo role="img" aria-label="Before and after: background removed from a jollof rice food photo">
+          <img src="img/before-jollof.jpg" alt="">
+          <div class="demo-afterwrap"><img src="img/after-jollof.jpg" alt=""></div>
+          <div class="demo-handle"><span class="demo-knob"><svg viewBox="0 0 24 24"><path d="M9 6l-5 6 5 6M15 6l5 6-5 6"/></svg></span></div>
+          <span class="chip chip-b">Before</span>
+          <span class="chip chip-a">After</span>
+        </div>
+        <p class="demo-cap">Jollof rice — yes, even lunch.</p>
+      </div>
+    </div>
+    <p class="demo-hint">Drag any slider — or just watch them sweep.</p>
+  </section>
+
+  <div class="checker-strip" aria-hidden="true"></div>
+
+  <section class="tool" id="tool" aria-label="Remove a background">
+    <div class="tool-head">
+      <h3>Your turn.</h3>
+      <p>Drop in any photo and take the background out, right here.</p>
+    </div>
+
+    <!-- UPLOAD -->
+    <div id="view-upload">
+      <div class="panel">
+        <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Choose a photo to remove its background">
+          <svg class="tray" viewBox="0 0 24 24"><path d="M12 16V4m0 0l-4 4m4-4l4 4"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+          <h4>Drop a photo to cut out</h4>
+          <p><span class="cta">Tap to choose</span> — JPG, PNG or WebP, up to 30MB. You can also paste from your clipboard.</p>
+        </div>
+        <input type="file" id="file-input" accept="image/*" class="hidden" aria-hidden="true" tabindex="-1">
+        <p class="engine-status" id="engine-status">Loading AI engine…</p>
+        <ol class="steps">
+          <li><b>1</b>Drop a photo</li>
+          <li><b>2</b>The background is cut away</li>
+          <li><b>3</b>Download the PNG</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div id="view-progress" class="hidden" aria-live="polite" aria-label="Processing">
+      <div class="panel">
+        <div class="prog-head">
+          <img id="progress-thumb" alt="Selected photo preview">
+          <div>
+            <div class="name" id="progress-name">photo.jpg</div>
+            <div class="sub">Processing on your device…</div>
+          </div>
+        </div>
+        <div class="bar"><div class="fill" id="progress-fill"></div></div>
+        <div class="prog-row">
+          <span id="progress-label">Preparing…</span>
+          <span id="progress-pct">0%</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-ghost" id="cancel-btn" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div id="view-result" class="hidden" aria-label="Result">
+      <div class="panel">
+        <p class="result-name" id="result-name"></p>
+        <div class="stage-wrap bg-transparent" id="stage-wrap">
+          <div class="compare" id="compare-stage">
+            <img class="base" id="img-after" alt="Photo with background removed">
+            <img class="on-top" id="img-before" alt="Original photo">
+            <div class="divider" id="compare-divider"><span class="knob"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l-5 6 5 6M15 6l5 6-5 6" stroke="#12294F" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+            <span class="tag tag-before">Before</span>
+            <span class="tag tag-after">After</span>
+          </div>
+        </div>
+        <div class="compare-slider">
+          <label for="compare-range">Drag to compare before and after</label>
+          <input type="range" id="compare-range" min="0" max="100" value="50" step="1">
+        </div>
+        <div class="toolbar">
+          <div class="seg" role="group" aria-label="Result background">
+            <button type="button" class="bg-btn active" data-bg="transparent"><span class="swatch s-transparent"></span>Clear</button>
+            <button type="button" class="bg-btn" data-bg="white"><span class="swatch s-white"></span>White</button>
+            <button type="button" class="bg-btn" data-bg="black"><span class="swatch s-black"></span>Black</button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="download-btn" type="button">
+            <svg viewBox="0 0 24 24"><path d="M12 4v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2"/></svg>
+            Download PNG
+          </button>
+          <button class="btn btn-ghost" id="new-btn" type="button">
+            <svg viewBox="0 0 24 24"><path d="M4 4v6h6M20 20v-6h-6"/><path d="M20 9A8 8 0 0 0 5.6 5.6L4 7m0 8a8 8 0 0 0 14.4 3.4L20 17"/></svg>
+            New image
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ERROR -->
+    <div id="view-error" class="hidden" aria-label="Error">
+      <div class="panel">
+        <div class="error-box">
+          <span class="mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5m0 3v.5"/></svg>
+          </span>
+          <h4>That didn't cut it</h4>
+          <p id="error-message">Please try again.</p>
+          <button class="btn btn-primary" id="retry-btn" type="button">Try again</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="free">Free.</span> No signup. Runs 100% on your device — your photo never leaves your phone.
+    <span class="credit">Cutout runs on the @imgly/background-removal engine (v1.7.0, AGPL) loaded from a CDN. First run downloads the model once (~40MB), then it works offline from cache.</span>
+  </footer>
+
+</div>
+<script type="module">
+/* Cutout preview v3 — client-side background removal.
+   Engine: @imgly/background-removal@1.7.0 (AGPL) loaded as an ES module from jsDelivr.
+   Model assets (~40MB, isnet) download on first run from the library's CDN and are
+   cached by the browser afterwards. No backend, no uploads, no accounts. */
+
+const LIB_URL = 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/dist/index.mjs';
+const MAX_FILE_MB = 30;
+
+const $ = (id) => document.getElementById(id);
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let removeBackgroundFn = null;
+let engineState = 'loading';
+let enginePromise = null;
+let objectUrls = [];
+let resultBlob = null;
+let resultName = '';
+let cancelled = false;
+
+function trackUrl(url) { objectUrls.push(url); return url; }
+function revokeAll() {
+  objectUrls.forEach((u) => { try { URL.revokeObjectURL(u); } catch (e) { /* noop */ } });
+  objectUrls = [];
+}
+
+function showView(name) {
+  ['upload', 'progress', 'result', 'error'].forEach((v) => {
+    $('view-' + v).classList.toggle('hidden', v !== name);
+  });
+}
+
+function setLabel(text) { $('progress-label').textContent = text; }
+
+function showError(message) {
+  $('error-message').textContent = message;
+  showView('error');
+}
+
+/* ---------- demo sliders: auto-sweep, pause on drag, resume when idle ---------- */
+function initDemos() {
+  document.querySelectorAll('[data-demo]').forEach((el, idx) => {
+    const afterWrap = el.querySelector('.demo-afterwrap');
+    const handle = el.querySelector('.demo-handle');
+    let pos = 50;
+    let dragging = false;
+    let lastTouch = 0; // 0 = never touched -> auto-sweep runs from the start
+    let visible = true;
+    const phase = idx * 2.1;
+
+    function render() {
+      afterWrap.style.width = pos + '%';
+      handle.style.left = pos + '%';
+    }
+    function setFromEvent(e) {
+      const r = el.getBoundingClientRect();
+      pos = Math.min(96, Math.max(4, ((e.clientX - r.left) / r.width) * 100));
+      render();
+    }
+
+    el.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      lastTouch = performance.now();
+      try { el.setPointerCapture(e.pointerId); } catch (err) { /* noop */ }
+      setFromEvent(e);
+    });
+    el.addEventListener('pointermove', (e) => {
+      if (dragging) { lastTouch = performance.now(); setFromEvent(e); }
+    });
+    const endDrag = () => { dragging = false; lastTouch = performance.now(); };
+    el.addEventListener('pointerup', endDrag);
+    el.addEventListener('pointercancel', endDrag);
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => { visible = entries[0].isIntersecting; }).observe(el);
+    }
+
+    render();
+    if (!reduceMotion) {
+      const tick = (t) => {
+        if (visible && !dragging && (performance.now() - lastTouch > 3000)) {
+          pos = 50 + 40 * Math.sin(t / 2600 + phase);
+          render();
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+  });
+}
+
+/* ---------- engine loading (eager, so the model fetch starts early) ---------- */
+function ensureEngine() {
+  if (!enginePromise) {
+    enginePromise = (async () => {
+      try {
+        const mod = await import(LIB_URL);
+        if (!mod || typeof mod.removeBackground !== 'function') {
+          throw new Error('Engine module did not export removeBackground.');
+        }
+        removeBackgroundFn = mod.removeBackground;
+        engineState = 'ready';
+        const st = $('engine-status');
+        st.textContent = 'AI engine ready — runs on your device';
+        st.classList.add('ok');
+      } catch (err) {
+        engineState = 'failed';
+        const st = $('engine-status');
+        st.textContent = 'Could not load the AI engine. Check your connection, then reload the page.';
+        st.classList.add('bad');
+        throw err;
+      }
+    })();
+  }
+  return enginePromise;
+}
+
+/* ---------- file intake ---------- */
+function handleFile(file) {
+  if (!file) return;
+  if (!file.type || file.type.indexOf('image/') !== 0) {
+    showError('That file is not an image. Please choose a JPG, PNG, or WebP photo.');
+    return;
+  }
+  if (file.size > MAX_FILE_MB * 1024 * 1024) {
+    showError('That image is larger than ' + MAX_FILE_MB + 'MB. Please try a smaller photo.');
+    return;
+  }
+  if (engineState === 'failed') {
+    showError('The AI engine failed to load. Check your internet connection and reload the page, then try again.');
+    return;
+  }
+  startProcessing(file);
+}
+
+/* ---------- processing ---------- */
+async function startProcessing(file) {
+  cancelled = false;
+  showView('progress');
+  revokeAll();
+  $('progress-name').textContent = file.name || 'photo';
+  $('progress-thumb').src = trackUrl(URL.createObjectURL(file));
+  $('progress-fill').style.width = '0%';
+  $('progress-pct').textContent = '0%';
+  setLabel('Loading AI engine…');
+
+  const steps = new Map();
+  const onProgress = (key, current, total) => {
+    if (cancelled) return;
+    if (typeof current !== 'number' || typeof total !== 'number' || !(total > 0)) return;
+    steps.set(String(key), { current: Math.min(current, total), total: total });
+    let done = 0, all = 0;
+    steps.forEach((s) => { done += s.current; all += s.total; });
+    const pct = Math.max(0, Math.min(100, Math.round((done / all) * 100)));
+    $('progress-fill').style.width = pct + '%';
+    $('progress-pct').textContent = pct + '%';
+    const k = String(key);
+    if (k.indexOf('fetch') === 0) {
+      setLabel('Downloading AI model — one-time download (~40MB)…');
+    } else if (k.indexOf('compute') === 0) {
+      setLabel('Removing background…');
+    }
+  };
+
+  try {
+    await ensureEngine();
+    if (cancelled) return;
+    const blob = await removeBackgroundFn(file, { progress: onProgress });
+    if (cancelled) return;
+    if (!blob || !(blob instanceof Blob)) throw new Error('Engine returned no image.');
+    showResult(file, blob);
+  } catch (err) {
+    if (cancelled) return;
+    showError(friendlyError(err));
+  }
+}
+
+function friendlyError(err) {
+  const msg = (err && err.message ? err.message : String(err)).toLowerCase();
+  if (msg.indexOf('engine') !== -1 && msg.indexOf('load') !== -1) {
+    return 'The AI engine could not start. Check your internet connection and reload the page, then try again.';
+  }
+  if (msg.indexOf('fetch') !== -1 || msg.indexOf('network') !== -1 || msg.indexOf('failed to fetch') !== -1) {
+    return 'Could not download the AI model. Check your internet connection and try again — the model downloads once and is cached afterwards.';
+  }
+  if (msg.indexOf('webgl') !== -1 || msg.indexOf('wasm') !== -1 || msg.indexOf('simd') !== -1) {
+    return 'Your browser could not run the AI model (WebGL/WebAssembly unavailable). Try the latest Chrome, Edge, or Safari.';
+  }
+  return 'Something went wrong while removing the background. Please try again with a different photo.';
+}
+
+/* ---------- result ---------- */
+function setCompare(v) {
+  const pct = Math.max(0, Math.min(100, Number(v) || 0));
+  $('img-before').style.clipPath = 'inset(0 ' + (100 - pct) + '% 0 0)';
+  $('compare-divider').style.left = pct + '%';
+}
+
+function setBg(mode) {
+  const wrap = $('stage-wrap');
+  wrap.classList.remove('bg-transparent', 'bg-white', 'bg-black');
+  wrap.classList.add('bg-' + mode);
+  document.querySelectorAll('.bg-btn').forEach((b) => {
+    b.classList.toggle('active', b.getAttribute('data-bg') === mode);
+  });
+}
+
+function showResult(file, blob) {
+  resultBlob = blob;
+  resultName = file.name || 'image';
+  $('result-name').textContent = resultName;
+  $('img-before').src = trackUrl(URL.createObjectURL(file));
+  $('img-after').src = trackUrl(URL.createObjectURL(blob));
+  $('compare-range').value = '50';
+  setCompare(50);
+  setBg('transparent');
+  showView('result');
+  try { document.getElementById('tool').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' }); } catch (e) { /* noop */ }
+}
+
+function resetAll() {
+  cancelled = true;
+  revokeAll();
+  resultBlob = null;
+  resultName = '';
+  $('file-input').value = '';
+  showView('upload');
+}
+
+/* ---------- events ---------- */
+function init() {
+  initDemos();
+
+  const dz = $('dropzone');
+  const fi = $('file-input');
+
+  dz.addEventListener('click', () => fi.click());
+  dz.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fi.click(); }
+  });
+  ['dragenter', 'dragover'].forEach((evt) =>
+    dz.addEventListener(evt, (e) => { e.preventDefault(); dz.classList.add('drag'); })
+  );
+  ['dragleave', 'drop'].forEach((evt) =>
+    dz.addEventListener(evt, (e) => { e.preventDefault(); dz.classList.remove('drag'); })
+  );
+  dz.addEventListener('drop', (e) => {
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    handleFile(f);
+  });
+  fi.addEventListener('change', (e) => {
+    handleFile(e.target.files && e.target.files[0]);
+    e.target.value = '';
+  });
+  window.addEventListener('paste', (e) => {
+    const files = e.clipboardData && e.clipboardData.files;
+    if (files && files.length) handleFile(files[0]);
+  });
+
+  $('cancel-btn').addEventListener('click', resetAll);
+  $('new-btn').addEventListener('click', resetAll);
+  $('retry-btn').addEventListener('click', () => showView('upload'));
+  $('compare-range').addEventListener('input', (e) => setCompare(e.target.value));
+  document.querySelectorAll('.bg-btn').forEach((b) =>
+    b.addEventListener('click', () => setBg(b.getAttribute('data-bg')))
+  );
+
+  $('download-btn').addEventListener('click', () => {
+    if (!resultBlob) return;
+    const base = resultName.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9-_]+/g, '-').replace(/^-+|-+$/g, '') || 'image';
+    const a = document.createElement('a');
+    a.href = trackUrl(URL.createObjectURL(resultBlob));
+    a.download = 'cutout-' + base + '.png';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  });
+
+  ensureEngine().catch(() => { /* status line already updated */ });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+</body>
+</html>
