@@ -1,304 +1,100 @@
-// Supabase Edge Function: create-order
-// Recalculates price on server from database, creates 'pending' order,
-// and returns verified amount and reference for Paystack checkout.
-
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { edgeRateLimit } from '../_shared/edgeRateLimit.ts';
+import { positiveQuantity, priceCustomOrder } from '../_shared/orderPricing.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), {
+  status, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+});
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
-  }
-
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+  if (req.method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Postgres-backed per-IP throttle: guest checkout is public, so cap
-    // mass-creation of pending orders (20/hr/IP). Fails open on limiter error.
+    const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
     const limited = await edgeRateLimit(supabase, req, 'create-order', 20, 60 * 60 * 1000);
     if (limited) return limited;
-
-    // Optional user authentication via bearer token
     let userId: string | null = null;
     const authHeader = req.headers.get('Authorization');
     if (authHeader) {
-      const token = authHeader.replace('Bearer ', '');
-      const { data: { user } } = await supabase.auth.getUser(token);
-      if (user) {
-        userId = user.id;
-      }
+      const { data: { user } } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''));
+      userId = user?.id || null;
     }
-
-    const {
-      items = [], // Array<{ variant_id: string, quantity: number }>
-      customer_name,
-      phone,
-      email,
-      address,
-      area,
-      type = 'apparel',
-      specs = null,
-      reference_files = [],
-      client_total = 0,
-      pay_full = true,
-      is_custom_quote = false,
-    } = await req.json();
-
-    if (!customer_name || !phone || !address || !area) {
-      return new Response(
-        JSON.stringify({ error: 'Missing required customer delivery information.' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    const body = await req.json();
+    const { customer_name, phone, email, address, area, type = 'apparel', items, specs, reference_files = [], pay_full = true } = body;
+    for (const value of [customer_name, phone, address, area]) {
+      if (typeof value !== 'string' || !value.trim() || value.length > 1000) return json({ error: 'Missing or invalid customer information.' }, 400);
     }
-
-    let calculatedSubtotal = 0;
-    let validatedItems: Array<{ variant_id: string; quantity: number; price_at_purchase: number }> = [];
-
-    if (type === 'apparel') {
-      if (!Array.isArray(items) || items.length === 0) {
-        return new Response(
-          JSON.stringify({ error: 'Order must contain at least one item.' }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
-      const variantIds = items.map((i: any) => i.variant_id).filter(Boolean);
-      const { data: variants, error: variantError } = await supabase
-        .from('variants')
-        .select(`
-          id,
-          stock,
-          product_id,
-          products (
-            id,
-            name,
-            price
-          )
-        `)
-        .in('id', variantIds);
-
-      const variantMap = new Map<string, any>();
-      if (variants && variants.length > 0) {
-        for (const v of variants) {
-          variantMap.set(v.id, v);
-        }
-      }
-
-      let totalQuantity = 0;
-      for (const item of items) {
-        if (!item || (!item.variant_id && !item.product_id)) {
-          return new Response(
-            JSON.stringify({ error: 'Each item must specify a valid product or variant ID.' }),
-            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-
-        const variant = item.variant_id ? variantMap.get(item.variant_id) : null;
-        if (!variant && !item.product_id) {
-          return new Response(
-            JSON.stringify({ error: `Product or variant with ID '${item.variant_id || item.product_id}' was not found.` }),
-            { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-
-        const qty = Math.max(1, parseInt(item.quantity, 10) || 1);
-
-        if (variant) {
-          if (variant.stock !== undefined && variant.stock < qty) {
-            return new Response(
-              JSON.stringify({ error: `Insufficient stock for selected variant '${variant.id}'.` }),
-              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            );
-          }
-          const unitPrice = Number(variant.price > 0 ? variant.price : variant.products?.price);
-          if (!unitPrice || unitPrice <= 0) {
-            return new Response(
-              JSON.stringify({ error: `Item '${variant.id}' does not have a valid price set in the database.` }),
-              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            );
-          }
-          calculatedSubtotal += unitPrice * qty;
-          totalQuantity += qty;
-          validatedItems.push({
-            variant_id: item.variant_id,
-            quantity: qty,
-            price_at_purchase: unitPrice,
-          });
+    if (!['apparel', 'custom'].includes(type)) return json({ error: 'Invalid order type.' }, 400);
+    if (!Array.isArray(reference_files) || reference_files.length > 10 || reference_files.some((v: unknown) => typeof v !== 'string')) {
+      return json({ error: 'Invalid reference files.' }, 400);
+    }
+    if (!Array.isArray(items) || items.length === 0 || items.length > 100) return json({ error: 'Order must contain 1 to 100 items.' }, 400);
+    let total = 0;
+    let requiredAmount = 0;
+    let isQuote = false;
+    let orderSpecs = specs || null;
+    const validatedItems: { variant_id: string; quantity: number }[] = [];
+    try {
+      if (type === 'custom') {
+        if (specs?.service === 'Other' || specs?.service === 'Custom Bundle') {
+          // Free-form briefs are always quotes, never payable catalog orders.
+          isQuote = true;
+          orderSpecs = { service: specs.service, options: specs.options, deadline: specs.deadline, description: specs.description };
         } else {
-          // If no variant ID, query product by product_id
-          const { data: dbProd } = await supabase
-            .from('products')
-            .select('id, price, is_active')
-            .eq('id', item.product_id)
-            .single();
-
-          if (!dbProd || dbProd.is_active === false) {
-            return new Response(
-              JSON.stringify({ error: `Product '${item.product_id}' was not found or is currently inactive.` }),
-              { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            );
+          if (items.length !== 1 || !items[0]?.product_id) throw new Error('Select one valid order service.');
+          const { data: product, error: productError } = await supabase.from('products').select('*').eq('id', items[0].product_id).single();
+          if (productError || !product) throw new Error('Order service was not found.');
+          const { data: variants, error: variantError } = await supabase.from('variants').select('*').eq('product_id', product.id);
+          if (variantError) throw new Error('Unable to load service pricing.');
+          const price = priceCustomOrder(product, variants || [], items[0].quantity, specs?.options, pay_full);
+          total = price.total;
+          requiredAmount = price.requiredAmount;
+          isQuote = price.isCustomQuote;
+          // Bind the fulfilment brief to the same catalog item and options we priced.
+          orderSpecs = {
+            product_id: product.id, service: product.title || product.name,
+            quantity: items[0].quantity, options: specs.options,
+            specs: JSON.stringify(specs.options),
+            deadline: specs.deadline, description: specs.description,
+          };
+        }
+      } else {
+        for (const item of items) {
+          if (!item || typeof item.variant_id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item.variant_id)) {
+            throw new Error('Each apparel item must specify a valid variant ID.');
           }
-
-          const unitPrice = Number(dbProd.price);
-          if (!unitPrice || unitPrice <= 0) {
-            return new Response(
-              JSON.stringify({ error: `Product '${dbProd.id}' does not have a valid price set.` }),
-              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            );
-          }
-
-          calculatedSubtotal += unitPrice * qty;
-          totalQuantity += qty;
-          validatedItems.push({
-            variant_id: dbProd.id,
-            quantity: qty,
-            price_at_purchase: unitPrice,
-          });
+          validatedItems.push({ variant_id: item.variant_id, quantity: positiveQuantity(item.quantity) });
         }
       }
-      // Delivery rule: free if 10+ items, else 2500
-      const deliveryFee = totalQuantity >= 10 ? 0 : 2500;
-      const calculatedTotal = calculatedSubtotal + deliveryFee;
-
-      // Unique reference
-      const paystackRef = `SLK-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
-
-      // Insert pending order
-      const { data: order, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-          user_id: userId,
-          type: 'apparel',
-          customer_name,
-          email: email || null,
-          phone,
-          address,
-          area,
-          subtotal: calculatedSubtotal,
-          delivery_fee: deliveryFee,
-          total: calculatedTotal,
-          server_verified_amount: calculatedTotal,
-          status: 'pending',
-          paystack_ref: paystackRef,
-          specs: specs || null,
-          reference_files: reference_files || [],
-          status_history: [
-            {
-              status: 'pending',
-              timestamp: new Date().toISOString(),
-              note: 'Order initiated at checkout',
-            },
-          ],
-        })
-        .select()
-        .single();
-
-      if (orderError || !order) {
-        console.error('Failed to create pending order:', orderError);
-        return new Response(
-          JSON.stringify({ error: 'Database order creation failed.' }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
-      // Insert order items
-      const orderItems = validatedItems.map((item) => ({
-        order_id: order.id,
-        variant_id: item.variant_id,
-        quantity: item.quantity,
-        price_at_purchase: item.price_at_purchase,
-      }));
-
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems);
-
-      if (itemsError) {
-        console.error('Order items insertion error:', itemsError);
-      }
-
-      return new Response(
-        JSON.stringify({
-          success: true,
-          order_id: order.id,
-          paystack_ref: paystackRef,
-          total: calculatedTotal,
-          subtotal: calculatedSubtotal,
-          delivery_fee: deliveryFee,
-        }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    } else {
-      // Custom order flow
-      const paystackRef = `SLK-CUST-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
-
-      const safeTotal = Number(client_total) > 0 ? Number(client_total) : 0;
-      const requiredAmount = is_custom_quote
-        ? 0
-        : Math.round(pay_full ? safeTotal : safeTotal * 0.75);
-      const orderStatus = is_custom_quote ? 'quote_requested' : 'pending';
-
-      const { data: order, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-          user_id: userId,
-          type: 'custom',
-          customer_name,
-          email: email || null,
-          phone,
-          address,
-          area,
-          subtotal: safeTotal,
-          delivery_fee: 0,
-          total: safeTotal,
-          server_verified_amount: requiredAmount,
-          status: orderStatus,
-          paystack_ref: paystackRef,
-          specs: specs || null,
-          reference_files: reference_files || [],
-          status_history: [
-            {
-              status: orderStatus,
-              timestamp: new Date().toISOString(),
-              note: is_custom_quote
-                ? 'Custom design quote requested'
-                : `Order initiated — ${pay_full ? 'full payment' : 'deposit'} expected`,
-            },
-          ],
-        })
-        .select()
-        .single();
-
-      if (orderError || !order) {
-        return new Response(
-          JSON.stringify({ error: 'Failed to record custom order.' }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
-      return new Response(
-        JSON.stringify({
-          success: true,
-          order_id: order.id,
-          paystack_ref: paystackRef,
-          status: 'quote_requested',
-        }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    } catch (error) {
+      return json({ error: error instanceof Error ? error.message : 'Invalid order.' }, 400);
     }
-  } catch (err: any) {
-    console.error('create-order error:', err);
-    return new Response(
-      JSON.stringify({ error: err?.message || 'Server error creating order.' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    const reference = `SLK-${type === 'custom' ? 'CUST-' : ''}${crypto.randomUUID()}`;
+    const { data: order, error } = await supabase.rpc('create_pending_order', {
+      p_order: {
+        user_id: userId, type, customer_name, phone, email: email || null, address, area,
+        total, server_verified_amount: requiredAmount,
+        status: isQuote ? 'quote_requested' : 'pending', paystack_ref: reference,
+        specs: orderSpecs, reference_files,
+      },
+      p_items: validatedItems,
+    });
+    if (error || !order) {
+      console.error('Atomic order creation failed:', error);
+      return json({ error: 'Could not save your order. Check availability and try again.' }, 400);
+    }
+    return json({
+      success: true, order_id: order.id, paystack_ref: order.paystack_ref,
+      total: order.total, subtotal: order.subtotal, delivery_fee: order.delivery_fee,
+      required_amount: order.server_verified_amount, is_custom_quote: isQuote, status: order.status,
+    });
+  } catch (error) {
+    console.error('create-order error:', error);
+    return json({ error: 'Server error creating order.' }, 500);
   }
 });

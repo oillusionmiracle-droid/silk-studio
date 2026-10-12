@@ -54,7 +54,7 @@ Notes:
 ## Getting started
 
 ### Prerequisites
-- Node.js 18+
+- Node.js 22+
 - A [Supabase](https://supabase.com) project
 - A [Cloudinary](https://cloudinary.com) account
 - A [Paystack](https://paystack.com) account (test keys for local dev)
@@ -120,15 +120,13 @@ supabase db push
 ```
 Migrations live in `supabase/migrations/` and include schema, RLS policies, and the admin-role protection trigger. Read them in numeric order if you want to understand the auth/authorization model.
 
-> **Manual column:** The `orders` table requires an `email` column (`text`, nullable) that is not included in any migration file. Add it manually:
-> ```sql
-> ALTER TABLE orders ADD COLUMN IF NOT EXISTS email text;
-> ```
+The atomic checkout migration includes the orders email column and payment audit columns.
 
 ### 4. Deploy the Edge Functions
 ```bash
 supabase functions deploy create-order --no-verify-jwt
 supabase functions deploy verify-order --no-verify-jwt
+supabase functions deploy paystack-webhook --no-verify-jwt
 ```
 
 ### 5. Run the dev server
@@ -148,7 +146,9 @@ npm run start    # run production build locally
 npm run lint     # ESLint
 ```
 
-> No `test` or `typecheck` script exists yet — see Known Issues below.
+Run `npm test` for pricing and checkout regression tests, including the actual
+checkout SQL migration against an isolated PGlite Postgres database.
+Run `npx tsc --noEmit` for TypeScript validation. CI runs these checks, lint, and build.
 
 ---
 
@@ -179,8 +179,31 @@ public/               Static assets — being migrated to Cloudinary
 2. Order is created via the `create-order` Edge Function, which validates product/variant data and computes the price **server-side**.
 3. If the Edge Function fails, the submission stops immediately — no partial or phantom orders are created.
 4. Paystack checkout is initiated with the server-computed amount.
-5. On payment, the `verify-order` Edge Function re-verifies the transaction directly against Paystack's API, checks the paid amount against the order total, and updates order status.
-6. Confirmation email is sent; inventory is decremented.
+5. On payment, `verify-order` re-verifies the transaction directly with Paystack.
+   Both it and the signed webhook call `finalize_order_payment`, which checks NGN,
+   compares the paid kobo amount with the server-calculated full payment or deposit,
+   and locks the order before changing payment status and stock in one transaction.
+6. Duplicate callbacks and webhook retries do not decrement stock again or reset
+   fulfilment status. The browser confirms server verification before showing success.
+
+### Deploying the checkout fix
+
+Apply `20261012111500_atomic_checkout_payments.sql`, deploy all three checkout
+Edge Functions above, then deploy the Next.js application. Keep these changes
+together: custom checkout now sends structured options and uses the amount returned
+by the server. Configure Paystack's webhook URL to the deployed `paystack-webhook`.
+The new RPCs are executable only by `service_role`; do not expose that key.
+
+Pending orders created by the previous custom endpoint contain client-supplied
+prices. The new finalizer blocks these legacy custom orders. Recreate them through
+the new endpoint after confirming any existing payment with the customer.
+The migration does not rewrite historical prices or stock. Existing duplicate
+payment references must be resolved before its unique index can be created.
+
+Stock is checked at order creation and again at payment finalization; it is not
+reserved while a customer has checkout open. If availability changes after payment,
+finalization fails without partial inventory changes. Review the payment and
+reconcile fulfilment or refund rather than asking the customer to pay again.
 
 > The custom-order form (`app/order/page.tsx`) currently routes through `create-order` for order creation. Paystack is only launched after a valid server reference is returned — if the Edge Function returns no reference, the flow aborts with a clear error message.
 
@@ -210,13 +233,14 @@ Each page has a unique `title`, `description`, `keywords` array, `alternates.can
 
 This project is **not production-hardened yet**. Current priorities, roughly in order:
 
-- [ ] Remove the client-price fallback in `create-order` when a variant isn't found (currently defaults to a hardcoded price — should reject instead)
+- [x] Calculate custom order prices on the server and reject invalid apparel variants
 - [ ] Add auth check + rate limiting to the Cloudinary upload signing route
 - [ ] Remove the hardcoded Paystack public key fallback in the apparel checkout
 - [ ] Set up a Supabase custom domain so Google OAuth doesn't expose the raw `*.supabase.co` project URL to users
 - [ ] Move remaining local media in `public/` to Cloudinary and clean git history of large binaries
-- [ ] Add tests (unit tests for pricing logic and auth, E2E for the full order-to-payment-to-verification flow)
-- [ ] Add CI (lint, typecheck, build on every push)
+- [x] Add pricing tests and checkout transaction regression tests
+- [ ] Add E2E tests against Paystack test mode and a staging Supabase project
+- [x] Add CI (tests, lint, typecheck, build on every push)
 - [ ] Remove the dead admin self-escalation UI (DB-side RLS already blocks it, but the button still exists)
 - [ ] Add OG images (`/public/og-*.jpg`, 1200×630px) for all pages to enable rich social share previews
 
@@ -233,4 +257,5 @@ This project is **not production-hardened yet**. Current priorities, roughly in 
 ---
 
 ## License
+
 
