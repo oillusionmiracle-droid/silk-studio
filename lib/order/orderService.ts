@@ -172,8 +172,14 @@ export async function launchPaystackPayment({
   }
 }
 
+export interface ServerOrder {
+  paystack_ref: string;
+  total: number;
+  required_amount: number;
+  is_custom_quote: boolean;
+}
+
 export async function submitServerOrder({
-  userId,
   contact,
   subService,
   specsText,
@@ -181,13 +187,8 @@ export async function submitServerOrder({
   specs,
   referenceFileUrl,
   currentProduct,
-  isCustomQuote,
-  total,
-  deposit,
   payFull,
-  fallbackOrderRef,
 }: {
-  userId?: string | null;
   contact: ContactInfo;
   subService: string;
   specsText: string;
@@ -195,14 +196,8 @@ export async function submitServerOrder({
   specs: OrderSpecs;
   referenceFileUrl: string;
   currentProduct?: DbProduct;
-  isCustomQuote: boolean;
-  total: number;
-  deposit: number;
   payFull: boolean;
-  fallbackOrderRef: string;
-}): Promise<string | null> {
-  let orderRef = fallbackOrderRef;
-
+}): Promise<ServerOrder | null> {
   try {
     const payload = {
       type: 'custom',
@@ -218,11 +213,10 @@ export async function submitServerOrder({
         quantity,
         deadline: specs.deadline,
         description: specs.description,
+        options: specs,
       },
       reference_files: referenceFileUrl ? [referenceFileUrl] : [],
-      client_total: total,
       pay_full: payFull,
-      is_custom_quote: isCustomQuote,
     };
 
     // 15-second timeout for server order creation
@@ -242,8 +236,11 @@ export async function submitServerOrder({
       console.error('create-order Edge Function failed — refusing to proceed:', fnError.message);
       return null;
     }
-    if (functionData?.paystack_ref) {
-      orderRef = functionData.paystack_ref;
+    if (functionData?.success && functionData?.paystack_ref &&
+        Number.isFinite(functionData.total) &&
+        Number.isFinite(functionData.required_amount) &&
+        typeof functionData.is_custom_quote === 'boolean') {
+      return functionData as ServerOrder;
     } else {
       console.error('create-order returned no reference — refusing to proceed.');
       return null;
@@ -252,6 +249,5 @@ export async function submitServerOrder({
     console.error('Error in submitServerOrder:', err);
     return null;
   }
-
-  return orderRef;
 }
+

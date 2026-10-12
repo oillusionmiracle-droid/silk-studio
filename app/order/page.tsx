@@ -244,9 +244,6 @@ export default function OrderPage() {
     setIsSubmitting(true);
 
     try {
-      const fallbackOrderRef = `SLK-CUST-${Math.floor(1000 + Math.random() * 9000)}`;
-      setSubmittedRef(fallbackOrderRef);
-
       const specsText = formatSpecsText(subService!, specs);
       const isApparel = ['Custom T-Shirts', 'Sweatshirts', 'Grey Joggers', 'Hoodies'].includes(
         subService!
@@ -255,8 +252,7 @@ export default function OrderPage() {
 
       const currentProduct = matchProductForSubService(subService, dbProducts);
 
-      const authoritativeRef = await submitServerOrder({
-        userId: user?.id,
+      const serverOrder = await submitServerOrder({
         contact,
         subService: subService!,
         specsText,
@@ -264,20 +260,20 @@ export default function OrderPage() {
         specs,
         referenceFileUrl,
         currentProduct,
-        isCustomQuote,
-        total,
-        deposit,
         payFull,
-        fallbackOrderRef,
       });
 
-      if (!authoritativeRef) {
+      if (!serverOrder) {
         alert('We could not create your order on the server. Please check your connection and try again.');
         setIsSubmitting(false);
         return;
       }
 
+      const authoritativeRef = serverOrder.paystack_ref;
       setSubmittedRef(authoritativeRef);
+      setTotal(serverOrder.total);
+      setDeposit(Math.round(serverOrder.total * 0.75));
+      setIsCustomQuote(serverOrder.is_custom_quote);
 
       const msg = formatOrderMessage({
         orderRef: authoritativeRef,
@@ -287,12 +283,12 @@ export default function OrderPage() {
         specs,
         referenceFileUrl,
         contact,
-        isCustomQuote,
-        total,
-        deposit,
+        isCustomQuote: serverOrder.is_custom_quote,
+        total: serverOrder.total,
+        deposit: Math.round(serverOrder.total * 0.75),
       });
 
-      if (isCustomQuote) {
+      if (serverOrder.is_custom_quote) {
         window.open(`https://wa.me/2347064829776?text=${encodeURIComponent(msg)}`, '_blank');
         setIsSubmitted(true);
         setIsSubmitting(false);
@@ -303,8 +299,16 @@ export default function OrderPage() {
         orderRef: authoritativeRef,
         orderMessage: msg,
         contact,
-        amount: payFull ? total : deposit,
-        onSuccess: (paystackRef) => {
+        amount: serverOrder.required_amount,
+        onSuccess: async (paystackRef) => {
+          const { data, error } = await supabase.functions.invoke('verify-order', {
+            body: { paystack_ref: paystackRef },
+          });
+          if (error || !data?.success) {
+            alert('Payment confirmation is pending. If you were debited, check your orders before paying again.');
+            setIsSubmitting(false);
+            return;
+          }
           const paidMsg = msg.replace(
             'Price:* Total: ₦',
             `Price:* Paid deposit via Paystack (Ref: ${paystackRef})\nTotal: ₦`
