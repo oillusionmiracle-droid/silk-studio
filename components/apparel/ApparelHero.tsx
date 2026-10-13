@@ -57,10 +57,12 @@ export default function ApparelHero({ onShopNowClick }: ApparelHeroProps) {
       <AnimatePresence initial={false}>
         <motion.img
           key={current}
-          src={HERO_IMAGES[current]}
+          src={heroImages[current] || HERO_IMAGES[current]}
+          loading="eager"
+          fetchPriority={current === 0 ? 'high' : 'auto'}
           alt={`Silk Studio collection hero image ${current + 1}`}
           className="apparel-hero__slide-img"
-          initial={prefersReduced ? {} : { opacity: 0 }}
+          initial={false}
           animate={{ opacity: 1 }}
           exit={prefersReduced ? {} : { opacity: 0 }}
           transition={{ duration: 1.2, ease: EASE }}
