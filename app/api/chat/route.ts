@@ -1,4 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
+export const maxDuration = 60;
 import { NextRequest, NextResponse } from 'next/server';
 import {
   checkDistributedRateLimit,
