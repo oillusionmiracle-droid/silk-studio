@@ -12,7 +12,7 @@ const GeminiAssistant = dynamic(() => import('@/components/GeminiAssistant'), { 
 export function StudioLoading() { const path = usePathname(); return ['/', '/portfolio', '/moremi', '/studio'].includes(path) ? null : <LoadingScreen />; }
 export default function StudioChrome() {
   const path = usePathname();
-  if (['/', '/portfolio', '/studio'].includes(path)) return <><StudioMotion /><GeminiAssistant /><StudioFooter /></>;
-  if (path === "/moremi") return <StudioMotion />;
+  if (!path.startsWith('/apparel') && !path.startsWith('/moremi')) return <><StudioMotion /><GeminiAssistant /><StudioFooter /></>;
+  if (path.startsWith("/moremi")) return <StudioMotion />;
   return <><StudioMotion /><Footer /><WhatsAppButton /><CustomCursor /><MobileBottomNav /><GeminiAssistant /></>;
 }
