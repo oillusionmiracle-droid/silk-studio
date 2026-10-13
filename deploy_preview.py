@@ -8,8 +8,8 @@ import base64, hashlib, json, subprocess, sys, os
 SITE = "/tmp/moremi-preview"
 VERCEL = "/opt/hatch/bin/vercel"
 
-EXCLUDE_DIRS = set()
-EXCLUDE_FILES = set()
+EXCLUDE_DIRS = {'.git', '.next', 'node_modules', '.vercel', '.agent', '__pycache__'}
+EXCLUDE_FILES = {'.env', '.env.local'}
 
 def call_tool(name, args):
     p = subprocess.run(
@@ -36,6 +36,8 @@ files = []
 for root, dirs, names in os.walk(SITE):
     dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
     for nm in names:
+        if nm.startswith('.env') or nm.endswith(('.pem', '.key', '.log')):
+            continue
         if nm in EXCLUDE_FILES:
             continue
         full = os.path.join(root, nm)

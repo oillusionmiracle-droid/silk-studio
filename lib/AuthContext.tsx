@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from './supabase';
-import { verifyBotToken } from './turnstileClient';
+
 
 export interface Profile {
   id: string;
@@ -40,7 +40,7 @@ interface AuthContextType {
   ) => Promise<{ error: string | null; requiresEmailConfirmation?: boolean }>;
   signInWithGoogle: () => Promise<{ error: string | null }>;
   signInWithApple: () => Promise<{ error: string | null }>;
-  requestPasswordReset: (email: string) => Promise<{ error: string | null }>;
+  requestPasswordReset: (email: string, captchaToken?: string | null) => Promise<{ error: string | null }>;
   updatePassword: (newPassword: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -77,36 +77,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.warn('Profile fetch notice:', error.message);
       }
 
-      const isKnownAdmin =
-        email === 'oillusionmiracle@gmail.com' ||
-        email === 'ollusionmiracle@gmail.com' ||
-        (email && email.toLowerCase().includes('illusionmiracle'));
+      // Only the database role determines administrator access.
+      return data ? data as Profile : null;
 
-      if (data) {
-        const profileData = data as Profile;
-        if (isKnownAdmin && profileData.role !== 'admin') {
-          profileData.role = 'admin';
-          supabase.from('profiles').update({ role: 'admin' }).eq('id', userId).then();
-        }
-        return profileData;
-      }
-
-      // If profile record is still being created or RLS is pending, provide authorized profile for primary admin
-      if (isKnownAdmin) {
-        return {
-          id: userId,
-          full_name: 'Onyenwe Miracle',
-          phone: '',
-          default_address: '',
-          default_area: 'Lagos',
-          avatar_url: '',
-          role: 'admin',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        } as Profile;
-      }
-
-      return null;
     } catch (err) {
       console.warn('Profile fetch error:', err);
       return null;
@@ -172,13 +145,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     turnstileToken?: string | null
   ) => {
     try {
-      // Parallelize bot verification and Supabase authentication request for instant response
-      const [botOk, authRes] = await Promise.all([
-        verifyBotToken(turnstileToken ?? null),
-        supabase.auth.signInWithPassword({ email, password }),
-      ]);
-
-      if (!botOk) return { error: 'Bot verification failed. Please try again.' };
+      if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !turnstileToken) return { error: 'Please complete the bot check.' };
+      const authRes = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken: turnstileToken || undefined } });
       if (authRes.error) return { error: authRes.error.message };
 
       closeAuthModal();
@@ -198,20 +166,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
       const emailRedirectTo = origin ? `${origin}/account` : undefined;
 
-      // Parallelize bot verification and Supabase account creation request for instant response
-      const [botOk, authRes] = await Promise.all([
-        verifyBotToken(turnstileToken ?? null),
-        supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { full_name: fullName },
-            emailRedirectTo,
-          },
-        }),
-      ]);
-
-      if (!botOk) return { error: 'Bot verification failed. Please try again.' };
+      if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !turnstileToken) return { error: 'Please complete the bot check.' };
+      const authRes = await supabase.auth.signUp({ email, password, options: { data: { full_name: fullName }, emailRedirectTo, captchaToken: turnstileToken || undefined } });
       if (authRes.error) return { error: authRes.error.message };
 
       const requiresEmailConfirmation = !authRes.data.session;
@@ -270,13 +226,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const requestPasswordReset = async (email: string) => {
+  const requestPasswordReset = async (email: string, captchaToken?: string | null) => {
     try {
       const redirectTo =
         typeof window !== 'undefined'
           ? `${window.location.origin}/auth/reset-password`
           : undefined;
+      if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !captchaToken) return { error: 'Please complete the bot check.' };
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        captchaToken: captchaToken || undefined,
         redirectTo,
       });
       if (error) return { error: error.message };

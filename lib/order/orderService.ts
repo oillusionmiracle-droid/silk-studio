@@ -200,9 +200,7 @@ export async function submitServerOrder({
   deposit: number;
   payFull: boolean;
   fallbackOrderRef: string;
-}): Promise<string | null> {
-  let orderRef = fallbackOrderRef;
-
+}): Promise<{ reference: string; total: number; amount: number; isCustomQuote: boolean } | null> {
   try {
     const payload = {
       type: 'custom',
@@ -214,6 +212,8 @@ export async function submitServerOrder({
       items: currentProduct ? [{ product_id: currentProduct.id, quantity }] : [],
       specs: {
         service: subService,
+        service_slug: currentProduct?.slug || 'custom-quote',
+        options: specs,
         specs: specsText,
         quantity,
         deadline: specs.deadline,
@@ -243,7 +243,7 @@ export async function submitServerOrder({
       return null;
     }
     if (functionData?.paystack_ref) {
-      orderRef = functionData.paystack_ref;
+      return { reference: functionData.paystack_ref, total: functionData.total, amount: functionData.amount, isCustomQuote: functionData.is_custom_quote === true };
     } else {
       console.error('create-order returned no reference — refusing to proceed.');
       return null;
@@ -253,5 +253,11 @@ export async function submitServerOrder({
     return null;
   }
 
-  return orderRef;
+  return null;
+}
+
+export async function verifyServerPayment(reference: string) {
+  const { data, error } = await supabase.functions.invoke('verify-order', { body: { paystack_ref: reference } });
+  if (error || !data?.success) throw new Error(data?.error || 'Payment confirmation is pending. Keep your reference and check before paying again.');
+  return data as { success: true; requires_review: boolean; payment_state: string };
 }

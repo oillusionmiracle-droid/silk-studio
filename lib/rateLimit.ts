@@ -1,3 +1,4 @@
+import { getServerSupabase } from './serverSupabase';
 // Shared zero-dependency IP rate limiter for Next.js API routes.
 // In-memory sliding-window counters. Good enough as a first bot/abuse
 // barrier on a single server instance; for multi-instance / serverless
@@ -79,4 +80,12 @@ export function rateLimitedResponse(retryAfterSeconds: number, message?: string)
       headers: { 'Retry-After': String(retryAfterSeconds) },
     }
   );
+}
+
+/** Atomic across instances. Production fails closed when the database is unavailable. */
+export async function checkDistributedRateLimit(key: string, limit: number, windowMs: number): Promise<RateLimitResult> {
+  if (process.env.NODE_ENV !== 'production' && !process.env.SUPABASE_SERVICE_ROLE_KEY) return checkRateLimit(key, limit, windowMs);
+  const { data, error } = await getServerSupabase().rpc('consume_rate_limit', { p_key: key, p_limit: limit, p_window_ms: windowMs });
+  if (error || !data) throw new Error('Rate limit service is unavailable.');
+  return { allowed: data.allowed, remaining: data.remaining, retryAfterSeconds: data.retry_after_seconds };
 }

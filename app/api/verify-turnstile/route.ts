@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  checkRateLimit,
+  checkDistributedRateLimit,
   getClientIp,
   rateLimitedResponse,
 } from '@/lib/rateLimit';
@@ -15,8 +15,9 @@ const VERIFY_LIMIT = 20; // checks
 const VERIFY_WINDOW_MS = 60 * 1000; // per minute, per IP
 
 export async function POST(req: NextRequest) {
+  try {
   const ip = getClientIp(req);
-  const rl = checkRateLimit(`verify-turnstile:${ip}`, VERIFY_LIMIT, VERIFY_WINDOW_MS);
+  const rl = await checkDistributedRateLimit(`verify-turnstile:${ip}`, VERIFY_LIMIT, VERIFY_WINDOW_MS);
   if (!rl.allowed) {
     return rateLimitedResponse(
       rl.retryAfterSeconds,
@@ -37,4 +38,5 @@ export async function POST(req: NextRequest) {
     return turnstileFailedResponse(result.errorCodes);
   }
   return NextResponse.json({ ok: true });
+  } catch { return NextResponse.json({ error: 'Verification temporarily unavailable.' }, { status: 503 }); }
 }

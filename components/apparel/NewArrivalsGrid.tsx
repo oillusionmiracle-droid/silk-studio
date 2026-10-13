@@ -85,7 +85,7 @@ function ProductCard({
       productId: product.id,
       productName: product.name,
       size: variant.size,
-      price: product.price,
+      price: variant.price && variant.price > 0 ? variant.price : product.price,
       image: product.image_1_url,
     });
   };

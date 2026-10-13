@@ -8,12 +8,14 @@ import { Check, ArrowRight, MessageSquare, PackageCheck, ShieldCheck } from 'luc
 interface OrderConfirmationProps {
   submittedRef: string;
   hasUser: boolean;
+  whatsappUrl?: string;
   onOpenAuthModal: (view: 'sign_up' | 'sign_in') => void;
 }
 
 export default function OrderConfirmation({
   submittedRef,
   hasUser,
+  whatsappUrl,
   onOpenAuthModal,
 }: OrderConfirmationProps) {
   return (
@@ -178,6 +180,7 @@ export default function OrderConfirmation({
 
         {/* Actions */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {whatsappUrl && <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-6 py-4 text-white">Share confirmed brief on WhatsApp</a>}
           {hasUser ? (
             <Link
               href="/account/orders"
@@ -221,7 +224,7 @@ export default function OrderConfirmation({
                 boxShadow: '0 8px 24px rgba(198, 255, 51, 0.3)',
               }}
             >
-              <span>Create Silk ID to Track Live</span>
+              <span>Create a Silk ID for Future Orders</span>
               <ArrowRight size={16} strokeWidth={2.5} />
             </button>
           )}

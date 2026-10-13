@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useCart } from '@/lib/CartContext';
+import { verifyServerPayment } from '@/lib/order/orderService';
 import { useAuth } from '@/lib/AuthContext';
 import {
   ArrowLeft, CheckCircle2, AlertCircle, ShoppingCart,
@@ -145,13 +146,26 @@ export default function CheckoutPage() {
     if (user?.email && !email) {
       setEmail(user.email);
     }
-  }, [profile, user]);
+  }, [profile, user, name, phone, email, address, area]);
 
   // Flow state
   const [status, setStatus] = useState<'form' | 'processing' | 'success' | 'error'>('form');
   const [isInitializing, setIsInitializing] = useState(false);
   const [orderRef, setOrderRef] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [pendingPaymentRef, setPendingPaymentRef] = useState('');
+  useEffect(() => { setPendingPaymentRef(sessionStorage.getItem('silk-apparel-pending-payment') || ''); }, []);
+  const retryPaymentConfirmation = async () => {
+    setIsInitializing(true);
+    try {
+      const result = await verifyServerPayment(pendingPaymentRef);
+      setOrderRef(pendingPaymentRef);
+      setErrorMessage(result.requires_review ? 'Payment received. The studio will contact you about stock or a refund.' : '');
+      sessionStorage.removeItem('silk-apparel-pending-payment');
+      setPendingPaymentRef(''); setStatus('success'); clearCart();
+    } catch (error) { setErrorMessage(error instanceof Error ? error.message : 'Confirmation pending. Do not pay again yet.'); }
+    finally { setIsInitializing(false); }
+  };
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   // Empty cart guard
@@ -235,9 +249,7 @@ export default function CheckoutPage() {
 
   /* ── Paystack integration ─────────────────────── */
   const PAYSTACK_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
-if (!PAYSTACK_PUBLIC_KEY) {
-  throw new Error('Paystack public key not configured. Set NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY in .env.local');
-}
+
 
   const loadPaystackScript = () => new Promise<void>((resolve, reject) => {
     if (typeof window === 'undefined') return reject(new Error('Window is undefined.'));
@@ -267,6 +279,7 @@ if (!PAYSTACK_PUBLIC_KEY) {
     setErrorMessage('');
 
     try {
+      if (!PAYSTACK_PUBLIC_KEY) throw new Error('Payments are temporarily unavailable. Please contact the studio.');
       await loadPaystackScript();
     } catch (err) {
       console.error('Paystack load error:', err);
@@ -311,6 +324,12 @@ if (!PAYSTACK_PUBLIC_KEY) {
         if (orderData.success && orderData.paystack_ref) {
           activeRef = orderData.paystack_ref;
           verifiedTotalKobo = Math.round(orderData.total * 100);
+          if (verifiedTotalKobo !== Math.round(grandTotal * 100)) {
+            setIsInitializing(false);
+            setErrorMessage(`Prices have changed. The current total is ₦${Number(orderData.total).toLocaleString()}. Please refresh your cart before paying.`);
+            setStatus('error');
+            return;
+          }
         } else {
           setIsInitializing(false);
           setErrorMessage('We could not set up your order right now. Please try again in a moment.');
@@ -330,6 +349,8 @@ if (!PAYSTACK_PUBLIC_KEY) {
       const verifyPayment = async (paymentRef: string) => {
         setStatus('processing');
         setOrderRef(paymentRef);
+        sessionStorage.setItem('silk-apparel-pending-payment', paymentRef);
+        setPendingPaymentRef(paymentRef);
 
         try {
           let verifyErrorMsg =
@@ -351,6 +372,11 @@ if (!PAYSTACK_PUBLIC_KEY) {
 
             if (verifyRes.ok && verifyData?.success) {
               // Backend confirmed: Paystack says success + amount matches DB order.
+              if (verifyData.requires_review) {
+                setErrorMessage('Payment received. The studio will contact you to confirm stock or arrange a refund. Keep your reference.');
+              }
+              sessionStorage.removeItem('silk-apparel-pending-payment');
+              setPendingPaymentRef('');
               setStatus('success');
               clearCart();
               return;
@@ -446,6 +472,16 @@ if (!PAYSTACK_PUBLIC_KEY) {
     }
   };
 
+  if (pendingPaymentRef) {
+    return <div className="min-h-screen flex flex-col items-center justify-center gap-5 p-6 bg-white text-black">
+      <h1 className="text-2xl font-bold">Payment confirmation pending</h1>
+      <p>Keep this reference: {pendingPaymentRef}. Check confirmation before paying again.</p>
+      {errorMessage && <p role="alert">{errorMessage}</p>}
+      <button type="button" disabled={isInitializing} onClick={retryPaymentConfirmation} className="rounded-xl bg-black text-white px-6 py-3">{isInitializing ? 'Checking…' : 'Check payment confirmation'}</button>
+      <a href={`https://wa.me/2347064829776?text=${encodeURIComponent(`Please check my payment reference ${pendingPaymentRef}`)}`}>Contact the studio</a>
+    </div>;
+  }
+
   /* ── SUCCESS STATE (Apple Minimalist Clean) ─────────────────────── */
   if (status === 'success') {
     return (
@@ -496,7 +532,7 @@ if (!PAYSTACK_PUBLIC_KEY) {
               marginBottom: 8,
             }}
           >
-            Order Confirmed
+            {errorMessage ? 'Payment Received — Studio Review' : 'Order Confirmed'}
           </h2>
 
           <p
@@ -508,7 +544,7 @@ if (!PAYSTACK_PUBLIC_KEY) {
               lineHeight: 1.6,
             }}
           >
-            Thank you for your order, {name || 'valued customer'}. Your studio reference is:
+            {errorMessage || `Thank you for your order, ${name || 'valued customer'}.`} Your studio reference is:
           </p>
 
           <p

@@ -40,9 +40,9 @@ export default function ReferenceUpload({ onUpload, currentUrls = [] }: Referenc
 
     const file = fileList[0];
 
-    // Client-side validation: 20MB limit
-    if (file.size > 20 * 1024 * 1024) {
-      setErrorMessage('File size exceeds the 20MB limit.');
+    // Client-side validation: 3MB limit
+    if (file.size > 3 * 1024 * 1024) {
+      setErrorMessage('File size exceeds the 3MB limit.');
       return;
     }
 
@@ -84,7 +84,7 @@ export default function ReferenceUpload({ onUpload, currentUrls = [] }: Referenc
         size: file.size,
       };
 
-      setFiles((prev) => [...prev, newFile]);
+      setFiles([newFile]);
       onUpload(data.secure_url);
     } catch (err: any) {
       console.error('Upload failed:', err);
@@ -147,10 +147,10 @@ export default function ReferenceUpload({ onUpload, currentUrls = [] }: Referenc
           </div>
           <div>
             <p className="text-sm font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
-              {isUploading ? 'Encrypting & uploading asset...' : 'Drop your design asset or browse'}
+              {isUploading ? 'Uploading asset...' : 'Drop your design asset or browse'}
             </p>
             <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-              Vector, PSD, PDF, PNG or JPG • Max 20MB
+              Vector, PSD, PDF, PNG or JPG • Max 3MB
             </p>
           </div>
         </div>

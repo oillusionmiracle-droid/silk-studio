@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  checkRateLimit,
+  checkDistributedRateLimit,
   getClientIp,
   rateLimitedResponse,
 } from '@/lib/rateLimit';
@@ -36,8 +36,9 @@ Do not make up prices not listed here. If unsure, suggest requesting a custom qu
 
 export async function POST(req: NextRequest) {
   // 1. Per-IP rate limit (bot / loop protection for a paid LLM endpoint).
+  try {
   const ip = getClientIp(req);
-  const rl = checkRateLimit(`chat:${ip}`, CHAT_LIMIT, CHAT_WINDOW_MS);
+  const rl = await checkDistributedRateLimit(`chat:${ip}`, CHAT_LIMIT, CHAT_WINDOW_MS);
   if (!rl.allowed) {
     return rateLimitedResponse(
       rl.retryAfterSeconds,
@@ -45,7 +46,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  try {
     let body: unknown;
     try {
       body = await req.json();
@@ -106,6 +106,7 @@ export async function POST(req: NextRequest) {
       contents: contents,
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
+        maxOutputTokens: 1024,
       }
     });
     

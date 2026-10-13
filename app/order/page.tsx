@@ -10,6 +10,7 @@ import {
   formatSpecsText,
   formatOrderMessage,
   launchPaystackPayment,
+  verifyServerPayment,
   submitServerOrder,
 } from '@/lib/order/orderService';
 
@@ -230,10 +231,24 @@ export default function OrderPage() {
   }, [subService, specs, totalApparelQty, dbProducts, dbVariants]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pendingPaymentRef, setPendingPaymentRef] = useState('');
+  const [confirmedWhatsApp, setConfirmedWhatsApp] = useState('');
+  useEffect(() => { setPendingPaymentRef(sessionStorage.getItem('silk-pending-payment') || ''); }, []);
+  const retryPaymentConfirmation = async () => {
+    setIsSubmitting(true);
+    try {
+      await verifyServerPayment(pendingPaymentRef);
+      setSubmittedRef(pendingPaymentRef);
+      sessionStorage.removeItem('silk-pending-payment');
+      setPendingPaymentRef(''); setIsSubmitted(true);
+    } catch (error) { alert(error instanceof Error ? error.message : 'Confirmation is still pending.'); }
+    finally { setIsSubmitting(false); }
+  };
 
   // Order submission
   const handleSubmit = async () => {
     if (isSubmitting) return;
+    if (pendingPaymentRef) { await retryPaymentConfirmation(); return; }
 
     const validation = validateOrderSubmission(contact, subService, isCustomQuote);
     if (!validation.isValid) {
@@ -255,7 +270,7 @@ export default function OrderPage() {
 
       const currentProduct = matchProductForSubService(subService, dbProducts);
 
-      const authoritativeRef = await submitServerOrder({
+      const serverOrder = await submitServerOrder({
         userId: user?.id,
         contact,
         subService: subService!,
@@ -271,13 +286,16 @@ export default function OrderPage() {
         fallbackOrderRef,
       });
 
-      if (!authoritativeRef) {
+      if (!serverOrder) {
         alert('We could not create your order on the server. Please check your connection and try again.');
         setIsSubmitting(false);
         return;
       }
 
+      const authoritativeRef = serverOrder.reference;
       setSubmittedRef(authoritativeRef);
+      setTotal(serverOrder.total);
+      setDeposit(serverOrder.amount);
 
       const msg = formatOrderMessage({
         orderRef: authoritativeRef,
@@ -287,13 +305,13 @@ export default function OrderPage() {
         specs,
         referenceFileUrl,
         contact,
-        isCustomQuote,
-        total,
-        deposit,
+        isCustomQuote: serverOrder.isCustomQuote,
+        total: serverOrder.total,
+        deposit: serverOrder.amount,
       });
 
-      if (isCustomQuote) {
-        window.open(`https://wa.me/2347064829776?text=${encodeURIComponent(msg)}`, '_blank');
+      if (serverOrder.isCustomQuote) {
+        setConfirmedWhatsApp(`https://wa.me/2347064829776?text=${encodeURIComponent(msg)}`);
         setIsSubmitted(true);
         setIsSubmitting(false);
         return;
@@ -303,15 +321,22 @@ export default function OrderPage() {
         orderRef: authoritativeRef,
         orderMessage: msg,
         contact,
-        amount: payFull ? total : deposit,
-        onSuccess: (paystackRef) => {
-          const paidMsg = msg.replace(
-            'Price:* Total: ₦',
-            `Price:* Paid deposit via Paystack (Ref: ${paystackRef})\nTotal: ₦`
-          );
-          window.open(`https://wa.me/2347064829776?text=${encodeURIComponent(paidMsg)}`, '_blank');
-          setIsSubmitted(true);
-          setIsSubmitting(false);
+        amount: serverOrder.amount,
+        onSuccess: async (paystackRef) => {
+          sessionStorage.setItem('silk-pending-payment', paystackRef);
+          setPendingPaymentRef(paystackRef);
+          try {
+            const confirmation = await verifyServerPayment(paystackRef);
+            if (confirmation.requires_review) alert('Payment received. The studio will contact you about fulfillment. Keep your reference.');
+            sessionStorage.removeItem('silk-pending-payment');
+            setPendingPaymentRef('');
+            const paidMsg = `${msg}\n*Payment:* Server-verified ${serverOrder.amount < serverOrder.total ? 'deposit' : 'full payment'} (Ref: ${paystackRef})`;
+            setConfirmedWhatsApp(`https://wa.me/2347064829776?text=${encodeURIComponent(paidMsg)}`);
+            setIsSubmitted(true);
+          } catch (error) {
+            setPendingPaymentRef(paystackRef);
+            alert(error instanceof Error ? error.message : 'Payment confirmation pending. Do not pay again yet.');
+          } finally { setIsSubmitting(false); }
         },
         onCancel: () => {
           setIsSubmitting(false);
@@ -323,10 +348,20 @@ export default function OrderPage() {
     }
   };
 
+  if (pendingPaymentRef && !isSubmitted) {
+    return <div className="min-h-screen flex flex-col items-center justify-center gap-5 p-6 bg-neutral-950 text-white">
+      <h1 className="text-2xl font-bold">Payment confirmation pending</h1>
+      <p>Keep this reference: {pendingPaymentRef}. Check confirmation before paying again.</p>
+      <button type="button" disabled={isSubmitting} onClick={retryPaymentConfirmation} className="rounded-xl bg-lime-300 text-black px-6 py-3">{isSubmitting ? 'Checking…' : 'Check payment confirmation'}</button>
+      <a href={`https://wa.me/2347064829776?text=${encodeURIComponent(`Please check my payment reference ${pendingPaymentRef}`)}`}>Contact the studio</a>
+    </div>;
+  }
+
   if (isSubmitted) {
     return (
       <OrderConfirmation
         submittedRef={submittedRef}
+        whatsappUrl={confirmedWhatsApp}
         hasUser={Boolean(user)}
         onOpenAuthModal={openAuthModal}
       />

@@ -1,122 +1,20 @@
-// Supabase Edge Function: update-order-status
-// Restricted to admin users. Updates order status, records audit history,
-// and notifies customers of major order milestones.
-
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
-serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
-  }
-
+import { createClient } from 'npm:@supabase/supabase-js@2.115.0';
+import { failure, HttpError, json, methodCheck, readJson, UUID } from '../_shared/http.ts';
+const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
+Deno.serve(async (req: Request) => {
+  const method = methodCheck(req); if (method) return method;
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Verify admin caller via JWT
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Missing authorization header' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const token = authHeader.replace('Bearer ', '');
+    const token = /^Bearer\s+(.+)$/i.exec(req.headers.get('authorization') || '')?.[1];
+    if (!token) throw new HttpError(401, 'Sign in to continue.');
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Invalid auth session' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Check profile role
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
-
-    if (profile?.role !== 'admin') {
-      return new Response(JSON.stringify({ error: 'Access denied. Administrator privileges required.' }), {
-        status: 403,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const { order_id, new_status, admin_note } = await req.json();
-
-    if (!order_id || !new_status) {
-      return new Response(JSON.stringify({ error: 'order_id and new_status are required.' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Get current order
-    const { data: order, error: orderFetchErr } = await supabase
-      .from('orders')
-      .select('*')
-      .eq('id', order_id)
-      .single();
-
-    if (orderFetchErr || !order) {
-      return new Response(JSON.stringify({ error: 'Order not found' }), {
-        status: 404,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const currentHistory = Array.isArray(order.status_history) ? order.status_history : [];
-    const newEntry = {
-      status: new_status,
-      timestamp: new Date().toISOString(),
-      changed_by: user.email || user.id,
-      note: admin_note || `Status updated to ${new_status}`,
-    };
-
-    const updatePayload: Record<string, any> = {
-      status: new_status,
-      status_history: [...currentHistory, newEntry],
-      updated_at: new Date().toISOString(),
-    };
-
-    if (admin_note) {
-      updatePayload.admin_notes = admin_note;
-    }
-
-    const { data: updatedOrder, error: updateErr } = await supabase
-      .from('orders')
-      .update(updatePayload)
-      .eq('id', order_id)
-      .select()
-      .single();
-
-    if (updateErr) {
-      return new Response(JSON.stringify({ error: updateErr.message }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    return new Response(
-      JSON.stringify({ success: true, order: updatedOrder }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-  } catch (err: any) {
-    console.error('update-order-status error:', err);
-    return new Response(
-      JSON.stringify({ error: err?.message || 'Server error updating order.' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-  }
+    if (authError || !user) throw new HttpError(401, 'Invalid session.');
+    const body = await readJson(req);
+    if (!UUID.test(body.order_id)) throw new HttpError(400, 'Invalid order ID.');
+    const { data, error } = await supabase.rpc('admin_update_order', { p_admin_id: user.id, p_order_id: body.order_id, p_status: body.new_status, p_note: body.admin_note ?? null });
+    if (error?.message.includes('ADMIN_REQUIRED')) throw new HttpError(403, 'Administrator access required.');
+    if (error?.message.includes('PAYMENT_REQUIRED')) throw new HttpError(409, 'Payment must be verified before progressing this order.');
+    if (error?.message.includes('INVALID_STATUS')) throw new HttpError(400, 'Invalid order status or note.');
+    if (error || !data) throw new Error('Status update failed.');
+    return json({ success: true, order: data });
+  } catch (error) { return failure(error); }
 });

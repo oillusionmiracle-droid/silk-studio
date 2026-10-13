@@ -341,7 +341,8 @@ export default function AuthSheet() {
     setSuccessNotice(null);
     setIsLoading(true);
     try {
-      const res = await requestPasswordReset(em);
+      const res = await requestPasswordReset(em, turnstileToken);
+      setTurnstileResetKey((k) => k + 1); setTurnstileToken(null);
       if (res.error) {
         setError(res.error);
         recordAuthFailure();
@@ -480,6 +481,7 @@ export default function AuthSheet() {
                 </div>
               </div>
               {lockoutBanner}
+              <div className="flex justify-center py-1"><TurnstileWidget onToken={setTurnstileToken} resetKey={turnstileResetKey} /></div>
               <div className="pt-1">{limeBtn('Send reset link')}</div>
             </form>
             <button type="button" onClick={() => switchView('sign_in')} className="mt-5 inline-flex items-center gap-1.5 text-[13px] font-bold text-white/60 hover:text-white transition-colors cursor-pointer">

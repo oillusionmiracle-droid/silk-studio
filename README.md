@@ -87,6 +87,7 @@ NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAAEwCPPZFRXnUwIOx
 
 **Server-side only (Next.js API routes — never expose these):**
 ```
+SUPABASE_SERVICE_ROLE_KEY= # server-only; required for private uploads and distributed rate limits
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 GEMINI_API_KEY=
@@ -120,10 +121,7 @@ supabase db push
 ```
 Migrations live in `supabase/migrations/` and include schema, RLS policies, and the admin-role protection trigger. Read them in numeric order if you want to understand the auth/authorization model.
 
-> **Manual column:** The `orders` table requires an `email` column (`text`, nullable) that is not included in any migration file. Add it manually:
-> ```sql
-> ALTER TABLE orders ADD COLUMN IF NOT EXISTS email text;
-> ```
+> For an existing production project, follow [the coordinated security rollout and rollback guide](docs/security-rollout.md). The new security migration adds `orders.email` automatically. Do not replay historical setup scripts blindly.
 
 ### 4. Deploy the Edge Functions
 ```bash
