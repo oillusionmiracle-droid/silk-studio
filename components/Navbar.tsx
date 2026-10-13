@@ -8,13 +8,11 @@ import AccountMenu from '@/components/auth/AccountMenu';
 import { useOrderTheme } from '@/lib/OrderThemeContext';
 
 const navLinks: { label: string; href: string; accent?: string }[] = [
-  { label: 'Home', href: '/' },
-  { label: 'Services', href: '/services' },
-  { label: 'Moremi', href: '/moremi', accent: '#38BDF8' },
-  { label: 'Portfolio', href: '/portfolio' },
+  { label: 'Services', href: '/#services' },
+  { label: 'Work', href: '/portfolio' },
   { label: 'Apparel', href: '/apparel' },
-  { label: 'About', href: '/about' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'Studio', href: '/#studio' },
+  { label: 'Contact', href: '/#brief' },
 ];
 
 export default function Navbar() {
@@ -211,7 +209,7 @@ export default function Navbar() {
           {/* Hamburger */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden"
+            className="silk-menu-toggle md:hidden"
             style={{
               background: 'none',
               border: 'none',
@@ -221,7 +219,8 @@ export default function Navbar() {
               flexDirection: 'column',
               gap: 5,
             }}
-            aria-label="Toggle menu"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
           >
             <span style={{ width: 22, height: 2, background: menuOpen ? '#C6FF33' : isOrderLight ? '#000' : '#fff', display: 'block', transition: 'transform 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6)', transform: menuOpen ? 'translateY(3.5px) rotate(45deg)' : 'none' }} />
             <span style={{ width: 22, height: 2, background: menuOpen ? '#C6FF33' : isOrderLight ? '#000' : '#fff', display: 'block', transition: 'transform 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6)', transform: menuOpen ? 'translateY(-3.5px) rotate(-45deg)' : 'none' }} />
