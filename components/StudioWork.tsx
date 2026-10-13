@@ -11,7 +11,7 @@ export default function StudioWork({ archive = false }: { archive?: boolean }) {
   const [selected, setSelected] = useState<Project | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => { const id = new URLSearchParams(window.location.search).get('project'); const project = projects.find(p => p.id === id); if (project) { setSelected(project); dialog.current?.showModal(); } }, []);
-  const visible = (archive || expanded) ? projects.filter(p => filter === 'All' || p.category === filter) : ['bordeaux', 'splithouse', 'proofroom', 'suya', 'cutout', 'moremi'].map(id => projects.find(p => p.id === id)!);
+  const visible = (archive || expanded) ? projects.filter(p => filter === 'All' || p.category === filter) : ['bordeaux', 'splithouse', 'proofroom'].map(id => projects.find(p => p.id === id)!);
   function open(project: Project) { setSelected(project); dialog.current?.showModal(); }
   return <>
     {(archive || expanded) && <div className="studio-filters" role="group" aria-label="Filter projects">{['All', 'Apps', 'Websites'].map(category => <button key={category} aria-pressed={filter === category} onClick={() => setFilter(category)}>{category}<span>{category === 'All' ? projects.length : projects.filter(p => p.category === category).length}</span></button>)}</div>}
