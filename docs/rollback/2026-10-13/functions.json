@@ -1,0 +1,52 @@
+[
+  {
+    "name": "create-order",
+    "version": 5,
+    "verify_jwt": false,
+    "files": [
+      "functions/create-order/index.ts",
+      "functions/_shared/edgeRateLimit.ts"
+    ]
+  },
+  {
+    "name": "verify-order",
+    "version": 7,
+    "verify_jwt": false,
+    "files": [
+      "functions/verify-order/index.ts",
+      "functions/_shared/edgeRateLimit.ts"
+    ]
+  },
+  {
+    "name": "paystack-webhook",
+    "version": 1,
+    "verify_jwt": false,
+    "files": [
+      "paystack-webhook/index.ts"
+    ]
+  },
+  {
+    "name": "update-order-status",
+    "version": 1,
+    "verify_jwt": true,
+    "files": [
+      "update-order-status/index.ts"
+    ]
+  },
+  {
+    "name": "sign-upload",
+    "version": 1,
+    "verify_jwt": false,
+    "files": [
+      "sign-upload/index.ts"
+    ]
+  },
+  {
+    "name": "subscribe-newsletter",
+    "version": 3,
+    "verify_jwt": false,
+    "files": [
+      "subscribe-newsletter/index.ts"
+    ]
+  }
+]
