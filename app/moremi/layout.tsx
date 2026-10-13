@@ -4,7 +4,7 @@ import "./moremi.css";
 export const metadata: Metadata = {
   title: "Moremi — Stop Scrolling. Start Building.",
   description:
-    "Moremi is a Nigeria-first AI playground where kids aged 8–12 build real apps, games and stories with AI — no coding needed. Join the waitlist.",
+    "Moremi is Silk Studio’s Nigeria-first AI playground in development for kids aged 8–12 to create apps, games and stories. Join the launch waitlist.",
   keywords: [
     "Moremi",
     "kids coding Nigeria",
@@ -19,8 +19,8 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Moremi — Stop Scrolling. Start Building.",
     description:
-      "A Nigeria-first AI playground where kids aged 8–12 build real apps, games and stories with AI. Join the waitlist.",
-    url: "https://silkstudios.com.ng/moremi",
+      "A Nigeria-first AI playground in development for kids aged 8–12 to create apps, games and stories. Join the launch waitlist.",
+    url: "https://www.silkstudios.com.ng/moremi",
     siteName: "Silk Studio",
     locale: "en_NG",
     type: "website",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Moremi — Stop Scrolling. Start Building.",
     description:
-      "A Nigeria-first AI playground where kids aged 8–12 build real apps, games and stories with AI. Join the waitlist.",
+      "A Nigeria-first AI playground in development for kids aged 8–12 to create apps, games and stories. Join the launch waitlist.",
     images: ["/moremi/field.jpg"],
     creator: "@silkstudiong",
   },

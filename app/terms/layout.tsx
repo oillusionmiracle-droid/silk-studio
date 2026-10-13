@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Terms & Conditions — Silk Studio | Lagos Design & Print',
+  title: 'Terms & Conditions — Silk Studio Services & Orders',
   description:
     'Read Silk Studio\'s Terms and Conditions. Understand your rights and obligations when placing orders, making payments, and using our creative services in Lagos, Nigeria.',
   keywords: [
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     title: 'Terms & Conditions — Silk Studio',
     description:
       'The terms that govern your orders, payments, and use of Silk Studio\'s creative services.',
-    url: 'https://silkstudios.com.ng/terms',
+    url: 'https://www.silkstudios.com.ng/terms',
     siteName: 'Silk Studio',
     locale: 'en_NG',
     type: 'website',

@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     title: 'Silk Apparel — Limited Drop Custom Streetwear | Lagos',
     description:
       'Pre-order only. Each month, one exclusive drop of premium custom streetwear. Tees, hoodies, caps. Once the window closes, it\'s gone.',
-    url: 'https://silkstudios.com.ng/apparel',
+    url: 'https://www.silkstudios.com.ng/apparel',
     siteName: 'Silk Studio',
     locale: 'en_NG',
     type: 'website',
