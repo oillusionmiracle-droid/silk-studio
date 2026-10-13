@@ -69,7 +69,7 @@ export default function GeminiAssistant() {
       }
     } catch (error) {
       console.error(error);
-      setMessages([...newMessages, { role: 'model', content: "Sorry, I'm having trouble connecting right now. Please try again later." }]);
+      setMessages([...newMessages, { role: 'model', content: "I can’t connect to Gemini right now. You can still [start an order](/order), [browse our services](/#services), or [send a free project brief](/?brief=Website%20or%20app#brief)." }]);
     } finally {
       setIsLoading(false);
     }
@@ -274,6 +274,7 @@ export default function GeminiAssistant() {
               />
               <button
                 type="submit"
+                aria-label="Send message to Gemini"
                 disabled={!input.trim() || isLoading}
                 style={{
                   width: 40,

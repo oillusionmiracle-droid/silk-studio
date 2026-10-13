@@ -407,7 +407,7 @@ export default function OrderPage() {
             marginBottom: isMobile ? 28 : 44,
           }}
         >
-          <h1
+          <h2
             style={{
               fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
               fontWeight: 800,
@@ -420,7 +420,7 @@ export default function OrderPage() {
             }}
           >
             What are we making?
-          </h1>
+          </h2>
         </div>
 
         {/* ORDER BUILDER FORM */}

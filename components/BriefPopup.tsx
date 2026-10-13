@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { FormspreeProvider } from '@formspree/react';
 import StudioBrief from '@/components/StudioBrief';
 const services = ['Website or app','AI UGC & advertising','Custom software & automation','Branding & design','Print & packaging','Apparel'];
 export default function BriefPopup() {
@@ -13,5 +14,5 @@ export default function BriefPopup() {
     document.addEventListener('click', click);
     return () => { window.removeEventListener('popstate', check); document.removeEventListener('click', click); };
   }, []);
-  return <><button className="studio-button studio-dark" onClick={() => open()}>Tell us your idea ↗</button><dialog ref={dialog} className="studio-dialog brief-popup" aria-labelledby="brief-title" onClick={e => {if(e.target===e.currentTarget) dialog.current?.close();}}><div className="studio-dialog-bar"><span>FREE PROJECT BRIEF / NO COMMITMENT</span><button aria-label="Close brief" onClick={() => dialog.current?.close()}>×</button></div><div className="studio-dialog-content"><h2 id="brief-title">Let’s make it <em>real.</em></h2><p>Choose a service. Tell us what success looks like. Review your brief before sending it.</p><div className="brief-services">{services.map(s => <button key={s} aria-pressed={service===s} onClick={() => setService(s)}>{s}</button>)}</div><StudioBrief key={service} initialService={service}/></div></dialog></>;
+  return <><button className="studio-button studio-dark" onClick={() => open()}>Tell us your idea ↗</button><dialog ref={dialog} className="studio-dialog brief-popup" aria-labelledby="brief-title" onClick={e => {if(e.target===e.currentTarget) dialog.current?.close();}}><div className="studio-dialog-bar"><span>FREE PROJECT BRIEF / NO COMMITMENT</span><button aria-label="Close brief" onClick={() => dialog.current?.close()}>×</button></div><div className="studio-dialog-content"><h2 id="brief-title">Let’s make it <em>real.</em></h2><p>Choose a service. Tell us what success looks like. Review your brief before sending it.</p><div className="brief-services">{services.map(s => <button key={s} aria-pressed={service===s} onClick={() => setService(s)}>{s}</button>)}</div><FormspreeProvider project="3111554656879247341"><StudioBrief key={service} initialService={service}/></FormspreeProvider></div></dialog></>;
 }
