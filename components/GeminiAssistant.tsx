@@ -51,6 +51,7 @@ export default function GeminiAssistant() {
         body: JSON.stringify({ messages: newMessages })
       });
 
+      if (!res.ok) throw new Error('Assistant request failed');
       if (!res.body) throw new Error('No body in response');
 
       const reader = res.body.getReader();
@@ -88,7 +89,7 @@ export default function GeminiAssistant() {
             aria-label="Open AI Assistant"
             style={{
               position: 'fixed',
-              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 152px)',
+              bottom: `calc(env(safe-area-inset-bottom, 0px) + ${['/', '/portfolio', '/studio'].includes(pathname) ? 24 : 152}px)`,
               right: 20,
               zIndex: 8999,
               background: 'none',

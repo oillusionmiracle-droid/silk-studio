@@ -77,6 +77,16 @@ export default function OrderPage() {
   const [dbProducts, setDbProducts] = useState<DbProduct[]>([]);
   const [dbVariants, setDbVariants] = useState<DbVariant[]>([]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const selectedCategory = params.get('category');
+    const selectedService = params.get('service');
+    if (selectedCategory && DEFAULT_CATEGORIES.some(c => c.id === selectedCategory)) {
+      setCategory(selectedCategory);
+      if (selectedService && DEFAULT_SUB_SERVICES[selectedCategory]?.includes(selectedService)) setSubService(selectedService);
+    }
+  }, []);
+
   // Autofill contact info from user profile
   useEffect(() => {
     if (profile) {
@@ -371,7 +381,7 @@ export default function OrderPage() {
   const isDark = theme === 'dark';
 
   return (
-    <div
+    <div className="order-redesign"
       style={{
         minHeight: '100vh',
         backgroundColor: isDark ? '#09090b' : '#f4f4f6',
@@ -389,7 +399,8 @@ export default function OrderPage() {
           zIndex: 1,
         }}
       >
-        {/* TOP HEADER - CENTRALIZED "What would you like to order?" */}
+        <div className="order-intro"><span className="studio-eyebrow">YOUR NEXT THING / MADE BY SILK</span><h1>Make it yours<span>.</span></h1><p>Choose what you’re making. Shape the details. We’ll take care of the rest.</p><div className="order-steps"><span data-active={!category}>01 · Choose</span><span data-active={!!category && !subService}>02 · Customize</span><span data-active={!!subService}>03 · Review & order</span></div></div>
+        {/* TOP HEADER - CENTRALIZED "What are we making?" */}
         <div
           style={{
             textAlign: 'center',
@@ -408,7 +419,7 @@ export default function OrderPage() {
               transition: 'color 0.2s ease',
             }}
           >
-            What would you like to order?
+            What are we making?
           </h1>
         </div>
 

@@ -11,7 +11,8 @@ const navLinks: { label: string; href: string; accent?: string }[] = [
   { label: 'Services', href: '/#services' },
   { label: 'Work', href: '/portfolio' },
   { label: 'Apparel', href: '/apparel' },
-  { label: 'Studio', href: '/#studio' },
+  { label: 'Studio', href: '/studio' },
+  { label: 'Moremi', href: '/moremi' },
   { label: 'Contact', href: '/#brief' },
 ];
 
@@ -114,7 +115,7 @@ export default function Navbar() {
           }}
           className="hidden md:flex"
         >
-          {navLinks.filter((link) => link.label !== 'Moremi').map((link) => (
+          {navLinks.filter((link) => !['Moremi', 'Studio'].includes(link.label)).map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -209,7 +210,7 @@ export default function Navbar() {
           {/* Hamburger */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="silk-menu-toggle md:hidden"
+            className="silk-menu-toggle"
             style={{
               background: 'none',
               border: 'none',
