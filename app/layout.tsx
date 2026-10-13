@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { SITE_URL, SERVICE_DESCRIPTION, studioStructuredData } from "@/lib/siteMetadata";
 import localFont from "next/font/local";
 
 import "@/app/globals.css";
@@ -33,7 +34,7 @@ const dmMono = localFont({
 export const metadata: Metadata = {
   title: "Silk Studio — Design, Apps, Ads & Print",
   description:
-    "Silk Studio connects brands, websites, apps, AI ads, and print. An independent creative studio led by Miracle in Lagos, working worldwide.",
+    SERVICE_DESCRIPTION,
   keywords: [
     "design studio Lagos",
     "print shop Lagos",
@@ -45,15 +46,22 @@ export const metadata: Metadata = {
     "logo design Nigeria",
     "web design Lagos",
     "event packages Lagos",
+    "app development Nigeria",
+    "custom software Nigeria",
+    "business automation",
+    "UGC ads Nigeria",
+    "AI video advertising",
+    "product video production",
+    "packaging design Nigeria",
     "Silk Studio",
     "silk studios Lagos",
   ],
-  authors: [{ name: "Silk Studio", url: "https://silkstudios.com.ng" }],
+  authors: [{ name: "Silk Studio", url: "https://www.silkstudios.com.ng" }],
   creator: "Silk Studio",
   publisher: "Silk Studio",
   category: "Creative Services",
   manifest: "/manifest.json",
-  metadataBase: new URL("https://silkstudios.com.ng"),
+  metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: "/",
   },
@@ -76,8 +84,8 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Silk Studio — Design, Apps, Ads & Print",
     description:
-      "Brands, websites, apps, AI ads, and print. Designed and built in Lagos, working worldwide.",
-    url: "https://silkstudios.com.ng",
+      SERVICE_DESCRIPTION,
+    url: "https://www.silkstudios.com.ng",
     siteName: "Silk Studio",
     locale: "en_NG",
     type: "website",
@@ -94,7 +102,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Silk Studio — Design, Apps, Ads & Print",
     description:
-      "Brands, websites, apps, AI ads, and print. Designed and built in Lagos, working worldwide.",
+      SERVICE_DESCRIPTION,
     images: ["/og-home.jpg"],
     creator: "@silkstudiong",
   },
@@ -124,6 +132,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-512x512.png" />
       </head>
       <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(studioStructuredData).replace(/</g, "\\u003c") }} />
         <Script
           id="gtm-script"
           strategy="afterInteractive"

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — How Silk Studio Handles Your Data | Lagos',
+  title: 'Privacy Policy — How Silk Studio Handles Your Data',
   description:
     'Read Silk Studio\'s Privacy Policy. We are committed to protecting your personal data. Learn what we collect, how we use it, and your rights as a customer.',
   keywords: [
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     title: 'Privacy Policy — Silk Studio',
     description:
       'How Silk Studio handles your personal data. Transparent, responsible, and NDPR-aware.',
-    url: 'https://silkstudios.com.ng/privacy',
+    url: 'https://www.silkstudios.com.ng/privacy',
     siteName: 'Silk Studio',
     locale: 'en_NG',
     type: 'website',

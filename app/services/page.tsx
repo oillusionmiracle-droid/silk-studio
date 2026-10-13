@@ -14,7 +14,11 @@ gsap.registerPlugin(ScrollTrigger);
    DATA
 ───────────────────────────────────────── */
 
-const servicesData = [
+type ServiceItem = { category: string; title: string; image: string; icon: string; tag: string; body: string; price: string; turnaround: string; href?: string };
+const servicesData: ServiceItem[] = [
+  { category: 'Ads', title: 'UGC & AI Product Ads', image: '/images/projects/bordeaux-editorial.webp', icon: '/icons/design.svg', tag: 'ADVERTISING', body: 'Creator-style product ads, AI campaigns, product films and generated imagery. Script, hook and visual direction shaped around your audience.', price: 'Custom quote', turnaround: 'Scope agreed first', href: '/?brief=AI%20UGC%20%26%20advertising#brief' },
+  { category: 'Software', title: 'Apps & Custom Software', image: '/images/projects/splithouse-live.jpg', icon: '/icons/web.svg', tag: 'SOFTWARE', body: 'Web apps, reusable business software and internal tools designed around the way your company works.', price: 'Custom quote', turnaround: 'Scope agreed first', href: '/?brief=Custom%20software%20%26%20automation#brief' },
+  { category: 'Software', title: 'Workflow Automation & Integrations', image: '/images/projects/proofroom-app.jpg', icon: '/icons/web.svg', tag: 'AUTOMATION', body: 'Connect your systems and automate repeated tasks with tools tailored to your business.', price: 'Custom quote', turnaround: 'Scope agreed first', href: '/?brief=Custom%20software%20%26%20automation#brief' },
   {
     category: 'Print',
     title: 'Flyers & Handbills',
@@ -258,7 +262,7 @@ const faqsData = [
   { q: 'How fast is fast?', a: '48hrs standard. Urgent (same-day/next-day) available at a premium.' },
 ];
 
-const tabs = ['All', 'Print', 'Apparel', 'Design', 'Web', 'Bundles'];
+const tabs = ['All', 'Print', 'Apparel', 'Design', 'Web', 'Ads', 'Software', 'Bundles'];
 
 /* ─────────────────────────────────────────
    SERVICE CARD
@@ -489,7 +493,7 @@ function ServiceCard({ item, index }: { item: typeof servicesData[0]; index: num
           </div>
 
           <Link
-            href={`/order?service=${encodeURIComponent(item.title)}`}
+            href={item.href || `/order?category=${encodeURIComponent(item.category)}&service=${encodeURIComponent(item.title)}`}
             onClick={e => e.stopPropagation()}
             style={{
               display: 'inline-flex',
