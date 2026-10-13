@@ -1,0 +1,32 @@
+{
+  "forms": {
+    "projectBrief": {
+      "name": "Silk Studio \u2014 Free project briefs",
+      "fields": {
+        "name": {
+          "type": "text",
+          "required": true,
+          "maxlength": 120
+        },
+        "email": {
+          "type": "email",
+          "required": true
+        },
+        "service": {
+          "type": "text",
+          "required": true
+        },
+        "goal": {
+          "type": "text",
+          "required": true,
+          "maxlength": 1000
+        },
+        "details": {
+          "type": "text",
+          "maxlength": 1500
+        }
+      },
+      "actions": []
+    }
+  }
+}

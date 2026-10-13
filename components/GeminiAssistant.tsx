@@ -51,6 +51,7 @@ export default function GeminiAssistant() {
         body: JSON.stringify({ messages: newMessages })
       });
 
+      if (!res.ok) throw new Error('Assistant request failed');
       if (!res.body) throw new Error('No body in response');
 
       const reader = res.body.getReader();
@@ -68,7 +69,7 @@ export default function GeminiAssistant() {
       }
     } catch (error) {
       console.error(error);
-      setMessages([...newMessages, { role: 'model', content: "Sorry, I'm having trouble connecting right now. Please try again later." }]);
+      setMessages([...newMessages, { role: 'model', content: "I can’t connect to Gemini right now. You can still [start an order](/order), [browse our services](/#services), or [send a free project brief](/?brief=Website%20or%20app#brief)." }]);
     } finally {
       setIsLoading(false);
     }
@@ -88,7 +89,7 @@ export default function GeminiAssistant() {
             aria-label="Open AI Assistant"
             style={{
               position: 'fixed',
-              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 152px)',
+              bottom: `calc(env(safe-area-inset-bottom, 0px) + ${['/', '/portfolio', '/studio'].includes(pathname) ? 24 : 152}px)`,
               right: 20,
               zIndex: 8999,
               background: 'none',
@@ -273,6 +274,7 @@ export default function GeminiAssistant() {
               />
               <button
                 type="submit"
+                aria-label="Send message to Gemini"
                 disabled={!input.trim() || isLoading}
                 style={{
                   width: 40,
