@@ -2,6 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 import { NextRequest, NextResponse } from 'next/server';
 import {
   checkDistributedRateLimit,
+  checkRateLimit,
   getClientIp,
   rateLimitedResponse,
 } from '@/lib/rateLimit';
@@ -38,7 +39,12 @@ export async function POST(req: NextRequest) {
   // 1. Per-IP rate limit (bot / loop protection for a paid LLM endpoint).
   try {
   const ip = getClientIp(req);
-  const rl = await checkDistributedRateLimit(`chat:${ip}`, CHAT_LIMIT, CHAT_WINDOW_MS);
+  // The public live assistant already has provider configuration and its own
+  // rate limit. Preview builds can reuse it without production database keys.
+  const usePublicAssistant = process.env.VERCEL_ENV === 'preview' && !process.env.GEMINI_API_KEY;
+  const rl = usePublicAssistant
+    ? checkRateLimit(`preview-chat:${ip}`, CHAT_LIMIT, CHAT_WINDOW_MS)
+    : await checkDistributedRateLimit(`chat:${ip}`, CHAT_LIMIT, CHAT_WINDOW_MS);
   if (!rl.allowed) {
     return rateLimitedResponse(
       rl.retryAfterSeconds,
@@ -99,6 +105,26 @@ export async function POST(req: NextRequest) {
         );
       }
       contents.push({ role: m.role, parts: [{ text: m.content }] });
+    }
+
+    if (usePublicAssistant) {
+      const upstream = await fetch('https://www.silkstudios.com.ng/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages }),
+        cache: 'no-store',
+        redirect: 'error',
+        signal: AbortSignal.timeout(25000),
+      });
+      // Never forward cookies, authorization headers or user-configured URLs.
+      return new Response(upstream.body, {
+        status: upstream.status,
+        headers: {
+          'Content-Type': upstream.headers.get('content-type') || 'text/plain',
+          'Cache-Control': 'no-store',
+          ...(upstream.headers.get('retry-after') ? { 'Retry-After': upstream.headers.get('retry-after')! } : {}),
+        },
+      });
     }
 
     const responseStream = await getAi().models.generateContentStream({
