@@ -42,6 +42,8 @@ export async function GET() {
   const now = new Date().toISOString();
 
   const staticRoutes = [
+    { url: `${baseUrl}/studio`, lastModified: now, changeFrequency: 'monthly', priority: '0.7' },
+    { url: `${baseUrl}/moremi`, lastModified: now, changeFrequency: 'weekly', priority: '0.8' },
     { url: baseUrl, lastModified: now, changeFrequency: 'daily', priority: '1.0' },
     { url: `${baseUrl}/services`, lastModified: now, changeFrequency: 'weekly', priority: '0.9' },
     { url: `${baseUrl}/portfolio`, lastModified: now, changeFrequency: 'weekly', priority: '0.9' },

@@ -10,6 +10,7 @@ export interface Variant {
   size: string;
   color: string | null;
   stock: number;
+  price?: number;
 }
 
 export interface Product {

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import { supabase } from '@/lib/supabase';
+import { getServerSupabase } from '@/lib/serverSupabase';
 import {
-  checkRateLimit,
+  checkDistributedRateLimit,
   getClientIp,
   rateLimitedResponse,
 } from '@/lib/rateLimit';
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
     if (!turnstile.ok) {
       return turnstileFailedResponse(turnstile.errorCodes);
     }
-    const ipRl = checkRateLimit(
+    const ipRl = await checkDistributedRateLimit(
       `newsletter:${ip}`,
       NEWSLETTER_IP_LIMIT,
       NEWSLETTER_IP_WINDOW_MS
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
         'Too many signup attempts. Please try again later.'
       );
     }
-    const emailRl = checkRateLimit(
+    const emailRl = await checkDistributedRateLimit(
       `newsletter-email:${trimmedEmail}`,
       NEWSLETTER_EMAIL_LIMIT,
       NEWSLETTER_EMAIL_WINDOW_MS
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 1. Save subscriber in Supabase
-    const { error: supabaseError } = await supabase
+    const { error: supabaseError } = await getServerSupabase()
       .from('newsletter_subscribers')
       .upsert(
         {
@@ -102,7 +102,8 @@ export async function POST(req: NextRequest) {
       );
 
     if (supabaseError) {
-      console.error('Supabase newsletter error:', supabaseError);
+      console.error('Supabase newsletter error:', supabaseError.code);
+      return NextResponse.json({ error: 'Subscription could not be recorded. Please try again.' }, { status: 503 });
     }
 
     // 2. Add subscriber to Resend
@@ -124,7 +125,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log('Newsletter subscriber added to Resend:', contact);
+
 
     // 3. Trigger the Resend welcome automation
     const { error: eventError } = await getResend().events.send({

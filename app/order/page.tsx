@@ -10,6 +10,7 @@ import {
   formatSpecsText,
   formatOrderMessage,
   launchPaystackPayment,
+  verifyServerPayment,
   submitServerOrder,
 } from '@/lib/order/orderService';
 
@@ -75,6 +76,16 @@ export default function OrderPage() {
 
   const [dbProducts, setDbProducts] = useState<DbProduct[]>([]);
   const [dbVariants, setDbVariants] = useState<DbVariant[]>([]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const selectedCategory = params.get('category');
+    const selectedService = params.get('service');
+    if (selectedCategory && DEFAULT_CATEGORIES.some(c => c.id === selectedCategory)) {
+      setCategory(selectedCategory);
+      if (selectedService && DEFAULT_SUB_SERVICES[selectedCategory]?.includes(selectedService)) setSubService(selectedService);
+    }
+  }, []);
 
   // Autofill contact info from user profile
   useEffect(() => {
@@ -230,10 +241,24 @@ export default function OrderPage() {
   }, [subService, specs, totalApparelQty, dbProducts, dbVariants]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pendingPaymentRef, setPendingPaymentRef] = useState('');
+  const [confirmedWhatsApp, setConfirmedWhatsApp] = useState('');
+  useEffect(() => { setPendingPaymentRef(sessionStorage.getItem('silk-pending-payment') || ''); }, []);
+  const retryPaymentConfirmation = async () => {
+    setIsSubmitting(true);
+    try {
+      await verifyServerPayment(pendingPaymentRef);
+      setSubmittedRef(pendingPaymentRef);
+      sessionStorage.removeItem('silk-pending-payment');
+      setPendingPaymentRef(''); setIsSubmitted(true);
+    } catch (error) { alert(error instanceof Error ? error.message : 'Confirmation is still pending.'); }
+    finally { setIsSubmitting(false); }
+  };
 
   // Order submission
   const handleSubmit = async () => {
     if (isSubmitting) return;
+    if (pendingPaymentRef) { await retryPaymentConfirmation(); return; }
 
     const validation = validateOrderSubmission(contact, subService, isCustomQuote);
     if (!validation.isValid) {
@@ -255,7 +280,7 @@ export default function OrderPage() {
 
       const currentProduct = matchProductForSubService(subService, dbProducts);
 
-      const authoritativeRef = await submitServerOrder({
+      const serverOrder = await submitServerOrder({
         userId: user?.id,
         contact,
         subService: subService!,
@@ -271,13 +296,16 @@ export default function OrderPage() {
         fallbackOrderRef,
       });
 
-      if (!authoritativeRef) {
+      if (!serverOrder) {
         alert('We could not create your order on the server. Please check your connection and try again.');
         setIsSubmitting(false);
         return;
       }
 
+      const authoritativeRef = serverOrder.reference;
       setSubmittedRef(authoritativeRef);
+      setTotal(serverOrder.total);
+      setDeposit(serverOrder.amount);
 
       const msg = formatOrderMessage({
         orderRef: authoritativeRef,
@@ -287,13 +315,13 @@ export default function OrderPage() {
         specs,
         referenceFileUrl,
         contact,
-        isCustomQuote,
-        total,
-        deposit,
+        isCustomQuote: serverOrder.isCustomQuote,
+        total: serverOrder.total,
+        deposit: serverOrder.amount,
       });
 
-      if (isCustomQuote) {
-        window.open(`https://wa.me/2347064829776?text=${encodeURIComponent(msg)}`, '_blank');
+      if (serverOrder.isCustomQuote) {
+        setConfirmedWhatsApp(`https://wa.me/2347064829776?text=${encodeURIComponent(msg)}`);
         setIsSubmitted(true);
         setIsSubmitting(false);
         return;
@@ -303,15 +331,22 @@ export default function OrderPage() {
         orderRef: authoritativeRef,
         orderMessage: msg,
         contact,
-        amount: payFull ? total : deposit,
-        onSuccess: (paystackRef) => {
-          const paidMsg = msg.replace(
-            'Price:* Total: ₦',
-            `Price:* Paid deposit via Paystack (Ref: ${paystackRef})\nTotal: ₦`
-          );
-          window.open(`https://wa.me/2347064829776?text=${encodeURIComponent(paidMsg)}`, '_blank');
-          setIsSubmitted(true);
-          setIsSubmitting(false);
+        amount: serverOrder.amount,
+        onSuccess: async (paystackRef) => {
+          sessionStorage.setItem('silk-pending-payment', paystackRef);
+          setPendingPaymentRef(paystackRef);
+          try {
+            const confirmation = await verifyServerPayment(paystackRef);
+            if (confirmation.requires_review) alert('Payment received. The studio will contact you about fulfillment. Keep your reference.');
+            sessionStorage.removeItem('silk-pending-payment');
+            setPendingPaymentRef('');
+            const paidMsg = `${msg}\n*Payment:* Server-verified ${serverOrder.amount < serverOrder.total ? 'deposit' : 'full payment'} (Ref: ${paystackRef})`;
+            setConfirmedWhatsApp(`https://wa.me/2347064829776?text=${encodeURIComponent(paidMsg)}`);
+            setIsSubmitted(true);
+          } catch (error) {
+            setPendingPaymentRef(paystackRef);
+            alert(error instanceof Error ? error.message : 'Payment confirmation pending. Do not pay again yet.');
+          } finally { setIsSubmitting(false); }
         },
         onCancel: () => {
           setIsSubmitting(false);
@@ -323,10 +358,20 @@ export default function OrderPage() {
     }
   };
 
+  if (pendingPaymentRef && !isSubmitted) {
+    return <div className="min-h-screen flex flex-col items-center justify-center gap-5 p-6 bg-neutral-950 text-white">
+      <h1 className="text-2xl font-bold">Payment confirmation pending</h1>
+      <p>Keep this reference: {pendingPaymentRef}. Check confirmation before paying again.</p>
+      <button type="button" disabled={isSubmitting} onClick={retryPaymentConfirmation} className="rounded-xl bg-lime-300 text-black px-6 py-3">{isSubmitting ? 'Checking…' : 'Check payment confirmation'}</button>
+      <a href={`https://wa.me/2347064829776?text=${encodeURIComponent(`Please check my payment reference ${pendingPaymentRef}`)}`}>Contact the studio</a>
+    </div>;
+  }
+
   if (isSubmitted) {
     return (
       <OrderConfirmation
         submittedRef={submittedRef}
+        whatsappUrl={confirmedWhatsApp}
         hasUser={Boolean(user)}
         onOpenAuthModal={openAuthModal}
       />
@@ -336,7 +381,7 @@ export default function OrderPage() {
   const isDark = theme === 'dark';
 
   return (
-    <div
+    <div className="order-redesign"
       style={{
         minHeight: '100vh',
         backgroundColor: isDark ? '#09090b' : '#f4f4f6',
@@ -354,14 +399,15 @@ export default function OrderPage() {
           zIndex: 1,
         }}
       >
-        {/* TOP HEADER - CENTRALIZED "What would you like to order?" */}
+        <div className="order-intro"><span className="studio-eyebrow">YOUR NEXT THING / MADE BY SILK</span><h1>Make it yours<span>.</span></h1><p>Choose what you’re making. Shape the details. We’ll take care of the rest.</p><div className="order-steps"><span data-active={!category}>01 · Choose</span><span data-active={!!category && !subService}>02 · Customize</span><span data-active={!!subService}>03 · Review & order</span></div></div>
+        {/* TOP HEADER - CENTRALIZED "What are we making?" */}
         <div
           style={{
             textAlign: 'center',
             marginBottom: isMobile ? 28 : 44,
           }}
         >
-          <h1
+          <h2
             style={{
               fontFamily: "'Helvetica Neue', Helvetica, -apple-system, Arial, sans-serif",
               fontWeight: 800,
@@ -373,8 +419,8 @@ export default function OrderPage() {
               transition: 'color 0.2s ease',
             }}
           >
-            What would you like to order?
-          </h1>
+            What are we making?
+          </h2>
         </div>
 
         {/* ORDER BUILDER FORM */}

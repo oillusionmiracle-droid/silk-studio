@@ -133,9 +133,9 @@ export default function ProductSelector({
   };
 
   return (
-    <div
+    <div className="order-product-selector"
       style={{
-        backgroundColor: isDark ? '#111113' : '#ffffff',
+        backgroundColor: isDark ? '#14190f' : '#eef0e7',
         border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
         borderRadius: 24,
         padding: isMobile ? 16 : 24,
@@ -207,7 +207,7 @@ export default function ProductSelector({
                 border: isSelected
                   ? `2px solid ${isDark ? '#ffffff' : '#000000'}`
                   : `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
-                backgroundColor: isDark ? '#17171a' : '#f9fafb',
+                backgroundColor: isDark ? '#1e2518' : '#ffffff',
                 cursor: 'pointer',
                 textAlign: 'left',
                 display: 'flex',
@@ -232,7 +232,7 @@ export default function ProductSelector({
                   flex: 1,
                   minHeight: 0,
                   overflow: 'hidden',
-                  backgroundColor: isDark ? '#141416' : '#e5e7eb',
+                  backgroundColor: isDark ? '#27321e' : '#e3e9d9',
                 }}
               >
                 <OrderImage
@@ -343,7 +343,7 @@ export default function ProductSelector({
                       border: isSelected
                         ? `2px solid ${isDark ? '#ffffff' : '#000000'}`
                         : `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
-                      backgroundColor: isDark ? '#17171a' : '#f9fafb',
+                      backgroundColor: isDark ? '#1e2518' : '#ffffff',
                       cursor: 'pointer',
                       textAlign: 'left',
                       display: 'flex',
@@ -368,7 +368,7 @@ export default function ProductSelector({
                         flex: 1,
                         minHeight: 0,
                         overflow: 'hidden',
-                        backgroundColor: isDark ? '#141416' : '#e5e7eb',
+                        backgroundColor: isDark ? '#27321e' : '#e3e9d9',
                       }}
                     >
                       <OrderImage

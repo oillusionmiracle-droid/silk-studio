@@ -19,9 +19,13 @@ def call_tool(name, args):
         sys.exit(1)
     return json.loads(content["text"])["result"]
 
+EXCLUDE_DIRS = {'.git', '.next', 'node_modules', '.vercel', '.agent', '__pycache__'}
 files = []
 for root, dirs, names in os.walk(SITE):
+    dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
     for nm in names:
+        if nm.startswith('.env') or nm.endswith(('.pem', '.key', '.log')):
+            continue
         full = os.path.join(root, nm)
         rel = os.path.relpath(full, SITE)
         raw = open(full, "rb").read()

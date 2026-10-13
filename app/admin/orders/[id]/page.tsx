@@ -1,5 +1,6 @@
 'use client';
 
+import ReferenceFileLink from '@/components/ReferenceFileLink';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -102,32 +103,9 @@ export default function AdminOrderDetailPage() {
     setNoticeMessage(null);
 
     try {
-      const historyEntry = {
-        status: selectedStatus,
-        timestamp: new Date().toISOString(),
-        note: `Status advanced by admin`,
-      };
-
-      const updatedHistory = Array.isArray(order.status_history)
-        ? [...order.status_history, historyEntry]
-        : [historyEntry];
-
-      const { error } = await supabase
-        .from('orders')
-        .update({
-          status: selectedStatus,
-          status_history: updatedHistory,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', order.id);
-
-      if (error) throw error;
-
-      setOrder((prev: any) => ({
-        ...prev,
-        status: selectedStatus,
-        status_history: updatedHistory,
-      }));
+      const { data, error } = await supabase.functions.invoke('update-order-status', { body: { order_id: order.id, new_status: selectedStatus } });
+      if (error || !data?.order) throw error || new Error('Status update failed.');
+      setOrder(data.order);
 
       setNoticeMessage(`Order status updated to ${selectedStatus}.`);
       setTimeout(() => setNoticeMessage(null), 4000);
@@ -374,11 +352,9 @@ export default function AdminOrderDetailPage() {
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {order.reference_files.map((fileUrl: string, idx: number) => (
-                  <a
+                  <ReferenceFileLink
                     key={idx}
                     href={fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     className="flex items-center justify-between p-3.5 rounded-xl border border-neutral-200 bg-neutral-50 hover:bg-neutral-100 transition-colors"
                   >
                     <div className="flex items-center gap-2.5 truncate">
@@ -388,7 +364,7 @@ export default function AdminOrderDetailPage() {
                       </span>
                     </div>
                     <ExternalLink className="h-3.5 w-3.5 text-neutral-400 shrink-0 stroke-[2]" />
-                  </a>
+                  </ReferenceFileLink>
                 ))}
               </div>
             </div>

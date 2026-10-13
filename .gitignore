@@ -46,3 +46,5 @@ dev-server*.log
 dev-server*.err.log
 dev-server*.out.log
 netstat*.txt
+# Deno workspace dependency caches
+supabase/functions/node_modules/

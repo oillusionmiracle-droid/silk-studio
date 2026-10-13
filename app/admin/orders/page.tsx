@@ -86,13 +86,7 @@ export default function AdminOrdersPage() {
   const handleQuickStatusChange = async (orderId: string, newStatus: string) => {
     setUpdatingId(orderId);
     try {
-      const { error } = await supabase
-        .from('orders')
-        .update({
-          status: newStatus,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', orderId);
+      const { error } = await supabase.functions.invoke('update-order-status', { body: { order_id: orderId, new_status: newStatus } });
 
       if (error) throw error;
 

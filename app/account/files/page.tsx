@@ -1,5 +1,6 @@
 'use client';
 
+import ReferenceFileLink from '@/components/ReferenceFileLink';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -56,6 +57,11 @@ export default function AccountFilesPage() {
                 }
               }
             }
+          }
+          const { data: manualAssets } = await supabase.from('reference_assets').select('id,created_at').eq('user_id', currentUserId);
+          for (const asset of manualAssets || []) {
+            const url = `/api/reference-files/${asset.id}`;
+            if (!collected.some((file) => file.url === url)) collected.push({ url, orderRef: 'Manual Upload', orderId: '', createdAt: asset.created_at });
           }
           setFiles(collected);
         }
@@ -157,15 +163,13 @@ export default function AccountFilesPage() {
                       <span className="text-[10px] text-neutral-400">
                         {new Date(file.createdAt).toLocaleDateString()}
                       </span>
-                      <a
+                      <ReferenceFileLink
                         href={file.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 font-medium text-neutral-950 dark:text-white hover:underline"
                       >
                         <span>Open</span>
                         <ExternalLink className="h-3 w-3 stroke-[2]" />
-                      </a>
+                      </ReferenceFileLink>
                     </div>
                   </motion.div>
                 );

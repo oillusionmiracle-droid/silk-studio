@@ -1,0 +1,112 @@
+[
+  {
+    "id": "splithouse",
+    "title": "SplitHouse",
+    "category": "Apps",
+    "image": "/images/projects/splithouse-live.jpg",
+    "url": "https://splithouse-ten.vercel.app/",
+    "summary": "SplitHouse addresses the mental work of sharing a home: remembering who paid, who owes and whose turn it is. Shared expenses, chores and household members sit together in a welcoming interface.",
+    "role": "Product design, front-end and backend development, authentication and deployment.",
+    "built": "Google and email sign-in, household setup, shared expenses, chores, people and persistent theme preference."
+  },
+  {
+    "id": "bordeaux",
+    "title": "Bordeaux Nail Studio",
+    "category": "Websites",
+    "image": "/images/projects/bordeaux-editorial.webp",
+    "url": "https://bordeaux-ritual.vercel.app",
+    "summary": "An immersive beauty studio concept with burgundy art direction, a dreamy cloud doorway and editorial imagery. Visitors choose a service and preferred time, then continue their booking request directly in WhatsApp.",
+    "role": "Design, development, motion and AI art direction.",
+    "built": "Responsive layout, animated transitions, service selection and WhatsApp request preparation."
+  },
+  {
+    "id": "moremi",
+    "title": "Moremi",
+    "category": "Apps",
+    "image": "/images/projects/moremi.webp",
+    "url": "https://silkstudios.com.ng/moremi",
+    "summary": "Moremi helps children move from consuming content to creating small working apps. Guided starters let a child change a rule, predict what happens, test it and keep the creation.",
+    "role": "Founder, learning experience designer and product developer.",
+    "built": "Two playable projects in the current development build: Puff-puff Counter and Market Stall. Guided editing, prediction, tests, saving and remixing. Research direction: ages 8–12, phone-first and offline-first; the remaining curriculum is in development."
+  },
+  {
+    "id": "cutout",
+    "title": "Cutout",
+    "category": "Apps",
+    "image": "/images/projects/cutout.webp",
+    "url": "https://cutout-phi.vercel.app",
+    "summary": "A free background removal tool that runs on the user’s device. The experience keeps the task straightforward: bring an image, remove the background and use the result.",
+    "role": "Founder and web app developer.",
+    "built": "Browser-based AI background removal with no signup required. Portfolio visual: generated interface mockup."
+  },
+  {
+    "id": "proofroom",
+    "title": "ProofRoom",
+    "category": "Apps",
+    "image": "/images/projects/proofroom-app.jpg",
+    "url": "https://proofroom-oillusionmiracle-droids-projects.vercel.app/",
+    "summary": "ProofRoom addresses feedback scattered across messages and versions. Artwork, pinned comments, revisions and approval live in one review workspace. The current build uses a private workspace in each browser; shared team review is a future step.",
+    "role": "Product design, onboarding, front-end development, Supabase backend and Vercel deployment.",
+    "built": "Persistent projects and feedback, private image storage, revision history, approval controls, onboarding and light/dark mode. Portfolio visual: generated interface mockup."
+  },
+  {
+    "id": "suya",
+    "title": "Suya & Smoke",
+    "category": "Websites",
+    "image": "/images/projects/suya-and-smoke.webp",
+    "url": "https://suya-and-smoke.vercel.app",
+    "summary": "A restaurant website demo with bold visual direction, a menu and WhatsApp ordering. A configurable kit designed to adapt to another restaurant’s brand.",
+    "role": "Founder, designer and developer.",
+    "built": "Menu presentation, location information and WhatsApp order journey."
+  },
+  {
+    "id": "carrygo",
+    "title": "CarryGo",
+    "category": "Websites",
+    "image": "/images/projects/carrygo.webp",
+    "url": "https://carrygo-oillusionmiracle-droids-projects.vercel.app",
+    "summary": "A delivery tracker concept designed around Lagos. The mobile-first interface helps explain where a package is and what happens next.",
+    "role": "Design and development.",
+    "built": "Dispatch tracking concept and a mobile-first delivery experience."
+  },
+  {
+    "id": "kolo",
+    "title": "Kolo",
+    "category": "Websites",
+    "image": "/images/projects/kolo.webp",
+    "url": "https://kolo-oillusionmiracle-droids-projects.vercel.app",
+    "summary": "A landing page for a smart savings app. Clear messaging and a strong product showcase introduce the app and help visitors understand its purpose quickly.",
+    "role": "Website design and development.",
+    "built": "Product landing page, feature presentation and responsive layouts."
+  },
+  {
+    "id": "mide",
+    "title": "Mide Alabi",
+    "category": "Websites",
+    "image": "/images/projects/mide-alabi.webp",
+    "url": "https://mide-alabi.vercel.app",
+    "summary": "A photographer portfolio that lets the photography lead. The page frames the work with expressive typography and an editorial visual direction.",
+    "role": "Portfolio development.",
+    "built": "Photography-led layout, project presentation and responsive browsing."
+  },
+  {
+    "id": "kwikflow",
+    "title": "KwikFlow",
+    "category": "Websites",
+    "image": "/images/projects/kwikflow.webp",
+    "url": "https://kwikflow.tiiny.site/",
+    "summary": "A plumbing and home services website built around the customer’s need to find help quickly. The brand and service information support a clear enquiry journey.",
+    "role": "Brand website design and development.",
+    "built": "Service information, brand presentation and a complete responsive website."
+  },
+  {
+    "id": "adun",
+    "title": "Adùn Kitchen",
+    "category": "Websites",
+    "image": "/images/projects/adun-kitchen.webp",
+    "url": "https://kwikflow.tiiny.site/adun/",
+    "summary": "A restaurant website with warm food-led imagery, a distinctive identity and a full menu. The design brings the character of the restaurant onto the screen.",
+    "role": "Restaurant website design.",
+    "built": "Restaurant presentation, menu and responsive browsing."
+  }
+]

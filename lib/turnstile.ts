@@ -38,7 +38,7 @@ export async function verifyTurnstileToken(
   remoteIp?: string | null
 ): Promise<TurnstileVerifyResult> {
   const secret = process.env.TURNSTILE_SECRET_KEY;
-  const enforce = process.env.TURNSTILE_ENFORCE === 'true';
+  const enforce = process.env.NODE_ENV === 'production' || process.env.TURNSTILE_ENFORCE === 'true';
 
   if (!secret) {
     // Not configured: open in dev, closed in production when enforced.
@@ -65,7 +65,8 @@ export async function verifyTurnstileToken(
       hostname?: string;
       action?: string;
     };
-    if (data.success) {
+    const allowedHosts = (process.env.TURNSTILE_ALLOWED_HOSTNAMES || 'silkstudios.com.ng,www.silkstudios.com.ng').split(',').map((host) => host.trim());
+    if (data.success && (!enforce || (data.hostname && allowedHosts.includes(data.hostname)))) {
       return { ok: true, hostname: data.hostname, action: data.action };
     }
     return { ok: false, errorCodes: data['error-codes'] ?? [] };

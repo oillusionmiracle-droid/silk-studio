@@ -1,5 +1,6 @@
 'use client';
 
+import ReferenceFileLink from '@/components/ReferenceFileLink';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -273,11 +274,9 @@ export default function OrderDetailPage() {
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {order.reference_files.map((fileUrl, idx) => (
-                  <a
+                  <ReferenceFileLink
                     key={idx}
                     href={fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     className="flex items-center justify-between p-3 rounded-xl border border-neutral-200 dark:border-white/10 bg-neutral-50/50 dark:bg-neutral-800/40 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                   >
                     <div className="flex items-center gap-2.5 truncate">
@@ -287,7 +286,7 @@ export default function OrderDetailPage() {
                       </span>
                     </div>
                     <Download className="h-3.5 w-3.5 text-neutral-400 shrink-0 stroke-[2]" />
-                  </a>
+                  </ReferenceFileLink>
                 ))}
               </div>
             </div>
