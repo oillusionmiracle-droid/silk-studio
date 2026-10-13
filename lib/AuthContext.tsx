@@ -120,6 +120,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!mounted) return;
         setSession(newSession);
         setUser(newSession?.user ?? null);
+        setProfile(current => current?.id === newSession?.user?.id ? current : null);
         setIsLoading(false);
 
         if (newSession?.user) {
@@ -256,11 +257,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const isAdmin =
-    profile?.role === 'admin' ||
-    user?.email === 'oillusionmiracle@gmail.com' ||
-    user?.email === 'ollusionmiracle@gmail.com' ||
-    Boolean(user?.email && user.email.toLowerCase().includes('illusionmiracle'));
+  const isAdmin = Boolean(user && profile?.id === user.id && profile?.role === 'admin');
 
   return (
     <AuthContext.Provider

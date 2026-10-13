@@ -1,321 +1,53 @@
 'use client';
-
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { ArrowUpRight, RefreshCw, Package, MessageSquare, Users } from 'lucide-react';
+import { useAuth } from '@/lib/AuthContext';
 import { supabase } from '@/lib/supabase';
-import {
-  TrendingUp,
-  Package,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
-  ArrowRight,
-  ExternalLink,
-  Users,
-  Loader2,
-  DollarSign,
-  BarChart3,
-  ChevronRight,
-  ArrowUpRight,
-  Award,
-} from 'lucide-react';
-
-interface AdminStats {
-  totalRevenue: number;
-  totalOrders: number;
-  inProduction: number;
-  pendingOrders: number;
-  deliveredOrders: number;
-  totalCustomers: number;
-}
-
-interface OrderPreview {
-  id: string;
-  paystack_ref: string;
-  customer_name: string;
-  total: number;
-  status: string;
-  type: string;
-  created_at: string;
-  area: string;
-}
-
+import { dashboardMetrics, money, type DashboardOrder } from '@/lib/dashboard';
+import { Metric, OrderList, PageIntro } from '@/components/dashboard/OverviewParts';
 export default function AdminOverviewPage() {
-  const [stats, setStats] = useState<AdminStats>({
-    totalRevenue: 0,
-    totalOrders: 0,
-    inProduction: 0,
-    pendingOrders: 0,
-    deliveredOrders: 0,
-    totalCustomers: 0,
-  });
-  const [recentOrders, setRecentOrders] = useState<OrderPreview[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
+  const { user, isAdmin } = useAuth();
+  const [orders, setOrders] = useState<DashboardOrder[]>([]);
+  const [customers, setCustomers] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [refresh, setRefresh] = useState(0);
+  const [updated, setUpdated] = useState('');
   useEffect(() => {
-    async function loadAdminData() {
+    if (!user || !isAdmin) return;
+    let mounted = true;
+    setLoading(true); setError('');
+    async function load() {
       try {
-        const { data: orders, error: ordersErr } = await supabase
-          .from('orders')
-          .select('id, paystack_ref, customer_name, total, status, type, created_at, area')
-          .order('created_at', { ascending: false });
-
-        const { count: customerCount } = await supabase
-          .from('profiles')
-          .select('*', { count: 'exact', head: true });
-
-        if (orders) {
-          let rev = 0;
-          let inProd = 0;
-          let pend = 0;
-          let deliv = 0;
-
-          for (const ord of orders) {
-            if (['paid', 'confirmed', 'in_production', 'ready', 'shipped', 'delivered'].includes(ord.status)) {
-              rev += Number(ord.total) || 0;
-            }
-            if (ord.status === 'in_production') inProd++;
-            if (ord.status === 'pending' || ord.status === 'quote_requested') pend++;
-            if (ord.status === 'delivered') deliv++;
+        const customerRequest = supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'customer');
+        const loadOrders = async () => {
+          const loaded: DashboardOrder[] = [];
+          for (let offset = 0; ; offset += 500) {
+            const { data, error: queryError } = await supabase.from('orders').select('id,paystack_ref,customer_name,type,total,status,created_at,payment_state,paid_amount_kobo,inventory_state').order('created_at', { ascending: false }).order('id', { ascending: false }).range(offset, offset + 499);
+            if (queryError) throw queryError;
+            loaded.push(...(data || []));
+            if (!mounted || !data || data.length < 500) break;
           }
-
-          setStats({
-            totalRevenue: rev,
-            totalOrders: orders.length,
-            inProduction: inProd,
-            pendingOrders: pend,
-            deliveredOrders: deliv,
-            totalCustomers: customerCount || 0,
-          });
-
-          setRecentOrders(orders.slice(0, 6));
-        }
-      } catch (err) {
-        console.warn('Admin stats error:', err);
-      } finally {
-        setIsLoading(false);
-      }
+          return loaded;
+        };
+        const [loaded, customerResult] = await Promise.all([loadOrders(), customerRequest]);
+        if (customerResult.error) throw customerResult.error;
+        if (mounted) { setOrders(loaded); setCustomers(customerResult.count || 0); setUpdated(new Date().toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit' })); }
+      } catch { if (mounted) setError('Studio data couldn’t be loaded. Please refresh to try again.'); }
+      finally { if (mounted) setLoading(false); }
     }
-
-    void loadAdminData();
-  }, []);
-
-  return (
-    <div className="space-y-8 font-sans text-neutral-900">
-      {/* Metric Cards Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <motion.div
-          whileHover={{ y: -3 }}
-          className="rounded-[24px] bg-white border border-neutral-200/80 p-6 shadow-sm space-y-3 relative overflow-hidden group"
-        >
-          <div className="flex items-center justify-between text-neutral-400">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600">Gross Revenue</span>
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-              <DollarSign className="h-5 w-5 stroke-[2.5]" />
-            </div>
-          </div>
-          <div>
-            <p
-              style={{ fontFamily: 'var(--font-jakarta)' }}
-              className="text-[26px] sm:text-[32px] font-extrabold tracking-tight text-neutral-900 leading-none"
-            >
-              ₦{stats.totalRevenue.toLocaleString()}
-            </p>
-            <div className="flex items-center gap-1.5 mt-2">
-              <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-0.5 bg-emerald-50 px-2 py-0.5 rounded-full">
-                <ArrowUpRight className="h-3 w-3" /> +14.2%
-              </span>
-              <span className="text-[11px] text-neutral-400 font-medium">vs last month</span>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          whileHover={{ y: -3 }}
-          className="rounded-[24px] bg-white border border-neutral-200/80 p-6 shadow-sm space-y-3 relative overflow-hidden group"
-        >
-          <div className="flex items-center justify-between text-neutral-400">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600">In Production</span>
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
-              <Clock className="h-5 w-5 stroke-[2.5]" />
-            </div>
-          </div>
-          <div>
-            <p
-              style={{ fontFamily: 'var(--font-jakarta)' }}
-              className="text-[26px] sm:text-[32px] font-extrabold tracking-tight text-neutral-900 leading-none"
-            >
-              {stats.inProduction}
-            </p>
-            <span className="text-[11px] font-medium text-neutral-400 mt-2 block">Active print & garment runs</span>
-          </div>
-        </motion.div>
-
-        <motion.div
-          whileHover={{ y: -3 }}
-          className="rounded-[24px] bg-white border border-neutral-200/80 p-6 shadow-sm space-y-3 relative overflow-hidden group"
-        >
-          <div className="flex items-center justify-between text-neutral-400">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-purple-600">Pending Orders</span>
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 text-[#5E17EB]">
-              <AlertCircle className="h-5 w-5 stroke-[2.5]" />
-            </div>
-          </div>
-          <div>
-            <p
-              style={{ fontFamily: 'var(--font-jakarta)' }}
-              className="text-[26px] sm:text-[32px] font-extrabold tracking-tight text-neutral-900 leading-none"
-            >
-              {stats.pendingOrders}
-            </p>
-            <span className="text-[11px] font-medium text-neutral-400 mt-2 block">Awaiting payment or quote</span>
-          </div>
-        </motion.div>
-
-        <motion.div
-          whileHover={{ y: -3 }}
-          className="rounded-[24px] bg-white border border-neutral-200/80 p-6 shadow-sm space-y-3 relative overflow-hidden group"
-        >
-          <div className="flex items-center justify-between text-neutral-400">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600">Total Orders</span>
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-              <Package className="h-5 w-5 stroke-[2.5]" />
-            </div>
-          </div>
-          <div>
-            <p
-              style={{ fontFamily: 'var(--font-jakarta)' }}
-              className="text-[26px] sm:text-[32px] font-extrabold tracking-tight text-neutral-900 leading-none"
-            >
-              {stats.totalOrders}
-            </p>
-            <span className="text-[11px] font-medium text-emerald-600 mt-2 block">{stats.deliveredOrders} delivered to customers</span>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Production & Sales Activity Pipeline Chart Visualizer */}
-      <div className="rounded-[28px] bg-white border border-neutral-200/80 p-6 sm:p-8 shadow-sm">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2
-              style={{ fontFamily: 'var(--font-jakarta)' }}
-              className="text-[20px] font-extrabold text-neutral-900 flex items-center gap-2.5"
-            >
-              <BarChart3 className="h-5 w-5 text-[#5E17EB] stroke-[2.5]" />
-              <span>Studio Fulfillment Pipeline</span>
-            </h2>
-            <p className="text-[13px] text-neutral-500 mt-1">
-              Live telemetry & order distribution across studio production stages
-            </p>
-          </div>
-          <span className="px-3 py-1 rounded-full text-[12px] font-extrabold bg-purple-50 text-[#5E17EB]">
-            {stats.totalOrders} total jobs
-          </span>
-        </div>
-
-        {/* Status Distribution Bars */}
-        <div className="grid grid-cols-5 gap-4 pt-2">
-          {[
-            { label: 'Pending', count: stats.pendingOrders, color: 'from-amber-400 to-amber-500', textColor: 'text-amber-600' },
-            { label: 'Production', count: stats.inProduction, color: 'from-blue-400 to-blue-600', textColor: 'text-blue-600' },
-            { label: 'Delivered', count: stats.deliveredOrders, color: 'from-emerald-400 to-emerald-600', textColor: 'text-emerald-600' },
-            { label: 'Customers', count: stats.totalCustomers, color: 'from-purple-400 to-[#5E17EB]', textColor: 'text-[#5E17EB]' },
-            { label: 'Total Runs', count: stats.totalOrders, color: 'from-neutral-700 to-neutral-900', textColor: 'text-neutral-900' },
-          ].map((bar, i) => {
-            const heightPercent = stats.totalOrders > 0 ? Math.max(16, Math.min(100, (bar.count / stats.totalOrders) * 100)) : 20;
-            return (
-              <div key={bar.label} className="flex flex-col items-center">
-                <div className="h-36 sm:h-44 w-full rounded-2xl bg-neutral-100 p-1.5 flex flex-col justify-end">
-                  <motion.div
-                    initial={{ height: 0 }}
-                    animate={{ height: `${heightPercent}%` }}
-                    transition={{ type: 'spring', damping: 15, stiffness: 200, delay: i * 0.08 }}
-                    className={`w-full rounded-xl bg-gradient-to-t ${bar.color} shadow-xs`}
-                  />
-                </div>
-                <span className={`text-[15px] font-extrabold mt-3 ${bar.textColor}`}>{bar.count}</span>
-                <span className="text-[11px] text-neutral-500 font-semibold text-center truncate w-full mt-0.5">
-                  {bar.label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Recent Orders Queue */}
-      <div className="rounded-[28px] bg-white border border-neutral-200/80 p-6 sm:p-8 shadow-sm">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2
-              style={{ fontFamily: 'var(--font-jakarta)' }}
-              className="text-[20px] font-extrabold text-neutral-900"
-            >
-              Live Studio Order Stream
-            </h2>
-            <p className="text-[13px] text-neutral-500 mt-1">
-              Real-time incoming customer orders and bespoke quote requests
-            </p>
-          </div>
-          <Link
-            href="/admin/orders"
-            className="inline-flex items-center gap-1 text-[13px] font-bold text-[#5E17EB] hover:underline"
-          >
-            <span>View All Stream</span>
-            <ChevronRight className="h-4 w-4 stroke-[2.5]" />
-          </Link>
-        </div>
-
-        {isLoading ? (
-          <div className="py-12 text-center">
-            <Loader2 className="h-7 w-7 animate-spin text-[#5E17EB] mx-auto stroke-[2]" />
-            <p className="text-[13px] text-neutral-400 mt-2">Connecting to live order stream...</p>
-          </div>
-        ) : recentOrders.length > 0 ? (
-          <div className="divide-y divide-neutral-100">
-            {recentOrders.map((ord) => (
-              <Link
-                key={ord.id}
-                href={`/admin/orders`}
-                className="block py-4 hover:bg-neutral-50 rounded-2xl px-3 transition-colors group"
-              >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-mono text-[13px] font-bold text-neutral-900">
-                        {ord.paystack_ref}
-                      </span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-neutral-100 text-neutral-700">
-                        {ord.type}
-                      </span>
-                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold capitalize bg-emerald-50 text-emerald-800">
-                        {ord.status.replace('_', ' ')}
-                      </span>
-                    </div>
-                    <p className="text-[13px] text-neutral-500 mt-1">
-                      {ord.customer_name} • {ord.area || 'Lagos'} •{' '}
-                      {new Date(ord.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between sm:justify-end gap-3">
-                    <p className="text-[15px] font-extrabold text-neutral-900">
-                      {ord.total > 0 ? `₦${Number(ord.total).toLocaleString()}` : 'Quote'}
-                    </p>
-                    <ChevronRight className="h-4 w-4 text-neutral-400 group-hover:text-[#5E17EB] group-hover:translate-x-1 transition-all" />
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div className="py-8 text-center text-[13px] text-neutral-400">
-            No studio orders recorded yet.
-          </div>
-        )}
-      </div>
-    </div>
-  );
+    void load(); return () => { mounted = false; };
+  }, [user, isAdmin, refresh]);
+  const metrics = dashboardMetrics(orders);
+  const waiting = orders.filter(order => !['cancelled', 'delivered'].includes(order.status) && (['pending', 'quote_requested'].includes(order.status) || order.inventory_state === 'review')).slice(0, 5);
+  const value = (amount: string | number) => loading || error ? '—' : amount;
+  const pipeline = [{ label: 'Awaiting payment / quote', count: metrics.awaiting }, { label: 'In production', count: metrics.production }, { label: 'Ready for dispatch', count: orders.filter(order => order.status === 'ready').length }, { label: 'On the way', count: orders.filter(order => order.status === 'shipped').length }, { label: 'Delivered', count: metrics.delivered }];
+  return <><PageIntro eyebrow="STUDIO OPERATIONS" title="A clear view of the studio." description="Orders, customers and the work that needs your attention." action={<button className="dash-button dash-dark" disabled={loading} onClick={() => setRefresh(value => value + 1)}><RefreshCw size={16} className={loading ? 'dash-spinner' : ''}/>{loading ? 'Refreshing…' : 'Refresh data'}</button>}/>{error && <p className="dash-notice" role="alert">{error}</p>}
+    <div className="dash-metrics"><Metric label="Payments received" value={value(money(metrics.received))} detail="Recorded full payments and deposits"/><Metric label="Orders" value={value(metrics.total)} detail="Across print, apparel and studio projects"/><Metric label="In production" value={value(metrics.production)} detail="Work currently underway"/><Metric label="Customers" value={value(customers)} detail="Registered customer accounts"/></div>
+    <section className="dash-attention"><div><span className="dash-kicker">YOUR NEXT MOVES</span><h2>{loading || error ? 'Checking the queue.' : metrics.review ? `${metrics.review} order${metrics.review === 1 ? '' : 's'} need review.` : `${metrics.awaiting} order${metrics.awaiting === 1 ? '' : 's'} awaiting payment or a quote.`}</h2><p>{metrics.review ? 'Review these paid orders before you confirm production or delivery.' : 'Open an order to review the brief, payment and next step.'}</p></div><Link href="/admin/orders" className="dash-button dash-lime">Open the order queue <ArrowUpRight size={17}/></Link></section>
+    <div className="dash-two-column"><section className="dash-panel"><div className="dash-panel-heading"><div><span className="dash-kicker">KEEP THINGS MOVING</span><h2>Needs attention</h2></div><Link href="/admin/orders" className="dash-text-link">All orders ↗</Link></div>{loading ? <p className="dash-loading" role="status">Loading the queue…</p> : error ? <p className="dash-loading">The queue is temporarily unavailable.</p> : waiting.length ? <OrderList orders={waiting} admin/> : <div className="dash-empty"><Package size={28}/><h3>You’re up to date.</h3><p>No pending orders or payment reviews in the queue.</p></div>}</section><section className="dash-panel"><span className="dash-kicker">ORDER FLOW</span><h2>The production picture.</h2><div className="dash-pipeline">{pipeline.map(stage => <div key={stage.label}><span>{stage.label}</span><strong>{value(stage.count)}</strong><span className="dash-pipeline-track"><i style={{ width: `${metrics.total ? stage.count / metrics.total * 100 : 0}%` }}/></span></div>)}</div></section></div>
+    <section className="dash-panel"><div className="dash-panel-heading"><div><span className="dash-kicker">RECENT ACTIVITY</span><h2>Latest orders</h2></div><span className="dash-updated">{updated && !error ? `Updated ${updated}` : 'Refresh to load the latest data'}</span></div>{loading ? <p className="dash-loading">Loading recent orders…</p> : error ? <p className="dash-loading">Recent orders are temporarily unavailable.</p> : <OrderList orders={orders.slice(0, 5)} admin/>}</section>
+    <div className="dash-shortcuts"><Link href="/admin/products"><Package size={20}/><div><strong>Products & stock</strong><span>Keep the catalogue ready.</span></div><ArrowUpRight size={17}/></Link><Link href="/admin/customers"><Users size={20}/><div><strong>Customer directory</strong><span>Orders, details and relationships.</span></div><ArrowUpRight size={17}/></Link><Link href="/admin/messages"><MessageSquare size={20}/><div><strong>Messages</strong><span>See what customers need.</span></div><ArrowUpRight size={17}/></Link></div>
+  </>;
 }
