@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
 
 interface OrderImageProps {
   src?: string;
@@ -11,6 +10,7 @@ interface OrderImageProps {
   className?: string;
   aspectRatio?: string;
   fill?: boolean;
+  eager?: boolean;
 }
 
 export default function OrderImage({
@@ -21,6 +21,7 @@ export default function OrderImage({
   className = '',
   aspectRatio = '16/10',
   fill = false,
+  eager = false,
 }: OrderImageProps) {
   const [sourceIndex, setSourceIndex] = useState(0);
   const [hasError, setHasError] = useState(false);
@@ -66,7 +67,8 @@ export default function OrderImage({
             objectFit: 'cover',
             transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
-          loading="lazy"
+          loading={eager ? 'eager' : 'lazy'}
+          fetchPriority={eager ? 'high' : 'auto'}
         />
       ) : (
         <div

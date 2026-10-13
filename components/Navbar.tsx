@@ -13,7 +13,7 @@ const navLinks: { label: string; href: string; accent?: string }[] = [
   { label: 'Apparel', href: '/apparel' },
   { label: 'Studio', href: '/studio' },
   { label: 'Moremi', href: '/moremi' },
-  { label: 'Contact', href: '/#brief' },
+  { label: 'Contact', href: '/contact' },
 ];
 
 export default function Navbar() {

@@ -62,6 +62,7 @@ export default function ApparelLayout({
 }) {
   return (
     <div className="apparel-root" style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
+      <link rel="preload" as="image" href="/images/apparel/hero-1.jpg" fetchPriority="high" />
       <ApparelNavbar />
       <main>{children}</main>
       <FloatingCheckout />

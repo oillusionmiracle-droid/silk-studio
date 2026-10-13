@@ -239,6 +239,7 @@ export default function ProductSelector({
                   src={imgConfig?.primary}
                   fallbackSources={imgConfig?.fallbacks}
                   alt={cat.label}
+                  eager
                   icon={cat.icon}
                   fill
                 />

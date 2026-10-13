@@ -3,11 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import dynamic from 'next/dynamic';
 
-const TurnstileWidget = dynamic(() => import('@/components/TurnstileWidget'), {
-  ssr: false,
-});
+
 
 /* ─────────────────────────────────────────
     FOOTER DATA
@@ -52,8 +49,7 @@ const NEWSLETTER_ENDPOINT = '/api/newsletter';
 
 async function subscribeEmail(
   email: string,
-  botField: string,
-  turnstileToken: string | null
+  botField: string
 ): Promise<{ ok: boolean; message: string }> {
   try {
     const res = await fetch(NEWSLETTER_ENDPOINT, {
@@ -62,7 +58,6 @@ async function subscribeEmail(
       body: JSON.stringify({
         email,
         website_url: botField,
-        turnstile_token: turnstileToken,
       }),
     });
     const data = await res.json();
@@ -78,8 +73,6 @@ export default function Footer() {
   const colsRef = useRef<HTMLDivElement>(null);
   const [email, setEmail] = useState('');
   const [botField, setBotField] = useState('');
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
@@ -150,15 +143,12 @@ export default function Footer() {
       return;
     }
     setStatus('loading');
-    const result = await subscribeEmail(email, botField, turnstileToken);
-    // Turnstile tokens are single-use: always refresh the widget after an
-    // attempt so the next submit gets a fresh token.
-    setTurnstileResetKey((k) => k + 1);
+    const result = await subscribeEmail(email, botField);
+
     setStatus(result.ok ? 'success' : 'error');
     setMessage(result.message);
     if (result.ok) {
       setEmail('');
-      setTurnstileToken(null);
     }
   };
 
@@ -461,8 +451,6 @@ export default function Footer() {
                     Privacy
                   </Link>
                 </div>
-
-                <TurnstileWidget onToken={setTurnstileToken} resetKey={turnstileResetKey} />
 
                 {message && (
                   <p style={{

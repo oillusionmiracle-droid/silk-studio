@@ -6,10 +6,6 @@ import {
   getClientIp,
   rateLimitedResponse,
 } from '@/lib/rateLimit';
-import {
-  verifyTurnstileToken,
-  turnstileFailedResponse,
-} from '@/lib/turnstile';
 
 // Lazily constructed: `next build` imports this module to collect page data,
 // and `new Resend()` without a key throws — so never build it at import time.
@@ -41,7 +37,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { email, website_url, turnstile_token } = (body as any) ?? {};
+    const { email, website_url } = (body as any) ?? {};
 
     // Silent honeypot: bots fill hidden fields, humans never see them.
     if (typeof website_url === 'string' && website_url.trim().length > 0) {
@@ -60,11 +56,7 @@ export async function POST(req: NextRequest) {
 
     const ip = getClientIp(req);
 
-    // Cloudflare Turnstile (skipped when no TURNSTILE_SECRET_KEY is set).
-    const turnstile = await verifyTurnstileToken(turnstile_token, ip);
-    if (!turnstile.ok) {
-      return turnstileFailedResponse(turnstile.errorCodes);
-    }
+    // Low-friction signups: honeypot and distributed IP/email limits stay enforced.
     const ipRl = await checkDistributedRateLimit(
       `newsletter:${ip}`,
       NEWSLETTER_IP_LIMIT,
