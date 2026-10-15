@@ -65,7 +65,7 @@
     "category": "Websites",
     "image": "/images/projects/carrygo.webp",
     "url": "https://carrygo-rouge.vercel.app/",
-    "summary": "An expressive Lagos delivery concept that makes a journey legible, from pickup to drop-off. Its route study lets visitors explore an illustrative trip across the city.",
+    "summary": "An expressive Lagos delivery concept that makes a journey legible, from pickup to drop-off. Its route study lets visitors explore an illustrative trip across the city",
     "role": "Design and development.",
     "built": "Responsive React experience, route selector and motion-led storytelling."
   },
@@ -105,7 +105,7 @@
     "category": "Websites",
     "image": "/images/projects/adun-kitchen.webp",
     "url": "https://adun-kitchen-sooty.vercel.app/",
-    "summary": "A firewood kitchen concept with food-led editorial art direction, a filterable sample menu and a vivid sense of the table.",
+    "summary": "A firewood kitchen concept with food-led editorial art direction, a filterable sample menu and a vivid sense of the table",
     "role": "Restaurant website design.",
     "built": "Responsive React experience, menu exploration and concept visit preview."
   }
