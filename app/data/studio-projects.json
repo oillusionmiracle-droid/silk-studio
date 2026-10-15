@@ -64,10 +64,10 @@
     "title": "CarryGo",
     "category": "Websites",
     "image": "/images/projects/carrygo.webp",
-    "url": "https://carrygo-oillusionmiracle-droids-projects.vercel.app",
-    "summary": "A delivery tracker concept designed around Lagos. The mobile-first interface helps explain where a package is and what happens next.",
+    "url": "https://carrygo-rouge.vercel.app/",
+    "summary": "An expressive Lagos delivery concept that makes a journey legible, from pickup to drop-off. Its route study lets visitors explore an illustrative trip across the city.",
     "role": "Design and development.",
-    "built": "Dispatch tracking concept and a mobile-first delivery experience."
+    "built": "Responsive React experience, route selector and motion-led storytelling."
   },
   {
     "id": "kolo",
@@ -104,9 +104,9 @@
     "title": "Adùn Kitchen",
     "category": "Websites",
     "image": "/images/projects/adun-kitchen.webp",
-    "url": "https://kwikflow.tiiny.site/adun/",
-    "summary": "A restaurant website with warm food-led imagery, a distinctive identity and a full menu. The design brings the character of the restaurant onto the screen.",
+    "url": "https://adun-kitchen-sooty.vercel.app/",
+    "summary": "A firewood kitchen concept with food-led editorial art direction, a filterable sample menu and a vivid sense of the table.",
     "role": "Restaurant website design.",
-    "built": "Restaurant presentation, menu and responsive browsing."
+    "built": "Responsive React experience, menu exploration and concept visit preview."
   }
 ]
