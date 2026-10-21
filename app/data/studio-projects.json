@@ -1,5 +1,25 @@
 [
   {
+    "id": "party-crashers",
+    "title": "Party Crashers",
+    "category": "Apps",
+    "image": "/images/projects/party-crashers-feed.jpg",
+    "url": "https://party-crashers-seven.vercel.app/",
+    "summary": "Party Crashers brings Lagos events into one place, helping people find a gathering without piecing together scattered flyers and organizer posts. Explore events, save a plan and share an event of your own.",
+    "role": "Product concept, brand direction, interface design and full-stack development.",
+    "built": "Event discovery and search, event details, saved plans and free event submissions."
+  },
+  {
+    "id": "rabbithole",
+    "title": "RabbitHole",
+    "category": "Apps",
+    "image": "/images/projects/rabbithole-home.jpg",
+    "url": "https://rabbithole-sand.vercel.app/",
+    "summary": "RabbitHole connects films, books and music around the things you already enjoy. Start with something you love and follow a discovery thread into your next obsession.",
+    "role": "Product concept, art direction, interface design and web development.",
+    "built": "Catalogue search, connected discovery threads and saved collections across watch, read and listen experiences."
+  },
+  {
     "id": "splithouse",
     "title": "SplitHouse",
     "category": "Apps",

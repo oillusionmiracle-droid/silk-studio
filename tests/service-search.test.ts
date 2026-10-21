@@ -14,3 +14,14 @@ test('search includes Moremi, applications, creative briefs and studio', () => {
  assert.ok(searchSite('studio').some(r=>r.href==='/studio'));
  assert.equal(searchSite('zzzzzzunknown').length,0);
 });
+
+test('website services open the website brief while projects remain searchable', () => {
+ for (const term of ['Landing Page', 'Business Website', 'E-commerce', 'Event Page']) {
+  const result = searchSite(term).find(r => r.title === term)!;
+  const url = new URL(result.href, 'https://example.com');
+  assert.equal(url.pathname, '/');
+  assert.equal(url.searchParams.get('brief'), 'Website or app');
+ }
+ assert.ok(searchSite('party crashers').some(r => r.href === '/portfolio?project=party-crashers'));
+ assert.ok(searchSite('rabbithole').some(r => r.href === '/portfolio?project=rabbithole'));
+});

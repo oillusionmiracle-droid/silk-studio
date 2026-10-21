@@ -8,7 +8,7 @@ import StudioVideoSamples from '@/components/StudioVideoSamples';
 import CurvedCarousel from '@/components/CurvedCarousel';
 
 const services = [
-  ['01', 'Websites & apps', 'A beautiful place to meet your customers. A useful tool to keep them coming back.', 'Design · Development · Launch', '/portfolio'],
+  ['01', 'Websites & apps', 'A beautiful place to meet your customers. A useful tool to keep them coming back.', 'Design · Development · Launch', '/?brief=Website%20or%20app#brief'],
   ['02', 'AI ads & content', 'A hook, a story, a reason to care. Creator-style ads and product films for your next campaign.', 'UGC · Product video · AI imagery', '/?brief=AI%20UGC%20%26%20advertising#brief'],
   ['03', 'Branding & design', 'A distinctive identity, made to work everywhere your business shows up.', 'Identity · Packaging · Campaigns', '/?brief=Branding%20%26%20design#brief'],
   ['04', 'Print & apparel', 'From the first business card to the launch-day merch. Good design, made tangible.', 'Print · Merchandise · Clothing', '/order'],
