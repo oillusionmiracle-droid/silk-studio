@@ -9,7 +9,7 @@ import CustomCursor from '@/components/CustomCursor';
 import StudioMotion from '@/components/StudioMotion';
 import MobileBottomNav from '@/components/MobileBottomNav';
 const GeminiAssistant = dynamic(() => import('@/components/GeminiAssistant'), { ssr: false });
-export function StudioLoading() { const path = usePathname(); return (['/', '/portfolio', '/moremi', '/studio'].includes(path) || path.startsWith('/account') || path.startsWith('/admin')) ? null : <LoadingScreen />; }
+export function StudioLoading() { const path = usePathname(); return (['/', '/portfolio', '/moremi', '/studio', '/website-offer'].includes(path) || path.startsWith('/account') || path.startsWith('/admin')) ? null : <LoadingScreen />; }
 export default function StudioChrome() {
   const path = usePathname();
   if (path.startsWith('/account') || path.startsWith('/admin')) return null;

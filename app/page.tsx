@@ -6,6 +6,7 @@ import ServiceSearch from '@/components/ServiceSearch';
 import StudioReferences from '@/components/StudioReferences';
 import StudioVideoSamples from '@/components/StudioVideoSamples';
 import CurvedCarousel from '@/components/CurvedCarousel';
+import WebsiteOfferBanner from '@/components/WebsiteOfferBanner';
 
 const services = [
   ['01', 'Websites & apps', 'A beautiful place to meet your customers. A useful tool to keep them coming back.', 'Design · Development · Launch', '/?brief=Website%20or%20app#brief'],
@@ -17,6 +18,7 @@ const services = [
 export default function Home() {
   return <main className="studio-page" id="top">
     <a href="#work" className="studio-skip">Skip to selected work</a>
+    <WebsiteOfferBanner />
     <section className="studio-hero studio-section"><div className="studio-hero-title"><h1>Ideas with<br /><em>a life</em> of their own<span>.</span></h1><CurvedCarousel /></div><div className="studio-hero-bottom"><p>We design brands, build websites and apps, make ads, and bring it all into the real world.</p><div><a className="studio-button studio-lime" href="#brief">Let’s make something <span>↗</span></a><a className="studio-text-link" href="#work">Explore the work ↓</a></div></div><ServiceSearch /><div className="studio-hero-peeks"><div className="studio-hero-reel"><video controls autoPlay muted loop playsInline preload="metadata" poster="/images/hero-bg.jpg" aria-label="Silk Studio homepage reel"><source src="/videos/sample-video.mp4" type="video/mp4" /></video></div><a href="#work"><Image src="/images/projects/splithouse-live.jpg" alt="SplitHouse household app" fill priority sizes="(max-width: 700px) 90vw, 34vw" /><span>Useful little systems ↗</span></a><a href="/order"><Image src="/images/portfolio/print-5b.jpg" alt="Printed Nigerian wedding backdrop from the Silk portfolio" fill priority sizes="(max-width: 700px) 90vw, 34vw" /><span>Beyond the screen ↗</span></a></div><StudioVideoSamples placement="homepage" /></section>
     <div className="studio-capabilities"><span>Digital experiences</span><b>✳</b><span>Brands with character</span><b>✳</b><span>Stories in motion</span><b>✳</b><span>Made tangible</span></div>
     <section className="studio-section studio-work" id="work"><div className="studio-section-line"><span>01 / Selected work</span><span>Less talking. More showing.</span></div><div className="studio-section-heading"><h2>A few things<br /><em>we’ve brought to life.</em></h2><Link className="studio-text-link" href="/portfolio">All projects ↗</Link></div><StudioWork /><div className="studio-work-end"><p>More apps, experiments, and websites in the collection.</p><Link className="studio-button studio-outline" href="/portfolio">Explore the portfolio ↗</Link></div></section>
