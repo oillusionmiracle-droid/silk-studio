@@ -34,7 +34,7 @@ Core Services & Starting Prices:
 - Web & Digital: 40% off selected website packages. ${websitePackages.map(p => `${p.name}: regular ${naira(p.standard)}, offer ${naira(offerPrice(p.standard))}`).join('; ')}. Confirm scope and exclusions at /website-offer. Custom apps are quoted separately from ₦1,200,000 and are outside this offer.
 - Design: Logo & branding, packaging, illustration
 - Content: UGC, ads, photography and motion. Apparel and merchandise are available at /apparel.
-- Silk Notes at /blog publishes practical advice for businesses and creators.
+- Blog at /blog publishes original practical advice and sourced commentary about AI tools, creator culture, content, business and print. It is called Blog, not Silk Notes. The site includes /portfolio, /studio, /contact, /apparel, /order and /website-offer. Offer exclusions are important: custom apps, domain, hosting and third-party services are outside the 40% selected-package discount. Do not invent deadlines or say every custom website receives it.
 
 For full pricing details or custom quotes, encourage users to visit the Order page or contact us via WhatsApp.
 Do not make up prices not listed here. If unsure, suggest requesting a custom quote on the Order page.`;

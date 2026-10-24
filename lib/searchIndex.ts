@@ -7,8 +7,9 @@ export const publicPages = [
   '/apparel/exchange-policy', '/apparel/return-policy',
 ].map(path => ({ path, lastModified: path.startsWith('/blog') || !path.startsWith('/moremi') ? '2026-10-24' : '2026-10-13' }));
 export function sitemapXml() {
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${publicPages.map(page => `  <url><loc>${SITE_URL}${page.path}</loc><lastmod>${page.lastModified}</lastmod></url>`).join('\n')}\n</urlset>`;
+  const xml=(value:string)=>value.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${publicPages.map(page => {const post=blogPosts.find(p=>page.path===`/blog/${p.slug}`);return `  <url><loc>${SITE_URL}${page.path}</loc><lastmod>${page.lastModified}</lastmod>${post?`<image:image><image:loc>${SITE_URL}${post.image.src}</image:loc><image:caption>${xml(post.image.caption)}</image:caption></image:image>`:''}</url>`;}).join('\n')}\n</urlset>`;
 }
 export function robotsText() {
-  return `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /account\nDisallow: /api/\nDisallow: /auth/\nDisallow: /apparel/checkout\n\nSitemap: ${SITE_URL}/sitemap.xml\n`;
+  return `User-agent: *\nAllow: /\nAllow: /blog/\nDisallow: /admin\nDisallow: /account\nDisallow: /api/\nDisallow: /auth/\nDisallow: /apparel/checkout\n\nSitemap: ${SITE_URL}/sitemap.xml\n`;
 }

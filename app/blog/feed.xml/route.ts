@@ -1,0 +1,4 @@
+import { blogPosts } from '@/lib/blogPosts';
+import { SITE_URL } from '@/lib/siteMetadata';
+const escapeXml=(text:string)=>text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+export function GET(){return new Response(`<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Silk Studio Blog</title><link>${SITE_URL}/blog</link><description>Business. Culture. The work behind the work.</description><language>en-ng</language>${blogPosts.map(p=>`<item><title>${escapeXml(p.title)}</title><link>${SITE_URL}/blog/${p.slug}</link><guid>${SITE_URL}/blog/${p.slug}</guid><description>${escapeXml(p.summary)}</description><pubDate>${new Date(`${p.published}T08:00:00Z`).toUTCString()}</pubDate></item>`).join('')}</channel></rss>`,{headers:{'Content-Type':'application/rss+xml; charset=utf-8','Cache-Control':'public, max-age=3600'}});}

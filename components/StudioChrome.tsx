@@ -8,7 +8,7 @@ import LoadingScreen from '@/components/LoadingScreen';
 import CustomCursor from '@/components/CustomCursor';
 import StudioMotion from '@/components/StudioMotion';
 import MobileBottomNav from '@/components/MobileBottomNav';
-const SilkGuide = dynamic(() => import('@/components/SilkGuide'), { ssr: false });
+const SilkGuide = dynamic(() => import('@/components/GeminiAssistant'), { ssr: false });
 export function StudioLoading() { const path = usePathname(); return (['/', '/portfolio', '/moremi', '/studio', '/website-offer'].includes(path) || path.startsWith('/blog') || path.startsWith('/account') || path.startsWith('/admin')) ? null : <LoadingScreen />; }
 export default function StudioChrome() {
   const path = usePathname();
