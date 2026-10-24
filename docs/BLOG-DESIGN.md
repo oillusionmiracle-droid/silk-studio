@@ -25,6 +25,7 @@ Downloaded to public/images/blog. Unsplash photo pages provide free-use license 
 - camera-and-phone.jpg — Miguel A Amutio; https://unsplash.com/photos/black-and-white-view-of-a-camera-phone-and-laptop-Fqj1Zbu0CqE
 - phone-and-camera.jpg — Ameen ALmayuf; https://unsplash.com/photos/black-iphone-7-plus-and-dslr-camera-on-table-8kpsiLhifq0
 - colour-swatches.jpg — credited to photo page; https://unsplash.com/photos/a-bunch-of-different-colors-of-paper-on-a-table-iWmgD20Mne0
+- customer-messages.jpg — illustrative phone-typing photo, free under the Unsplash license; https://unsplash.com/photos/hands-typing-on-a-smartphone-with-a-message-on-screen-SrgMu4Fvk7E
 
 ## Content and measurement
 Five original articles. Two respond to verified platform announcements; three are practical studio opinion with clearly illustrative scenarios. No invented customer anecdotes, statistics or test results.
