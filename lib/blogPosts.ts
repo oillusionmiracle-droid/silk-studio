@@ -1,4 +1,4 @@
-export type BlogImage = { src: string; alt: string; caption: string; credit: string; source: string };
+export type BlogImage = { src: string; alt: string; caption: string; credit: string; source: string; width?: number; height?: number };
 export type NoteSection = { heading: string; paragraphs: string[]; bullets?: string[]; template?: string };
 export type Note = { slug: string; title: string; category: string; summary: string; readTime: string; published: string; image: BlogImage; sections: NoteSection[]; takeaway: string; sources?: { title: string; url: string; date: string }[] };
 const desk: BlogImage = { src:'/images/blog/gemini-business-tools.jpg', alt:'Google’s announcement graphic showing Gemini brand styles, connected apps and content templates', caption:'Google’s announcement puts brand styles, connected apps and content templates in one place.', credit:'Google / The Keyword', source:'https://blog.google/innovation-and-ai/products/gemini-app/new-tools-small-business-owners/' };
@@ -7,6 +7,87 @@ const colour: BlogImage = { src:'/images/blog/colour-swatches.jpg', alt:'Fans of
 const phone: BlogImage = { src:'/images/blog/phone-and-camera.jpg', alt:'A smartphone and camera on a wooden table beside a laptop', caption:'Before opening the camera, decide what the person watching needs to understand.', credit:'Ameen ALmayuf / Unsplash', source:'https://unsplash.com/photos/black-iphone-7-plus-and-dslr-camera-on-table-8kpsiLhifq0' };
 const messages: BlogImage = { src:'/images/blog/customer-messages.jpg', alt:'Close view of someone typing on a smartphone held in both hands', caption:'A saved reply should make the next conversation easier, without making the customer feel rushed. Illustrative photo.', credit:'Photo via Unsplash', source:'https://unsplash.com/photos/hands-typing-on-a-smartphone-with-a-message-on-screen-SrgMu4Fvk7E' };
 export const blogPosts: Note[] = [
+{
+  "slug": "ai-service-first-sample-seven-days-nigeria",
+  "title": "Before you pay for another AI course, try this",
+  "category": "Skills & opportunities",
+  "summary": "A seven-day plan to turn AI learning into a useful service sample: choose a customer, make something real, test the offer and publish your proof.",
+  "readTime": "5 min read",
+  "published": "2026-10-24",
+  "image": {
+    "src": "/images/blog/ai-seven-day-experiment.jpg",
+    "alt": "Seven illustrated days following a Nigerian creator from researching a food business to presenting a finished sample website and content",
+    "caption": "One week, one finished sample. An illustrative journey, not a client testimonial or earnings result.",
+    "credit": "Silk Studio · AI-generated illustration",
+    "source": "https://www.silkstudios.com.ng/blog/ai-service-first-sample-seven-days-nigeria",
+    "width": 1000,
+    "height": 1500
+  },
+  "sections": [
+    {
+      "heading": "Another saved tutorial. Still nothing to show.",
+      "paragraphs": [
+        "You’ve saved the tutorial. Joined the group. Collected the prompts. Somehow, the thing you wanted to make is still in your head.",
+        "Give the learning a job this week: make one useful thing for one specific type of customer. This seven-day experiment aims for a finished sample and real feedback. A sale would be a bonus, not a promise."
+      ]
+    },
+    {
+      "heading": "Start with a problem people recognise",
+      "paragraphs": [
+        "“I do AI” leaves a customer doing the thinking. “I turn your product footage into three short videos you can post this week” gives them something to assess.",
+        "Pick something you can already deliver, or reasonably learn to deliver: tidy a small product catalogue, edit three short clips, or turn a service list into a clear one-page brochure. Choose one. Trying all three is how next week becomes another week of research."
+      ]
+    },
+    {
+      "heading": "Days 1–2: make the sample",
+      "paragraphs": [
+        "Pick one type of business—a food vendor, a clothing seller or a barber. Use your own material, get permission to use theirs, or make a clearly labelled fictional example. Show the original beside your finished version.",
+        "Use an AI tool to outline ideas or spot unclear wording. Do the checking yourself. A beautiful menu with the wrong prices is a problem wearing good clothes."
+      ]
+    },
+    {
+      "heading": "Day 3: put a boundary around the offer",
+      "paragraphs": [
+        "Write down exactly what the customer gets: how many items, which file formats, what they must supply, when you can deliver, and how many revisions you include. Decide your price from the work involved and your costs. Don’t copy somebody’s dollar-income screenshot."
+      ]
+    },
+    {
+      "heading": "Days 4–5: ask for useful feedback",
+      "paragraphs": [
+        "Show the sample to a few relevant people who are open to hearing from you. Ask: “Would this solve a problem for your business? What would stop you using it?”",
+        "If someone is interested, explain the scope and quote before beginning. Ask permission before making or publishing anything for their brand. Don’t mass-message strangers or promise results you can’t control."
+      ]
+    },
+    {
+      "heading": "Day 6: fix what they actually noticed",
+      "paragraphs": [
+        "Maybe the text is too small. Maybe the video looks good but leaves out how to order. Maybe you made a brochure for a business that needed a price list. That feedback is more useful than another folder of prompts."
+      ]
+    },
+    {
+      "heading": "Day 7: publish the proof",
+      "paragraphs": [
+        "Put the sample somewhere easy to open. Add three short lines: the problem, what you made, and what someone should send you to request it. Label concept work as concept work. No invented client, testimonial or sales result.",
+        "Your scorecard: one finished sample, one clear offer, and the objections you heard. If nobody wants it, change the offer before paying for more tools."
+      ]
+    },
+    {
+      "heading": "Borrow this prompt",
+      "paragraphs": [
+        "Act as a practical editor. I want to offer [specific deliverable] to [type of business]. My current skills are [skills]. I have [time and equipment]. Help me define a small sample, the materials I need, a delivery checklist and five questions to test whether customers need it. Flag assumptions. Do not invent income claims or customer results.",
+        "Want structured training alongside the experiment? Google’s 2026 Hustle Academy announcement describes free AI-focused learning for entrepreneurs in Nigeria, Kenya and South Africa. Check the programme page for current sessions and eligibility."
+      ]
+    }
+  ],
+  "takeaway": "Choose one deliverable and one kind of customer. Finish a sample, ask for feedback and improve the offer before buying more tools.",
+  "sources": [
+    {
+      "title": "Google: Hustle Academy’s 2026 AI-focused learning programme",
+      "url": "https://blog.google/intl/en-africa/from-side-hustle-to-digital-powerhouse-bridging-africas-100bn-ai-gap/",
+      "date": "11 May 2026"
+    }
+  ]
+},
  {slug:'gemini-small-business-tools-brand-brief',title:'Google can make your next campaign faster. It still needs to know what you’re selling.',category:'AI & tools',summary:'Gemini’s new business tools are an interesting update. The bigger opportunity is finally giving your brand a brief that makes sense.',readTime:'4 min read',published:'2026-10-24',image:desk,sections:[
  {heading:'Another AI tool. Another reason to open seventeen tabs?',paragraphs:['You need a flyer for Saturday. A customer wants a price list. Instagram needs feeding. Somewhere in all this, you were also supposed to run the actual business. An AI announcement promising to save time has your attention. Fair enough.', 'On 20 October, Google announced a business hub in Gemini, connections to business apps, and tools for creating visuals from uploaded brand guidelines. Google says the rollout is global and gradual. Check your account before reorganising your workflow around a feature you haven’t received.', 'Here’s our take: the useful part is continuity. Getting the tenth design to look as though it belongs to the first nine is often more valuable than producing ten more random options.']},
  {heading:'“Make it pop” is not a brand strategy.',paragraphs:['Upload a logo and a tool knows the shape of your logo. It still needs to know why someone should care about the thing beside it.', 'Imagine a food vendor in Yaba promoting office lunch delivery. “Delicious meals for everyone” leaves a lot unanswered. “Lunch delivered to offices in Yaba, orders close at 10am” gives the design a job. The location and deadline aren’t glamorous, but they help a hungry person make a decision.', 'Before you ask for visuals, write a small brief. Product. Customer. Offer. Evidence. Next step. Five lines will do. If you struggle with those lines, making more images is unlikely to solve the problem.']},

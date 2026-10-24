@@ -10,7 +10,7 @@ The studio designs brands, builds websites and apps, creates UGC and AI advertis
 
 | Area | Routes and behaviour |
 | --- | --- |
-| Studio website | Home, portfolio, studio, services, contact and project briefs. Motion, a desktop project carousel and searchable services/projects/articles. |
+| Studio website | Home, portfolio, studio, services, contact and project briefs. A featured studio film, dedicated case studies and searchable services/projects/articles. |
 | Website offer | A compact scrolling, fully clickable 40% offer strip on main public pages. The offer page shows standard/discounted package fees, deliverables, exclusions and prefilled WhatsApp enquiries. |
 | Blog | Five original stories on business, AI tools, creator culture, advertising and print. Topic filters, credited images, alt text, captions, source links, related reading and a saved light / true-black dark mode. |
 | Custom orders | Service specifications and server-computed pricing, with reference-file uploads. Website/app enquiries use the project brief. |
@@ -178,3 +178,16 @@ The connected GitHub repository deploys to Vercel. Confirm the deployment is **R
 
 No open-source license is declared here. Third-party packages and editorial images retain their respective licenses and credits.
 
+
+## Homepage and editorial update
+
+The homepage update was reviewed on `preview/studio-clarity-case-studies` and approved for main.
+
+- Replaces the desktop carousel with a 720p studio film (4.78 MB versus the original 87.9 MB; full duration and audio retained).
+- Adds `/work/party-crashers` and `/work/rabbithole`, adapted from the separate Silk portfolio, with original screenshots, implementation notes and honest outcome limitations.
+- Makes the hero heading immediately readable, adds direct routes to websites, campaign content and print, and removes repeated homepage calls to action.
+- Includes the case studies in site search and the sitemap.
+
+Validation: `npm test`, `npm run build`, and desktop/mobile layout checks.
+
+The October 24 update adds an illustrated seven-day AI service experiment, using supplied Silk artwork with alt text and an illustration caption. The project-start surface uses a pale glass treatment with an opaque fallback. Case-study JPEG uploads are checked against local Git blob hashes to prevent truncated media.
