@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { naira, offerPrice, websiteClaimLink, websitePackages } from '@/lib/websitePackages';
 import './offer.css';
 
@@ -14,10 +15,9 @@ export default function WebsiteOfferPage() {
   return <main className="studio-page web-offer-page" id="top">
     <a href="#packages" className="studio-skip">Skip to website packages</a>
     <section className="web-offer-hero studio-section">
-      <div className="studio-section-line"><Link href="/">Silk Studio / Websites</Link><span>A new home for your business</span></div>
       <div className="web-offer-hero-grid">
-        <div><span className="web-offer-tag">40% off selected website packages</span><h1>Your business.<br /><em>Its own address.</em></h1><p>They heard about you. Then they searched for you. Give them somewhere worth landing.</p><div className="web-offer-actions"><a href="#packages" className="studio-button studio-lime">Find your package <span aria-hidden="true">↓</span></a><Link href="/portfolio" className="studio-text-link">Explore our work ↗</Link></div><small>Landing pages from ₦90,000 · Business websites from ₦150,000</small></div>
-        <div className="web-offer-art" aria-label="40 percent off website design and build"><span className="web-offer-art-label">YOUR NEXT MOVE</span><strong>40<span>%</span></strong><div className="web-offer-art-bottom"><span>LESS ON THE BUILD.<br />MORE ROOM FOR THE IDEA.</span><b>↗</b></div></div>
+        <div><h1>Your business is<br /><em>bigger than your bio.</em></h1><p>Give it a website. Let it breathe. Get 40% off landing pages, business websites and online stores.</p><div className="web-offer-actions"><a href="#packages" className="studio-button studio-lime">See prices & claim <span aria-hidden="true">↓</span></a></div><small>Landing pages from ₦90,000 · Business websites from ₦150,000</small></div>
+        <a className="web-offer-flyer" href="#packages" aria-label="See the 40% website offer packages"><Image src="/images/website-offer-flyer.png" alt="Silk Studio: Your business is bigger than your bio. Give it a website. 40% off selected website packages." width={1229} height={1536} priority sizes="(max-width: 700px) 90vw, 45vw" /></a>
       </div>
     </section>
     <div className="web-offer-strip">Design + development <span>✳</span> Mobile ready <span>✳</span> Yours to grow</div>
