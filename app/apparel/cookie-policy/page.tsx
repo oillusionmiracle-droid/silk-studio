@@ -86,7 +86,7 @@ export default function CookiePolicyPage() {
               <strong>Preference cookies</strong>: Remember settings like your detected location, used to display prices in the appropriate currency (Naira or an approximate USD conversion)
             </li>
             <li>
-              <strong>Optional analytics</strong>: Google Tag Manager and Vercel Speed Insights load only after you choose “Allow analytics.” They help us understand site use and performance. You can choose “Only necessary” instead.
+              <strong>Optional analytics</strong>: Google Analytics (when configured), Google Tag Manager and Vercel Speed Insights load only after you choose “Allow analytics.” They help us understand site use and performance. You can choose “Only necessary” instead.
             </li>
             <li>
               <strong>Payment processing</strong>: Our payment partner, Paystack, may set its own cookies during checkout to process your payment securely. These are governed by Paystack&apos;s own privacy and cookie practices, not ours.

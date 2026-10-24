@@ -20,6 +20,7 @@ Research captured 24 October 2026. Original implementation in Next.js; reference
 
 ## Imagery
 Downloaded to public/images/blog. Unsplash photo pages provide free-use license statements. Captions describe the editorial relevance; the photos are not represented as Silk Studio client work.
+- gemini-business-tools.jpg — Google's actual announcement image, used to illustrate reporting about that announcement; credited and linked to The Keyword. Source: https://blog.google/innovation-and-ai/products/gemini-app/new-tools-small-business-owners/
 - creative-desk.jpg — Adeniji Abdullahi A; https://unsplash.com/photos/a-white-desk-topped-with-electronics-and-a-laptop-DKnh2zu0SbA
 - camera-and-phone.jpg — Miguel A Amutio; https://unsplash.com/photos/black-and-white-view-of-a-camera-phone-and-laptop-Fqj1Zbu0CqE
 - phone-and-camera.jpg — Ameen ALmayuf; https://unsplash.com/photos/black-iphone-7-plus-and-dslr-camera-on-table-8kpsiLhifq0
