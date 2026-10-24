@@ -1,0 +1,10 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { blogPosts } from '@/lib/blogPosts';
+export function generateStaticParams() { return blogPosts.map(post => ({ slug: post.slug })); }
+export function generateMetadata({ params }: { params: { slug: string } }): Metadata { const post = blogPosts.find(p => p.slug === params.slug); return post ? { title: `${post.title} | Silk Notes`, description: post.summary, alternates: { canonical: `/blog/${post.slug}` }, openGraph: { title: post.title, description: post.summary, url: `/blog/${post.slug}`, type: 'article', publishedTime: post.published } } : {}; }
+export default function NotePage({ params }: { params: { slug: string } }) {
+  const post = blogPosts.find(p => p.slug === params.slug); if (!post) notFound();
+  return <main className="studio-page silk-note-page" id="top"><header className="studio-section silk-note-header"><Link href="/blog" className="studio-text-link">← All Silk Notes</Link><div className="silk-note-meta">{post.category} · {post.readTime}</div><h1>{post.title}</h1><p>{post.summary}</p><span className="studio-eyebrow">By Silk Studio · 24 October 2026</span></header><div className="silk-note-body"><aside><span className="studio-eyebrow">IN THIS NOTE</span>{post.sections.map((s, i) => <a href={`#section-${i}`} key={s.heading}>{s.heading}</a>)}</aside><article>{post.sections.map((s, i) => <section key={s.heading} id={`section-${i}`}><h2>{s.heading}</h2>{s.paragraphs.map(p => <p key={p}>{p}</p>)}{s.bullets && <ul>{s.bullets.map(b => <li key={b}>{b}</li>)}</ul>}{s.template && <div className="silk-note-template"><span className="studio-eyebrow">KEEP THIS TEMPLATE</span><pre>{s.template}</pre></div>}</section>)}<div className="silk-note-takeaway"><span className="studio-eyebrow">TRY THIS TODAY</span><p>{post.takeaway}</p></div><Link href="/blog" className="studio-text-link">Another useful read ↗</Link><a href="#newsletter" className="studio-text-link">Get future Silk Notes ↓</a></article></div></main>;
+}

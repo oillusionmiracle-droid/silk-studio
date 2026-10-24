@@ -18,7 +18,7 @@ export default function StudioWork({ archive = false }: { archive?: boolean }) {
     <div className="studio-work-grid">{visible.map((project, index) => <article key={project.id} className={`studio-project studio-project-${project.id}`}>
       <button className="studio-project-image" onClick={() => open(project)} aria-label={`Explore ${project.title}`}>
         <Image src={project.image} alt={`${project.title} project preview`} fill sizes="(max-width: 700px) 92vw, 46vw" priority={index < 2} />
-        <span className="studio-image-label">{project.category} / {project.id === 'bordeaux' || project.id === 'suya' ? 'Concept' : 'Independent project'}</span><span className="studio-project-arrow" aria-hidden="true">↗</span>
+        <span className="studio-project-arrow" aria-hidden="true">↗</span>
       </button>
       <div className="studio-project-caption"><div><span className="studio-eyebrow">{project.category} / Design & development</span><h3><button onClick={() => open(project)}>{project.title}</button></h3></div><span className="studio-project-number">0{index + 1}</span></div>
       <p>{project.summary.split('. ')[0]}.</p>

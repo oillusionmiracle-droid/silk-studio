@@ -56,12 +56,12 @@ export default function CookiePolicyPage() {
           paddingBottom: 16,
         }}
       >
-        Last updated: 2nd September 2026
+        Last updated: 24th October 2026
       </p>
 
       <div style={{ fontSize: 15, color: '#333333' }}>
         <p style={{ marginBottom: 24, fontSize: 16, color: '#000000', fontWeight: 500 }}>
-          This Cookie Policy explains how Silk Studio (&quot;we,&quot; &quot;us,&quot; &quot;our&quot;) uses cookies and similar technologies on our apparel shop.
+          This Cookie Policy explains how Silk Studio (&quot;we,&quot; &quot;us,&quot; &quot;our&quot;) uses cookies and similar technologies across our website and apparel shop.
         </p>
 
         <section style={{ marginBottom: 32 }}>
@@ -86,7 +86,7 @@ export default function CookiePolicyPage() {
               <strong>Preference cookies</strong>: Remember settings like your detected location, used to display prices in the appropriate currency (Naira or an approximate USD conversion)
             </li>
             <li>
-              <strong>Analytics cookies</strong>: Help us understand how visitors interact with our site so we can improve the shopping experience (if analytics tools are added to the site)
+              <strong>Optional analytics</strong>: Google Tag Manager and Vercel Speed Insights load only after you choose “Allow analytics.” They help us understand site use and performance. You can choose “Only necessary” instead.
             </li>
             <li>
               <strong>Payment processing</strong>: Our payment partner, Paystack, may set its own cookies during checkout to process your payment securely. These are governed by Paystack&apos;s own privacy and cookie practices, not ours.
@@ -113,7 +113,7 @@ export default function CookiePolicyPage() {
             4. Managing Cookies
           </h2>
           <p>
-            You can control or disable cookies through your browser settings at any time. Please note that disabling essential cookies may affect your ability to use features like the shopping cart, wishlist, or checkout process.
+            Use “Cookie settings” in the footer to change your analytics choice at any time. We save that choice in your browser. You can also control or disable cookies through your browser settings. Disabling essential storage may affect accounts, the shopping cart, wishlist or checkout.
           </p>
         </section>
 

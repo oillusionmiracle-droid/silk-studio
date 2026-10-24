@@ -13,6 +13,7 @@ const navLinks: { label: string; href: string; accent?: string }[] = [
   { label: 'Apparel', href: '/apparel' },
   { label: 'Studio', href: '/studio' },
   { label: 'Moremi', href: '/moremi' },
+  { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/contact' },
 ];
 
@@ -115,7 +116,7 @@ export default function Navbar() {
           }}
           className="hidden md:flex"
         >
-          {navLinks.filter((link) => !['Moremi', 'Studio'].includes(link.label)).map((link) => (
+          {navLinks.filter((link) => !['Moremi', 'Studio', 'Blog'].includes(link.label)).map((link) => (
             <Link
               key={link.href}
               href={link.href}

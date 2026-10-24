@@ -1,4 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
+import { websitePackages, naira, offerPrice } from '@/lib/websitePackages';
 export const maxDuration = 60;
 import { NextRequest, NextResponse } from 'next/server';
 import {
@@ -29,9 +30,11 @@ Your goal is to assist clients with information about services, pricing, and gen
 Be concise, professional, and friendly.
 
 Core Services & Starting Prices:
-- Print Services: Flyers, banners, jotters, ID cards (from ₦4,500)
-- Web & Digital: Landing pages, business websites, event pages (from ₦80,000)
+- Print Services: Flyers, banners, jotters, ID cards; use /order for specifications and a current quote.
+- Web & Digital: 40% off selected website packages. ${websitePackages.map(p => `${p.name}: regular ${naira(p.standard)}, offer ${naira(offerPrice(p.standard))}`).join('; ')}. Confirm scope and exclusions at /website-offer. Custom apps are quoted separately from ₦1,200,000 and are outside this offer.
 - Design: Logo & branding, packaging, illustration
+- Content: UGC, ads, photography and motion. Apparel and merchandise are available at /apparel.
+- Silk Notes at /blog publishes practical advice for businesses and creators.
 
 For full pricing details or custom quotes, encourage users to visit the Order page or contact us via WhatsApp.
 Do not make up prices not listed here. If unsure, suggest requesting a custom quote on the Order page.`;

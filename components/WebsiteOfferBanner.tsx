@@ -1,11 +1,14 @@
+'use client';
 import Link from 'next/link';
-import { naira, offerPrice, websitePackages } from '@/lib/websitePackages';
+import { usePathname } from 'next/navigation';
 import '@/app/website-offer/offer.css';
 
 export default function WebsiteOfferBanner() {
-  const business = websitePackages.find(item => item.id === 'business')!;
-  return <aside className="website-offer-banner" aria-label="Website package offer">
-    <Link href="/website-offer" className="website-offer-stamp" aria-label="40% off websites — see prices and claim">40% OFF</Link>
-    <p>Your business deserves its own address. <span>Business websites from {naira(offerPrice(business.standard))}.</span></p>
+  const path = usePathname();
+  if (['/account', '/admin', '/auth', '/moremi', '/privacy', '/terms', '/apparel/checkout', '/apparel/cookie-policy', '/apparel/return-policy', '/apparel/exchange-policy'].some(prefix => path.startsWith(prefix))) return null;
+  return <aside className={`silk-promo ${path === '/apparel' ? 'silk-promo-apparel' : ''}`} aria-label="Website offer">
+    <Link href="/website-offer" className="silk-promo-link" aria-label="40% off selected websites. Business websites from ₦150,000. View packages and claim.">
+      <span className="silk-promo-track" aria-hidden="true">{[0, 1].map(copy => <span className="silk-promo-copy" key={copy}><strong>40% OFF WEBSITES</strong><span>YOUR BUSINESS IS BIGGER THAN YOUR BIO</span><b>↗</b><strong>40% OFF WEBSITES</strong><span>BUSINESS WEBSITES FROM ₦150,000</span><b>↗</b></span>)}</span>
+    </Link>
   </aside>;
 }
