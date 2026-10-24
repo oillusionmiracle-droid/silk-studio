@@ -1,40 +1,74 @@
 # Silk Studio
 
-A design, print, and apparel commerce platform — public marketing site, custom order + pricing engine, apparel storefront with Paystack checkout, customer account portal, admin dashboard, and an AI chat assistant.
+[Live website](https://www.silkstudios.com.ng) · [Blog](https://www.silkstudios.com.ng/blog) · [Website packages](https://www.silkstudios.com.ng/website-offer)
 
-> **Status: Work in progress.** Core flows (ordering, payments, auth) are functional; hardening, tests, and CI are still being built out. See [Known Issues](#known-issues--in-progress) below before using this in production.
+Silk Studio is a Lagos-based creative business working with customers in Nigeria and worldwide. This repository contains the studio website, portfolio, editorial blog, custom-order tools, apparel storefront, customer portal and administration interface.
 
----
+The studio designs brands, builds websites and apps, creates UGC and AI advertising, produces print and merchandise, and develops custom software and automation.
 
-## What's in here
+## What’s built
 
-| Area | What it does |
-|---|---|
-| **Public site** | Home, About, Portfolio, Services, Order, Apparel, Contact, Privacy/Terms |
-| **Custom orders** | Dynamic spec forms per service (flyers, banners, ID cards, business cards, etc.) with server-computed pricing |
-| **Apparel store** | Product catalog, sizes/variants, cart, Paystack checkout |
-| **Customer account** | Order history, order detail/status, uploaded reference files |
-| **Admin dashboard** | Customer list, order list/detail, order status management |
-| **AI assistant** | Chat widget backed by Google Gemini with Silk Studio–specific context |
-| **File uploads** | Cloudinary-backed reference file uploads for custom orders (images, PDF, PSD, AI/EPS) |
-| **SEO** | Per-page metadata (title, description, keywords, canonical, OpenGraph, Twitter card) on all public routes |
+| Area | Routes and behaviour |
+| --- | --- |
+| Studio website | Home, portfolio, studio, services, contact and project briefs. Motion, a desktop project carousel and searchable services/projects/articles. |
+| Website offer | A compact scrolling, fully clickable 40% offer strip on main public pages. The offer page shows standard/discounted package fees, deliverables, exclusions and prefilled WhatsApp enquiries. |
+| Blog | Five original stories on business, AI tools, creator culture, advertising and print. Topic filters, credited images, alt text, captions, source links, related reading and a saved light / true-black dark mode. |
+| Custom orders | Service specifications and server-computed pricing, with reference-file uploads. Website/app enquiries use the project brief. |
+| Apparel | Products, variants, cart and Paystack checkout. |
+| Accounts and administration | Customer order history/status and administrative product/order management. |
+| Gemini assistant | Real Gemini chat with current website-package context. The mobile launcher uses a smaller Gemini mark. |
+| Newsletter | Signup records in Supabase, Resend contacts and a welcome-automation event. Broadcast creation/sending is managed separately in Resend. |
+| Cookie choices | A compact, non-modal bottom bar: essential only, optional analytics, and an × dismiss control. Dismissal keeps optional analytics off. Reopen through **Cookie settings** in the footer. |
+| Search discovery | Canonicals, social metadata, BlogPosting structured data, image entries in the sitemap, public crawl rules and an RSS feed. |
 
----
+Features that depend on external services require valid runtime configuration. A successful build is not proof that payments, email delivery, Google reporting or every external integration is configured in a given deployment.
 
-## Tech stack
+## Stack
 
-- **Framework:** Next.js 14 (App Router), React 18, TypeScript
-- **Styling/animation:** Tailwind CSS, Framer Motion, GSAP + ScrollTrigger, Lenis (smooth scroll), Lottie
-- **Backend/data:** Supabase (Postgres, Auth, Edge Functions, Row Level Security)
-- **Payments:** Paystack
-- **Media:** Cloudinary
-- **AI:** Google Gemini (`@google/genai`)
-- **Email/marketing:** Mailchimp / Resend (order confirmations, newsletter)
-- **PWA:** `@ducanh2912/next-pwa`
+- Next.js 14 App Router, React 18 and TypeScript.
+- Tailwind CSS and scoped CSS; GSAP, Framer Motion and Lenis for motion.
+- Supabase for Postgres, authentication, policies and Edge Functions.
+- Paystack for payments; Cloudinary for uploaded media.
+- Google Gemini through `@google/genai`; Resend for email.
+- Vercel deployment from GitHub. PWA tooling is installed but currently disabled in `next.config.mjs`.
 
----
+## Local setup
 
-## ⚠️ Pricing — services vs apparel (READ THIS BEFORE EDITING PRICES)
+Use a current Node.js LTS release (Node 22 or newer recommended).
+
+```bash
+npm ci
+npm run dev
+```
+
+Create a local `.env.local` file with the variables below before using connected features. Open **http://localhost:3000**. Never commit credentials.
+
+### Next.js environment variables
+
+| Browser-visible configuration | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase client connection |
+| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | Uploaded-media delivery |
+| `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` | Paystack checkout |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Turnstile where enabled |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Optional real GA4 web-stream ID, in `G-…` format |
+
+Server-only configuration includes `SUPABASE_SERVICE_ROLE_KEY`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `GEMINI_API_KEY`, `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY` and `TURNSTILE_ENFORCE` where applicable. Do not prefix secrets with `NEXT_PUBLIC_`.
+
+Newsletter signup uses Resend; the welcome workflow listens for `newsletter.subscribed`. Verify that automation in the provider before relying on welcome delivery. The signup handler records automation-event errors in server logs.
+
+### Database and Edge Functions
+
+Review migrations and rollout notes before applying changes to an existing database.
+
+```bash
+supabase link --project-ref <your-project-ref>
+supabase db push
+```
+
+Edge Functions have their own environment/secrets, separate from Next.js. Depending on the function, these include Supabase credentials, `PAYSTACK_SECRET_KEY`, Cloudinary credentials and Resend configuration. Inspect each function’s requirements before deployment. Never use production payments for an unreviewed local test.
+
+## Pricing: custom orders, apparel and website packages
 
 Two pricing surfaces. They are intentionally separate.
 
@@ -51,184 +85,96 @@ Notes:
 
 ---
 
-## Getting started
 
-### Prerequisites
-- Node.js 18+
-- A [Supabase](https://supabase.com) project
-- A [Cloudinary](https://cloudinary.com) account
-- A [Paystack](https://paystack.com) account (test keys for local dev)
-- A Google AI Studio API key for Gemini
+### Website-package offer
 
-### 1. Install dependencies
-```bash
-npm install
-```
+`lib/websitePackages.ts` is the source of truth for the website offer’s standard prices, 40% calculation and WhatsApp claim links. These are separate from apparel prices and custom-print formulas. Keep the package page and Gemini context tied to this shared data.
 
-### 2. Set up environment variables
-Copy `.env.example` to `.env.local` and fill in real values:
-```bash
-cp .env.example .env.local
-```
+The discount applies to the listed design-and-build packages. Domain, hosting, paid services and separately scoped custom applications are excluded. An enquiry does not take payment or reserve a production slot.
 
-**Client-side (exposed to the browser — must be prefixed `NEXT_PUBLIC_`):**
-```
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
-NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY=
-# Cloudflare Turnstile widget (bot protection on auth + newsletter).
-NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAAEwCPPZFRXnUwIOx
-```
+## Working on the blog
 
-> Widget already created in dash.cloudflare.com → Turnstile. The site key is
-> public by design (it ships in client HTML). If you rotate the widget later,
-> update the key here, in `.env.local`, and in your hosting provider env vars.
+- Content: `lib/blogPosts.ts`.
+- Listing / article routes: `app/blog/page.tsx` and `app/blog/[slug]/page.tsx`.
+- Theme / category filters: `components/BlogShell.tsx` and `components/BlogListing.tsx`.
+- Editorial styling and shared updates: `app/studio-updates.css`.
+- Downloaded images: `public/images/blog/`; retain source credits, descriptive alt text and contextual captions.
+- Design research: [Blog design notes](docs/BLOG-DESIGN.md).
 
-**Server-side only (Next.js API routes — never expose these):**
-```
-SUPABASE_SERVICE_ROLE_KEY= # server-only; required for private uploads and distributed rate limits
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
-GEMINI_API_KEY=
-MAILCHIMP_API_KEY=
-MAILCHIMP_API_REGION=
-MAILCHIMP_AUDIENCE_ID=
-# Turnstile server secret from the same widget (dash.cloudflare.com → Turnstile
-# → Settings). Required for siteverify — without it, verification is skipped
-# unless TURNSTILE_ENFORCE=true (recommended in production to fail closed).
-TURNSTILE_SECRET_KEY=
-TURNSTILE_ENFORCE=
-```
+Add the article’s slug, category, summary, date, reading time, image information and sections to the content array. Provide source links for reported platform changes. Distinguish illustrative examples and studio opinion from verified facts.
 
-**Supabase Edge Functions** (set these via `supabase secrets set`, not in `.env.local` — they run on Supabase's servers, not Next.js):
-```
-SUPABASE_URL=
-SUPABASE_SERVICE_ROLE_KEY=
-PAYSTACK_SECRET_KEY=
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
-RESEND_API_KEY=
-RESEND_AUDIENCE_ID=
-```
+The blog index, related stories, sitemap entries and RSS feed derive from that data. Review the new page on a phone and desktop, in both themes, before publishing.
 
-### 3. Set up the database
-Run the migrations against your Supabase project in order:
-```bash
-supabase link --project-ref <your-project-ref>
-supabase db push
-```
-Migrations live in `supabase/migrations/` and include schema, RLS policies, and the admin-role protection trigger. Read them in numeric order if you want to understand the auth/authorization model.
+## Analytics and indexing
 
-> For an existing production project, follow [the coordinated security rollout and rollback guide](docs/security-rollout.md). The new security migration adds `orders.email` automatically. Do not replay historical setup scripts blindly.
+- `components/CookieBanner.tsx` controls the saved consent choice.
+- Optional Google Tag Manager, GA4 and Speed Insights load only after analytics consent.
+- `components/GoogleAnalytics.tsx` supports consented initial/client-route page views, article views and article-end reads.
+- Set the owner’s actual `NEXT_PUBLIC_GA_MEASUREMENT_ID` in the deployment environment and redeploy to activate direct GA4 reporting. **The last configuration check found no GA4 ID and an empty published GTM container; reporting must not be described as active until verified.**
+- Revoking analytics clears known analytics cookies and reloads the page to stop previously loaded scripts.
+- Blog light/dark preference is stored locally and is independent of analytics consent.
 
-### 4. Deploy the Edge Functions
-```bash
-supabase functions deploy create-order --no-verify-jwt
-supabase functions deploy verify-order --no-verify-jwt
-```
+Public discovery endpoints:
 
-### 5. Run the dev server
-```bash
-npm run dev
-```
-Visit http://silkstudios.com.ng
+| Endpoint | Purpose |
+| --- | --- |
+| `/sitemap.xml` | Public pages, all article URLs and article images |
+| `/robots.txt` | Allows public crawling and points to the sitemap; excludes private/system routes |
+| `/blog/feed.xml` | RSS feed |
+| `/blog/[slug]` | Server-rendered article content, canonical URL, social previews and BlogPosting structured data |
 
----
+Google Analytics measures visits; it does not submit pages for indexing. Search Console submission, indexing status, Google Ads configuration and live event reporting require their own account-side checks.
 
-## Available scripts
+## Checks
 
 ```bash
-npm run dev      # start dev server
-npm run build    # production build
-npm run start    # run production build locally
-npm run lint     # ESLint
+npm run lint
+npx tsc --noEmit
+npm test
+npm run build
 ```
 
-> No `test` or `typecheck` script exists yet — see Known Issues below.
+Additional scripts: `npm run check:env`, `npm run check:edge` (Deno required), and `npm run analyze`.
 
----
+The test suite covers pricing and order behaviour, security boundaries, email handling, service search, deployable media and blog/sitemap integrity. Full live payment and third-party delivery testing is separate.
 
-## Project structure
+## Project map
 
-```
-app/                  Next.js App Router pages & API routes
-  |- admin/            Admin dashboard (customers, orders)
-  |- account/          Customer account, order history, uploaded files
-  |- apparel/          Storefront + checkout
-  |- order/            Custom order form + pricing
-  |- api/              Route handlers (chat, cloudinary-sign, newsletter)
-components/           Shared UI + feature components (apparel/, auth/)
-lib/                  Client utilities, pricing logic, Supabase client
-  |- order/            orderService.ts — Paystack launch + order submission
-  |- validation/       orderValidation.ts — client-side form validation
+```text
+app/                  Pages, layouts and Next.js API handlers
+  blog/               Blog index, articles and RSS
+  website-offer/      Website-package offer
+  apparel/            Storefront and checkout
+  order/              Custom ordering
+  account/, admin/    Customer and administration interfaces
+components/           Shared navigation, footer, consent, assistant and UI
+lib/                  Content, pricing, validation and server/client utilities
 supabase/
-  |- migrations/       Versioned SQL schema + RLS policies
-  |- functions/        Edge Functions (create-order, verify-order, paystack-webhook)
-public/               Static assets — being migrated to Cloudinary
+  migrations/         Versioned schema and policies
+  functions/          Order creation, verification, webhook and support functions
+tests/                Node test runner + tsx tests
+public/               Site assets and credited editorial images
+docs/                 Implementation and design notes
 ```
 
----
+## Order and payment boundaries
 
-## Order & payment flow
+Orders are created through server-side validation and pricing. Paystack verification must confirm the transaction and expected amount server-side before marking an order paid. Do not trust a client-reported total or success message. Review the Edge Functions and database policies when changing payment or inventory behaviour.
 
-1. Customer configures a custom order or adds apparel to cart.
-2. Order is created via the `create-order` Edge Function, which validates product/variant data and computes the price **server-side**.
-3. If the Edge Function fails, the submission stops immediately — no partial or phantom orders are created.
-4. Paystack checkout is initiated with the server-computed amount.
-5. On payment, the `verify-order` Edge Function re-verifies the transaction directly against Paystack's API, checks the paid amount against the order total, and updates order status.
-6. Confirmation email is sent; inventory is decremented.
+Protect service-role and payment secrets. Review Row Level Security and administrative permissions before changing customer-data access. Report security issues privately to the studio rather than posting customer details or credentials in a public issue.
 
-> The custom-order form (`app/order/page.tsx`) currently routes through `create-order` for order creation. Paystack is only launched after a valid server reference is returned — if the Edge Function returns no reference, the flow aborts with a clear error message.
+## Publishing
 
----
+The connected GitHub repository deploys to Vercel. Confirm the deployment is **Ready**, then verify the changed public routes and relevant interactions. Preserve the configuration and delivery requirements of the external services; do not use a deployment success message as an integration-health check.
 
-## SEO
+## Current follow-up work
 
-All public-facing pages have per-page metadata configured in their `layout.tsx` files using Next.js `generateMetadata` / static `Metadata` exports:
-
-| Page | Canonical |
-|---|---|
-| Home | `/` |
-| About | `/about` |
-| Services | `/services` |
-| Portfolio | `/portfolio` |
-| Apparel | `/apparel` |
-| Contact | `/contact` |
-| Order | `/order` |
-| Privacy | `/privacy` |
-| Terms | `/terms` |
-
-Each page has a unique `title`, `description`, `keywords` array, `alternates.canonical`, `robots` with Googlebot directives, full OpenGraph tags, and Twitter card metadata.
-
----
-
-## Known issues / in progress
-
-This project is **not production-hardened yet**. Current priorities, roughly in order:
-
-- [ ] Remove the client-price fallback in `create-order` when a variant isn't found (currently defaults to a hardcoded price — should reject instead)
-- [ ] Add auth check + rate limiting to the Cloudinary upload signing route
-- [ ] Remove the hardcoded Paystack public key fallback in the apparel checkout
-- [ ] Set up a Supabase custom domain so Google OAuth doesn't expose the raw `*.supabase.co` project URL to users
-- [ ] Move remaining local media in `public/` to Cloudinary and clean git history of large binaries
-- [ ] Add tests (unit tests for pricing logic and auth, E2E for the full order-to-payment-to-verification flow)
-- [ ] Add CI (lint, typecheck, build on every push)
-- [ ] Remove the dead admin self-escalation UI (DB-side RLS already blocks it, but the button still exists)
-- [ ] Add OG images (`/public/og-*.jpg`, 1200×630px) for all pages to enable rich social share previews
-
----
-
-## Security notes
-
-- Row Level Security is enabled on all customer-data tables; policies are defined in `supabase/migrations/`.
-- Admin role changes are protected by a `BEFORE UPDATE` trigger that silently reverts unauthorized role modifications — admin roles should only be granted manually via the Supabase dashboard.
-- Payment verification happens server-side in `verify-order`, never trusting client-reported payment status.
-- The `create-order` function is rate-limited to 20 requests/hour/IP via a Postgres-backed throttle to prevent spam order creation.
-- If you find a security issue, please don't open a public GitHub issue — contact us privately instead.
-
----
+- Configure the real GA4 measurement ID and verify live reporting after consent.
+- Verify welcome-automation delivery in Resend.
+- Run controlled end-to-end payment, inventory and email checks when those flows change.
+- Continue improving case-study evidence and the path from service discovery to enquiry.
 
 ## License
+
+No open-source license is declared here. Third-party packages and editorial images retain their respective licenses and credits.
 
