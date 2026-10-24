@@ -1,8 +1,9 @@
 import { SITE_URL } from './siteMetadata';
 import { blogPosts } from './blogPosts';
+import { caseStudies } from './caseStudies';
 // Update a date only when that page's content or shared layout changes.
 export const publicPages = [
-  '/', '/website-offer', '/blog', ...blogPosts.map(post => `/blog/${post.slug}`), '/services', '/portfolio', '/studio', '/moremi', '/apparel', '/order',
+  '/', '/website-offer', '/blog', ...blogPosts.map(post => `/blog/${post.slug}`), ...caseStudies.map(study => `/work/${study.id}`), '/services', '/portfolio', '/studio', '/moremi', '/apparel', '/order',
   '/about', '/contact', '/privacy', '/terms', '/apparel/cookie-policy',
   '/apparel/exchange-policy', '/apparel/return-policy',
 ].map(path => ({ path, lastModified: path.startsWith('/blog') || !path.startsWith('/moremi') ? '2026-10-24' : '2026-10-13' }));

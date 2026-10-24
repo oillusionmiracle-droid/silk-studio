@@ -1,8 +1,10 @@
 import projects from '@/app/data/studio-projects.json';
 import { blogPosts } from './blogPosts';
+import { caseStudies } from './caseStudies';
 export type SearchEntry = { title: string; kind: string; keywords: string; href: string };
 const order = (category: string, service?: string) => `/order?category=${encodeURIComponent(category)}${service ? `&service=${encodeURIComponent(service)}` : ''}`;
 export const searchEntries: SearchEntry[] = [
+  ...caseStudies.map(p => ({ title: `${p.name} case study`, kind: 'Case study', keywords: `${p.name} case study ${p.short}`, href: `/work/${p.id}` })),
   { title: 'Blog', kind: 'Useful reads', keywords: 'blog newsletter business creative advice useful reads', href: '/blog' },
   ...blogPosts.map(post => ({ title: post.title, kind: post.category, keywords: `${post.category} ${post.summary} blog notes`, href: `/blog/${post.slug}` })),
   ...Object.entries({ Print: ['Flyers & Handbills','Banners','Billboards & Flex','Jotters & Notepads','ID Cards','Business Cards','Letterheads'], Apparel: ['Custom T-Shirts','Sweatshirts','Hoodies','Corporate Uniforms','Event Merch Set'], Design: ['Logo & Brand Identity','Social Media Templates','Print-Ready Artwork','Event Branding Kit'], Web: ['Landing Page','Business Website','E-commerce','Event Page'], Bundle: ['Event Package','Business Starter','Custom Bundle'] }).flatMap(([category, names]) => names.map(title => ({ title, kind: `${category} / ${category === 'Web' ? 'Free brief' : 'Order'}`, keywords: `${category} ${title} ${category === 'Print' ? 'printing paper packaging wedding invitation souvenir' : ''}`, href: category === 'Web' ? '/?brief=Website%20or%20app#brief' : order(category, title) }))),

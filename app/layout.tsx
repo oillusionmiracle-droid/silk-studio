@@ -19,6 +19,7 @@ import AuthSheet from "@/components/auth/AuthSheet";
 import CookieBanner from '@/components/CookieBanner';
 import WebsiteOfferBanner from '@/components/WebsiteOfferBanner';
 import '@/app/studio-updates.css';
+import '@/app/studio-review.css';
 
 const jakarta = localFont({
   src: "./fonts/GeistVF.woff",
