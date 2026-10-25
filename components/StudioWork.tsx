@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import projects from '@/app/data/studio-projects.json';
-const caseStudyHref = (id: string) => ['party-crashers', 'rabbithole'].includes(id) ? `/work/${id}` : null;
+const caseStudyHref = (id: string) => ['party-crashers', 'rabbithole', 'fieldmark'].includes(id) ? `/work/${id}` : null;
 
 type Project = typeof projects[number];
 export default function StudioWork({ archive = false }: { archive?: boolean }) {
@@ -13,16 +13,16 @@ export default function StudioWork({ archive = false }: { archive?: boolean }) {
   const [selected, setSelected] = useState<Project | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => { const id = new URLSearchParams(window.location.search).get('project'); const project = projects.find(p => p.id === id); if (project) { setSelected(project); dialog.current?.showModal(); } }, []);
-  const visible = (archive || expanded) ? projects.filter(p => filter === 'All' || p.category === filter) : ['party-crashers', 'rabbithole', 'bordeaux'].map(id => projects.find(p => p.id === id)!);
+  const visible = (archive || expanded) ? projects.filter(p => filter === 'All' || p.category === filter) : ['party-crashers', 'fieldmark', 'bordeaux'].map(id => projects.find(p => p.id === id)!);
   function open(project: Project) { setSelected(project); dialog.current?.showModal(); }
   return <>
-    {(archive || expanded) && <div className="studio-filters" role="group" aria-label="Filter projects">{['All', 'Apps', 'Websites'].map(category => <button key={category} aria-pressed={filter === category} onClick={() => setFilter(category)}>{category}<span>{category === 'All' ? projects.length : projects.filter(p => p.category === category).length}</span></button>)}</div>}
+    {(archive || expanded) && <div className="studio-filters" role="group" aria-label="Filter projects">{['All', 'Apps', 'Websites', 'Brand Identity'].map(category => <button key={category} aria-pressed={filter === category} onClick={() => setFilter(category)}>{category}<span>{category === 'All' ? projects.length : projects.filter(p => p.category === category).length}</span></button>)}</div>}
     <div className="studio-work-grid">{visible.map((project, index) => <article key={project.id} className={`studio-project studio-project-${project.id}`}>
       {caseStudyHref(project.id) ? <Link className="studio-project-image" href={caseStudyHref(project.id)!} aria-label={`Read ${project.title} case study`}><Image src={project.image} alt={`${project.title} project preview`} fill sizes="(max-width: 700px) 92vw, 46vw" priority={index < 2} /><span className="studio-project-arrow" aria-hidden="true">↗</span></Link> : <button className="studio-project-image" onClick={() => open(project)} aria-label={`Explore ${project.title}`}>
         <Image src={project.image} alt={`${project.title} project preview`} fill sizes="(max-width: 700px) 92vw, 46vw" priority={index < 2} />
         <span className="studio-project-arrow" aria-hidden="true">↗</span>
       </button>}
-      <div className="studio-project-caption"><div><span className="studio-eyebrow">{project.category} / Design & development</span><h3>{caseStudyHref(project.id) ? <Link href={caseStudyHref(project.id)!}>{project.title}</Link> : <button onClick={() => open(project)}>{project.title}</button>}</h3></div><span className="studio-project-number">0{index + 1}</span></div>
+      <div className="studio-project-caption"><div><span className="studio-eyebrow">{project.category} / {project.id === 'fieldmark' ? 'Strategy & visual identity' : 'Design & development'}</span><h3>{caseStudyHref(project.id) ? <Link href={caseStudyHref(project.id)!}>{project.title}</Link> : <button onClick={() => open(project)}>{project.title}</button>}</h3></div><span className="studio-project-number">0{index + 1}</span></div>
       <p>{project.summary.split('. ')[0]}.</p>
     </article>)}</div>
     {!archive && <div className="studio-show-more"><button className="studio-button studio-outline" onClick={() => { setExpanded(!expanded); setFilter("All"); }} aria-expanded={expanded}>{expanded ? "Show selected projects ↑" : `Explore all ${projects.length} projects ↓`}</button></div>}

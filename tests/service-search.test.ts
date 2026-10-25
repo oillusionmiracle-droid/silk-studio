@@ -23,5 +23,5 @@ test('website services open the website brief while projects remain searchable',
   assert.equal(url.searchParams.get('brief'), 'Website or app');
  }
  assert.ok(searchSite('party crashers').some(r => r.href === '/portfolio?project=party-crashers'));
- assert.ok(searchSite('rabbithole').some(r => r.href === '/portfolio?project=rabbithole'));
+ assert.ok(searchSite('fieldmark').some(r => r.href === '/work/fieldmark'));
 });
