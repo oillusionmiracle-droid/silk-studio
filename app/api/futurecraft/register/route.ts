@@ -25,6 +25,10 @@ export async function POST(req: NextRequest) {
   const experience = typeof body.experience==='string' ? body.experience : '';
   const interest = typeof body.interest==='string' ? body.interest : '';
   if (name.length < 2 || name.length > 90 || !EMAIL.test(email) || email.length > 254 || phone.length > 28 || !LEVELS.includes(experience) || !INTERESTS.includes(interest) || body.consent!==true) return NextResponse.json({ error:'Please complete the required fields and agree to registration emails.' },{status:400});
+  // A registration is not complete until the email service is ready.
+  if (!process.env.RESEND_API_KEY || !process.env.FUTURECRAFT_FROM_EMAIL) {
+   return NextResponse.json({error:'Genesis registration is not open yet. Our email service is being configured.'},{status:503});
+  }
   const ip = getClientIp(req);
   const anonymized = createHash('sha256').update(email).digest('hex').slice(0,32);
   const ipLimit = await checkDistributedRateLimit('futurecraft:signup:'+ip,5,60*60*1000);
@@ -37,7 +41,7 @@ export async function POST(req: NextRequest) {
   if(error || !data){ console.error('Genesis registration save failed',error?.code);return NextResponse.json({error:'Registration is temporarily unavailable. Please try again.'},{status:503}); }
   const sender=process.env.FUTURECRAFT_FROM_EMAIL;
   const apiKey=process.env.RESEND_API_KEY;
-  if(!sender || !apiKey){console.warn('Genesis signup saved but Resend sender is not configured');return NextResponse.json({ok:true,emailsPending:true});}
+  if(!sender || !apiKey){throw new Error('Resend sender configuration missing');}
   const resend = new Resend(apiKey);
   const first = name.split(' ')[0] || 'Maker';
   const mailings = [

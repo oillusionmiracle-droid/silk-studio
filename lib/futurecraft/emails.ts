@@ -1,13 +1,13 @@
 /* Hand-authored table-based transactional email HTML: robust in common email clients. */
 const site='https://silkstudios.com.ng/futurecraft';
 function escapeHtml(value:string){return value.replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]||ch));}
-const heroImage=site+'/mascot.webp';
+
 function frame({eyebrow,heading,intro,body,cta,art}:{eyebrow:string;heading:string;intro:string;body:string;cta:string;art:string}) {
  return '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>'+
  '<body style="margin:0;background:#eae9df;color:#121312;font-family:Arial,Helvetica,sans-serif;">'+
  '<table role="presentation" cellspacing="0" cellpadding="0" width="100%" style="background:#eae9df;"><tr><td align="center" style="padding:32px 12px;">'+
  '<table role="presentation" cellspacing="0" cellpadding="0" width="600" style="width:100%;max-width:600px;background:#111211;border-collapse:collapse;">'+
- '<tr><td style="padding:27px 32px 22px;color:white;font-size:24px;letter-spacing:-1.2px;font-weight:900;"><span style="display:inline-block;width:11px;height:11px;border-radius:100%;background:#ffae64;vertical-align:middle;margin-right:8px;"></span>futurecraft<span style="font-size:10px;vertical-align:top;">®</span><span style="float:right;font:700 10px monospace;letter-spacing:2px;color:#b0aeab;padding-top:10px;">GENESIS 001</span></td></tr>'+
+ '<tr><td style="padding:23px 32px 20px;color:white;font-size:24px;letter-spacing:-1.2px;font-weight:900;"><img src="'+site+'/mascot.webp" alt="" width="38" height="38" style="vertical-align:middle;width:38px;height:38px;border:0;margin-right:9px;">futurecraft<span style="font-size:10px;vertical-align:top;">®</span><span style="float:right;font:700 10px monospace;letter-spacing:2px;color:#b0aeab;padding-top:10px;">GENESIS 001</span></td></tr>'+
  '<tr><td style="padding:0 30px;"><img src="'+art+'" alt="Futurecraft creative space" width="540" style="display:block;width:100%;max-width:540px;height:auto;max-height:275px;object-fit:cover;border:0;"></td></tr>'+
  '<tr><td style="padding:28px 32px 9px;font:700 11px monospace;letter-spacing:2px;color:#ffb879;">'+eyebrow+'</td></tr>'+
  '<tr><td style="padding:0 32px;color:#f7f2e9;font-size:clamp(36px,8vw,53px);line-height:1.04;font-weight:900;letter-spacing:-2px;">'+heading+'</td></tr>'+
