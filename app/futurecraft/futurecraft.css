@@ -58,3 +58,11 @@
  .fc-form input::placeholder{color:#899db4}
 }
 @media(prefers-reduced-motion:reduce){.fc-site,.fc-site *{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
+
+/* Minimal cookie notice is isolated to the Futurecraft route */
+.fc-cookie-bar{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);width:min(820px,calc(100vw - 32px));z-index:11000;display:flex;align-items:center;gap:20px;justify-content:space-between;padding:15px 18px 15px 24px;border-radius:28px;border:1px solid #d7e3f5;background:#fff;color:#111629;box-shadow:0 20px 65px #0e2c6133;font-family:var(--font-jakarta),sans-serif}
+.fc-cookie-bar p{font-size:13px;line-height:1.5;color:#3f4c60;margin:0;max-width:385px}.fc-cookie-bar a{color:#0565ff;text-decoration:underline}
+.fc-cookie-bar>div{display:flex;align-items:center;gap:8px;flex-shrink:0}.fc-cookie-bar button{border-radius:999px;border:1px solid #d1dcf0;padding:12px 16px;white-space:nowrap;font:650 12px var(--font-jakarta),sans-serif;background:#fff;color:#111629;cursor:pointer}
+.fc-cookie-bar button:nth-child(2){background:#0565ff;color:white;border-color:#0565ff}.fc-cookie-bar button.fc-cookie-close{width:39px;height:39px;padding:0;font-size:23px;background:transparent;line-height:1}
+@media(max-width:700px){.fc-cookie-bar{flex-direction:column;align-items:stretch;padding:20px;gap:14px}.fc-cookie-bar>div{justify-content:space-between}.fc-cookie-bar button{font-size:11px;padding:12px}.fc-cookie-bar button.fc-cookie-close{margin-left:auto}}
+@media(prefers-color-scheme:dark){.fc-cookie-bar{background:#0b1220;color:#f7fbff;border-color:#29435c}.fc-cookie-bar p{color:#b8c5d8}.fc-cookie-bar button{background:#111e31;color:white;border-color:#30435a}}
