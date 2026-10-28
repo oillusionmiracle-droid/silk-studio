@@ -33,7 +33,8 @@
     "react-dom": "^18",
     "react-markdown": "^10.1.0",
     "resend": "^6.26.0",
-    "split-type": "^0.3.4"
+    "split-type": "^0.3.4",
+    "ogl": "^1.0.11"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.3.14",
