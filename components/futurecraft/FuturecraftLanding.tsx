@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities -- natural marketing copy */
 'use client';
 
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react';
@@ -34,8 +35,8 @@ const tracks=[
  {n:'04',title:'Automate',desc:'Build systems that make everyday business tasks simpler and faster.',kind:'Business workflows'}
 ];
 const quotes=[
- {quote:'“I had the idea, made it that same afternoon, and put it on the website.”',name:'Christian Ortega',role:'The Original Tamale Co.',url:'https://openai.com/index/small-business-stories/'},
- {quote:'“Before, I would wonder, where can I get this, who can help me with that. And now, it’s like, okay, I can do this.”',name:'Rachael Sharp',role:'Sharp & Sharp Certified Seed',url:'https://openai.com/index/small-business-stories/'},
+ {quote:'“I had the idea, made it that same afternoon.”',name:'Christian Ortega',role:'The Original Tamale Co.',url:'https://openai.com/index/small-business-stories/'},
+ {quote:'“Now, it’s like, okay, I can do this.”',name:'Rachael Sharp',role:'Sharp & Sharp Certified Seed',url:'https://openai.com/index/small-business-stories/'},
  {quote:'“ChatGPT saved me at least 10 hours of data entry.”',name:'Kevin English',role:'Owner, Keg Built',url:'https://openai.com/index/introducing-chatgpt-small-business-program/'}
 ];
 const faqs=[
@@ -96,10 +97,9 @@ export default function FuturecraftLanding(){
   const ctx=gsap.context(()=>{
     const headline=document.querySelector('.fc-hero h1');
     if(headline){
-      const split=SplitText.create(headline,{type:'words',autoSplit:true,onSplit(self){return gsap.from(self.words,{yPercent:85,opacity:0,duration:1.05,stagger:.09,ease:'power4.out'})}});
+      SplitText.create(headline,{type:'words',autoSplit:true,onSplit(self){return gsap.from(self.words,{yPercent:85,opacity:0,duration:1.05,stagger:.09,ease:'power4.out'})}});
       gsap.from('.fc-hero-lead',{opacity:0,y:24,duration:.9,delay:.5,ease:'power3.out'});
       gsap.from('.fc-countdown',{opacity:0,y:-18,duration:.8,delay:.25,ease:'power3.out'});
-      return ()=>split.revert();
     }
     gsap.utils.toArray<HTMLElement>('.fc-animate').forEach(el=>gsap.from(el,{opacity:0,y:45,duration:.85,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 90%',once:true}}));
   },root);
