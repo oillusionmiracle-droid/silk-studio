@@ -141,3 +141,20 @@ body:has(.fc-site) .silk-cookie-bar-actions button:last-child{background:#ffffff
  body:has(.fc-site) .silk-cookie-bar-actions{display:flex!important;justify-content:space-between!important}
 }
 @media(prefers-reduced-motion:reduce){.fc-site *,.fc-site *::before,.fc-site *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
+/* Registration confirmation and privacy are deliberately as quiet as the landing page. */
+.fc-success,.fc-privacy{min-height:100svh;background:#080808;color:#ffffff;font-family:'Mograph','Instrument Sans',Arial,sans-serif;padding:clamp(60px,8vw,120px) 24px}
+.fc-success{display:grid;place-items:center;text-align:center}
+.fc-success>div{max-width:730px}
+.fc-success img{width:105px;height:105px;object-fit:contain;margin-bottom:25px}
+.fc-success span,.fc-privacy .fc-overline{display:block;color:#bbbbbb;font-size:12px;letter-spacing:.12em;margin-bottom:25px}
+.fc-success h1,.fc-privacy h1{font-family:'Oddity','Arial Black',Impact,sans-serif;font-size:clamp(60px,9vw,126px);font-weight:800;line-height:.98;letter-spacing:-.065em}
+.fc-success h1 em,.fc-privacy h1 em{font-style:normal}
+.fc-success p{color:#bdbdbd;font-size:16px;line-height:1.7;max-width:540px;margin:32px auto}
+.fc-success a,.fc-privacy .fc-btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:16px 25px;background:white;color:#080808;text-decoration:none;font-size:13px;font-weight:750}
+.fc-privacy-inner{max-width:770px;margin:auto}
+.fc-privacy h1{margin:0 0 26px}
+.fc-privacy h2{margin-top:42px;font-size:27px;letter-spacing:-.04em}
+.fc-privacy p{color:#bdbdbd;font-size:16px;line-height:1.7;margin-top:10px}
+.fc-privacy a:not(.fc-btn){color:#ffffff;text-decoration:underline}
+.fc-privacy .fc-btn{margin-top:40px}
