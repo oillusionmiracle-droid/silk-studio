@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities -- marketing copy uses natural apostrophes */
 'use client';
 
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react';
