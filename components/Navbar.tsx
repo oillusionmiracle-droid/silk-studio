@@ -13,6 +13,7 @@ const navLinks: { label: string; href: string; accent?: string }[] = [
   { label: 'Apparel', href: '/apparel' },
   { label: 'Studio', href: '/studio' },
   { label: 'Moremi', href: '/moremi' },
+  { label: 'Futurecraft', href: '/futurecraft' },
   { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/contact' },
 ];
@@ -42,7 +43,8 @@ export default function Navbar() {
     pathname?.startsWith('/apparel') ||
     pathname?.startsWith('/account') ||
     pathname?.startsWith('/admin') ||
-    pathname?.startsWith('/moremi')
+    pathname?.startsWith('/moremi') ||
+    pathname?.startsWith('/futurecraft')
   ) {
     return null;
   }
