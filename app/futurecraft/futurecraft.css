@@ -66,3 +66,14 @@
 .fc-cookie-bar button:nth-child(2){background:#0565ff;color:white;border-color:#0565ff}.fc-cookie-bar button.fc-cookie-close{width:39px;height:39px;padding:0;font-size:23px;background:transparent;line-height:1}
 @media(max-width:700px){.fc-cookie-bar{flex-direction:column;align-items:stretch;padding:20px;gap:14px}.fc-cookie-bar>div{justify-content:space-between}.fc-cookie-bar button{font-size:11px;padding:12px}.fc-cookie-bar button.fc-cookie-close{margin-left:auto}}
 @media(prefers-color-scheme:dark){.fc-cookie-bar{background:#0b1220;color:#f7fbff;border-color:#29435c}.fc-cookie-bar p{color:#b8c5d8}.fc-cookie-bar button{background:#111e31;color:white;border-color:#30435a}}
+
+/* Pill-first refinement: no stacked rectangular statistic or testimonial blocks */
+.fc-facts{display:flex;flex-direction:column;gap:14px}
+.fc-fact{display:grid;grid-template-columns:minmax(150px,220px) minmax(250px,1fr) minmax(160px,260px);align-items:center;gap:28px;min-height:148px;padding:27px 42px;border-radius:999px}
+.fc-fact strong{font-size:clamp(49px,5vw,71px)}.fc-fact h3{margin:0;max-width:540px;font-size:18px}.fc-fact a{margin:0;line-height:1.5}
+.fc-quote{border:0;border-left:1px solid var(--fc-line);border-radius:0;padding:20px 27px;box-shadow:none}
+.fc-quote:first-child{border-left:0}
+.fc-step{background:transparent;border:0;border-radius:0;padding:20px 10px;min-height:auto}
+.fc-future{border-radius:70px}
+@media(max-width:1050px){.fc-fact{grid-template-columns:150px minmax(180px,1fr);border-radius:55px}.fc-fact a{grid-column:2}.fc-quote{padding:18px}}
+@media(max-width:800px){.fc-fact{display:flex;flex-direction:column;align-items:flex-start;gap:16px;border-radius:42px;min-height:auto;padding:26px}.fc-fact h3{max-width:none}.fc-quotes{gap:0}.fc-quote{border-left:0;border-top:1px solid var(--fc-line);padding:30px 5px}.fc-quote:first-child{border-top:0}.fc-step{border-bottom:1px solid var(--fc-line);padding:20px 0}.fc-future{border-radius:36px}}
