@@ -1,175 +1,128 @@
-/* eslint-disable react/no-unescaped-entities -- natural marketing copy */
 'use client';
 
-import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+import { AnimatePresence, motion } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { SplitText } from 'gsap/SplitText';
-import { ArrowUpRight, ArrowRight, ArrowDown, Check, ChevronDown, Menu, X, CalendarDays, LockKeyhole, PlayCircle } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, Menu, X, ChevronDown } from 'lucide-react';
+import FoldText from './motion/FoldText';
+import TextType from './motion/TextType';
 
-const LOGO = '/futurecraft/mark.svg';
-const deadline = new Date('2026-11-03T00:00:00+01:00').getTime();
-function getTimeLeft() {
-  const n = Math.max(0, deadline - Date.now());
-  return [Math.floor(n / 86400000), Math.floor(n / 3600000) % 24, Math.floor(n / 60000) % 60, Math.floor(n / 1000) % 60];
-}
-function Countdown() {
-  const [time,setTime]=useState<number[]|null>(null);
-  useEffect(()=>{setTime(getTimeLeft());const handle=setInterval(()=>setTime(getTimeLeft()),1000);return()=>clearInterval(handle)},[]);
-  return <div className="fc-countdown" aria-label="Countdown to November third, 2026">
-    <span className="fc-count-label"><span className="fc-live-dot"/>Countdown to Nov 3</span>
-    <span className="fc-time" aria-live="off">{['days','hrs','mins','secs'].map((unit,i)=><span className="fc-tick" key={unit}><strong suppressHydrationWarning>{time ? String(time[i]).padStart(2,'0'):'--'}</strong><small>{unit}</small></span>)}</span>
-  </div>;
-}
-function PillLink({href,children,subtle=false,external=false}:{href:string;children:React.ReactNode;subtle?:boolean;external?:boolean}) {
-  const ref=useRef<HTMLAnchorElement>(null);
-  function move(e:MouseEvent<HTMLAnchorElement>){const el=ref.current;if(!el||matchMedia('(prefers-reduced-motion: reduce)').matches||matchMedia('(pointer:coarse)').matches)return;const b=el.getBoundingClientRect();gsap.to(el,{x:(e.clientX-b.left-b.width/2)*.1,y:(e.clientY-b.top-b.height/2)*.13,duration:.4,ease:'power3.out'});}
-  function leave(){if(ref.current)gsap.to(ref.current,{x:0,y:0,duration:.5,ease:'elastic.out(1,.5)'})}
-  return <a ref={ref} className={'fc-pill '+(subtle?'fc-pill-subtle':'fc-pill-primary')} href={href} onMouseMove={move} onMouseLeave={leave} target={external?'_blank':undefined} rel={external?'noopener noreferrer':undefined}>{children}<ArrowUpRight size={17}/></a>;
-}
-const tracks=[
- {n:'01',title:'Design',desc:'Flyers, brand identities, campaigns and content you’re proud to publish.',kind:'Visual design'},
- {n:'02',title:'Video & motion',desc:'Create and edit videos, tell stories and produce advertisements.',kind:'Creative storytelling'},
- {n:'03',title:'Build',desc:'Go from an idea to apps, playful games and working digital experiences.',kind:'Apps & games'},
- {n:'04',title:'Automate',desc:'Build systems that make everyday business tasks simpler and faster.',kind:'Business workflows'}
-];
-const quotes=[
- {quote:'“I had the idea, made it that same afternoon.”',name:'Christian Ortega',role:'The Original Tamale Co.',url:'https://openai.com/index/small-business-stories/'},
- {quote:'“Now, it’s like, okay, I can do this.”',name:'Rachael Sharp',role:'Sharp & Sharp Certified Seed',url:'https://openai.com/index/small-business-stories/'},
- {quote:'“ChatGPT saved me at least 10 hours of data entry.”',name:'Kevin English',role:'Owner, Keg Built',url:'https://openai.com/index/introducing-chatgpt-small-business-program/'}
+const WarpText = dynamic(() => import('./motion/WarpText'), {ssr: false});
+const tracks = [
+ {title:'Design',description:'Flyers, campaigns, visual identities and social content that look considered—not generated.',detail:'Create'},
+ {title:'Video',description:'Plan, generate, direct and edit moving images, ads and stories with AI.',detail:'Animate'},
+ {title:'Build',description:'From an idea to a working website, playful experience or playable game.',detail:'Develop'},
+ {title:'Automate',description:'Make useful workflows that save time for creators, teams and businesses.',detail:'Simplify'},
 ];
 const faqs=[
- ['Is the Genesis Bootcamp free?','Yes. Genesis 1.0 is free. You don’t need to enter payment information to register.'],
- ['I have never used AI. Can I join?','Yes. This programme starts with the basics and focuses on learning by actually making things.'],
- ['How long is the programme?','Genesis runs for fourteen weeks, with practical two-hour sessions. We’ll email the confirmed class timetable.'],
- ['Is there a student dashboard?','A student portal for recordings, assignments, and progress tracking is planned for a later release.'],
- ['When do classes start?','The exact class start date has not been announced yet. The November 3 countdown marks our next programme milestone, not a confirmed first class.']
+ ['Is Genesis free?', 'Yes. The first Genesis Bootcamp is free. There is no payment required to register.'],
+ ['Can I join without experience?', 'Yes. Genesis is designed for beginners, including people who have never coded or used AI tools before.'],
+ ['How long is the programme?', 'Fourteen weeks, with practical two-hour classes. We will email the confirmed dates and schedule.'],
+ ['How will I join the classes?', 'Register your interest and watch your email for the confirmed timetable, format and community onboarding details.'],
+ ['Will there be a student portal?', 'A student portal for recordings, assignments and progress tracking is planned for a later release.'],
 ];
+function Pill({href,children,ghost=false}: {href:string;children:ReactNode;ghost?:boolean}){
+ return <a className={'fc-pill'+(ghost?' fc-pill-ghost':'')} href={href}>{children}<ArrowUpRight size={18} strokeWidth={1.8}/></a>;
+}
+function Header(){
+ const [open,setOpen]=useState(false),[active,setActive]=useState('Programme');
+ const links=[['Programme','#programme'],['Curriculum','#curriculum'],['Experience','#experience'],['FAQs','#faq']] as const;
+ useEffect(()=>{const f=(e:KeyboardEvent)=>{if(e.key==='Escape')setOpen(false)};window.addEventListener('keydown',f);return()=>window.removeEventListener('keydown',f)},[]);
+ return <header className="fc-header" id="top">
+  <Link href="/futurecraft" className="fc-brand" aria-label="Futurecraft Academy home">
+   <img src="/futurecraft/mark.svg" alt="" width="31" height="31"/>
+   <span>futurecraft<span className="fc-brand-period">.</span></span>
+  </Link>
+  <nav className="fc-desktop-nav" aria-label="Futurecraft navigation">{links.map(([label,href])=><a key={label} href={href} onClick={()=>setActive(label)} className={active===label?'fc-nav-item is-active':'fc-nav-item'}>{active===label&&<motion.span layoutId="fc-active-nav" className="fc-nav-indicator" transition={{type:'spring',stiffness:420,damping:33}}/>}<span>{label}</span></a>)}</nav>
+  <a href="#register" className="fc-header-join">Join Genesis <ArrowUpRight size={16}/></a>
+  <button type="button" className="fc-menu-trigger" aria-label={open?'Close navigation':'Open navigation'} aria-expanded={open} aria-controls="fc-mobile-nav" onClick={()=>setOpen(v=>!v)}>{open?<X size={22}/>:<Menu size={22}/>}</button>
+  <AnimatePresence>{open&&<motion.nav id="fc-mobile-nav" className="fc-mobile-nav" aria-label="Mobile Futurecraft navigation" initial={{opacity:0,height:0,scale:.96}} animate={{opacity:1,height:'auto',scale:1}} exit={{opacity:0,height:0,scale:.96}} transition={{duration:.26,ease:[.25,.1,.25,1]}}>{links.map(([label,href])=><a key={label} href={href} onClick={()=>{setActive(label);setOpen(false)}}>{label}<ArrowUpRight size={16}/></a>)}<a href="#register" onClick={()=>setOpen(false)}>Join Genesis<ArrowUpRight size={16}/></a></motion.nav>}</AnimatePresence>
+ </header>
+}
 function Registration(){
-  const [state,setState]=useState<'idle'|'sending'|'error'|'done'>('idle');
-  const [message,setMessage]=useState('');
-  async function submit(e:FormEvent<HTMLFormElement>){
-    e.preventDefault();
-    if(state==='sending')return;
-    const data=new FormData(e.currentTarget);
-    const payload={name:String(data.get('name')||''),email:String(data.get('email')||''),phone:String(data.get('phone')||''),experience:String(data.get('experience')||''),interest:String(data.get('interest')||''),consent:data.get('consent')==='yes',website_url:String(data.get('website_url')||'')};
-    setState('sending');setMessage('');
-    try {
-      const response=await fetch('/api/futurecraft/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-      const result=await response.json();
-      if(!response.ok)throw new Error(result.error||'Registration is unavailable. Please try again.');
-      if(result.alreadyRegistered){setState('done');setMessage('You are already registered. Watch your inbox for updates.');return;}
-      window.location.assign('/futurecraft/success');
-    } catch(err){setState('error');setMessage(err instanceof Error?err.message:'Please try again.')}
-  }
-  return <form className="fc-form" onSubmit={submit}>
-    <div className="fc-form-top"><h3>Join Genesis 1.0</h3><span>Free to register</span></div>
-    <div className="fc-form-pair">
-      <label>Full name<input name="name" type="text" minLength={2} maxLength={90} autoComplete="name" placeholder="Your name" required/></label>
-      <label>Email address<input name="email" type="email" maxLength={254} autoComplete="email" placeholder="you@example.com" required/></label>
-    </div>
-    <label>WhatsApp number <span>(optional)</span><input name="phone" type="tel" maxLength={28} autoComplete="tel" placeholder="+234"/></label>
-    <div className="fc-form-pair">
-      <label>Experience level<select name="experience" defaultValue="" required><option value="" disabled>Select your level</option><option value="complete_beginner">I'm just starting</option><option value="exploring">I've tried a few tools</option><option value="building">I already build things</option></select></label>
-      <label>What interests you most?<select name="interest" defaultValue="" required><option value="" disabled>Choose an interest</option><option value="design">Design</option><option value="video">Video & motion</option><option value="games">Apps & games</option><option value="automation">Business automation</option><option value="everything">Everything!</option></select></label>
-    </div>
-    <div className="fc-hidden" aria-hidden="true"><label>Website<input name="website_url" tabIndex={-1} autoComplete="off"/></label></div>
-    <label className="fc-check"><input name="consent" type="checkbox" value="yes" required/><span>I agree to receive Genesis registration and programme emails. <Link href="/futurecraft/privacy">Privacy policy</Link>.</span></label>
-    {message&&<p className="fc-form-message" role="alert">{message}</p>}
-    <button className="fc-submit" type="submit" disabled={state==='sending'||state==='done'}>{state==='sending'?'Submitting…':state==='done'?'You’re registered':'Join the community — free'}<ArrowUpRight size={18}/></button>
-    <p className="fc-form-caption">No payment required. Session details will be shared by email.</p>
-  </form>;
+ const [state,setState]=useState<'idle'|'sending'|'done'|'error'>('idle'),[message,setMessage]=useState('');
+ async function submit(e:FormEvent<HTMLFormElement>){
+   e.preventDefault();if(state==='sending')return;
+   const el=e.currentTarget,fd=new FormData(el);
+   const payload={name:String(fd.get('name')||''),email:String(fd.get('email')||''),phone:String(fd.get('phone')||''),experience:String(fd.get('experience')||''),interest:String(fd.get('interest')||''),consent:fd.get('consent')==='yes',website_url:String(fd.get('website_url')||'')};
+   setState('sending');setMessage('');
+   try{
+    const res=await fetch('/api/futurecraft/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const data=await res.json();if(!res.ok)throw new Error(data.error||'We could not register you right now.');
+    if(data.alreadyRegistered){setState('done');setMessage('This email is already registered. Look out for Genesis updates.');return}
+    window.location.assign('/futurecraft/success');
+   }catch(err){setState('error');setMessage(err instanceof Error?err.message:'Please try again.')}
+ }
+ return <form className="fc-form" onSubmit={submit}>
+  <div className="fc-form-grid"><label>Full name<input name="name" type="text" required minLength={2} maxLength={90} autoComplete="name" placeholder="Your name"/></label><label>Email address<input name="email" type="email" required maxLength={254} autoComplete="email" placeholder="you@example.com"/></label></div>
+  <label>WhatsApp number <span className="fc-optional">Optional</span><input name="phone" type="tel" maxLength={28} autoComplete="tel" placeholder="+234…"/></label>
+  <div className="fc-form-grid"><label>Starting point<select name="experience" required defaultValue=""><option value="" disabled>Where are you now?</option><option value="complete_beginner">I'm completely new</option><option value="exploring">I've tried some AI tools</option><option value="building">I've already built something</option></select></label><label>What interests you?<select name="interest" required defaultValue=""><option value="" disabled>Choose an area</option><option value="design">Design</option><option value="video">Video</option><option value="games">Games and apps</option><option value="automation">Automation</option><option value="everything">Everything</option></select></label></div>
+  <div className="fc-hidden-field" aria-hidden="true"><label>Leave blank<input name="website_url" tabIndex={-1} autoComplete="off"/></label></div>
+  <label className="fc-consent"><input type="checkbox" name="consent" value="yes" required/><span>I agree to receive programme and registration emails. <Link href="/futurecraft/privacy" target="_blank">Privacy policy</Link>.</span></label>
+  {message&&<p className={state==='error'?'fc-error':'fc-note'} role="alert">{message}</p>}
+  <button className="fc-form-submit" disabled={state==='sending'||state==='done'} type="submit">{state==='sending'?'Sending…':state==='done'?'You’re registered':'Join Genesis — free'}<ArrowUpRight size={20}/></button>
+  <p className="fc-form-foot">Registration dates, session links and onboarding details will be sent by email.</p>
+ </form>;
 }
 function Newsletter(){
- const [email,setEmail]=useState('');const [state,setState]=useState<'idle'|'loading'|'ok'|'error'>('idle');const [error,setError]=useState('');
- async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();setState('loading');setError('');
- try{const r=await fetch('/api/futurecraft/newsletter',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Please try again later.');setState('ok');}
- catch(e){setState('error');setError(e instanceof Error?e.message:'Please try again later.');}}
- return <form className="fc-newsletter" onSubmit={submit}><label htmlFor="fc-updates-email">Futurecraft updates, straight to your inbox.</label><div><input id="fc-updates-email" type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Your email address" required/><button type="submit" disabled={state==='loading'||state==='ok'} aria-label="Join Futurecraft newsletter">{state==='ok'?'Subscribed':state==='loading'?'Joining…':'Subscribe'}<ArrowUpRight size={17}/></button></div>{state==='error'&&<p role="alert">{error}</p>}{state==='ok'&&<p>You're on the updates list.</p>}</form>;
+ const [email,setEmail]=useState(''),[status,setStatus]=useState<'idle'|'loading'|'done'|'error'>('idle'),[msg,setMsg]=useState('');
+ async function send(e:FormEvent<HTMLFormElement>){
+  e.preventDefault();setStatus('loading');setMsg('');
+  try{const res=await fetch('/api/futurecraft/newsletter',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});const obj=await res.json();if(!res.ok)throw new Error(obj.error||'Try again later.');setStatus('done');setMsg('You’re on the update list.');}
+  catch(err){setStatus('error');setMsg(err instanceof Error?err.message:'Try again later.')}
+ }
+ return <form className="fc-newsletter" onSubmit={send}><label htmlFor="fc-newsletter-email">Get future cohort updates.</label><div className="fc-newsletter-control"><input id="fc-newsletter-email" value={email} onChange={e=>setEmail(e.target.value)} type="email" placeholder="Email address" required/><button type="submit" disabled={status==='loading'||status==='done'} aria-label="Subscribe to Futurecraft updates"><ArrowRight size={21}/></button></div>{msg&&<p role="status">{msg}</p>}</form>;
 }
 export default function FuturecraftLanding(){
- const root=useRef<HTMLDivElement>(null);
- const [menu,setMenu]=useState(false),[faq,setFaq]=useState<number|null>(0);
+ const ref=useRef<HTMLDivElement>(null),[faq,setFaq]=useState<number|null>(0);
  useEffect(()=>{
-  if(!root.current||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  gsap.registerPlugin(ScrollTrigger,SplitText);
+  if(!ref.current||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  gsap.registerPlugin(ScrollTrigger);
   const ctx=gsap.context(()=>{
-    const headline=document.querySelector('.fc-hero h1');
-    if(headline){
-      SplitText.create(headline,{type:'words',autoSplit:true,onSplit(self){return gsap.from(self.words,{yPercent:85,opacity:0,duration:1.05,stagger:.09,ease:'power4.out'})}});
-      gsap.from('.fc-hero-lead',{opacity:0,y:24,duration:.9,delay:.5,ease:'power3.out'});
-      gsap.from('.fc-countdown',{opacity:0,y:-18,duration:.8,delay:.25,ease:'power3.out'});
-    }
-    gsap.utils.toArray<HTMLElement>('.fc-animate').forEach(el=>gsap.from(el,{opacity:0,y:45,duration:.85,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 90%',once:true}}));
-  },root);
-  return()=>ctx.revert();
+   gsap.from('.fc-hero-intro', {y:25,opacity:0,duration:.85,ease:'power3.out',delay:.15});
+   gsap.from('.fc-hero-copy, .fc-hero-actions',{opacity:0,y:24,stagger:.13,duration:.8,ease:'power3.out',delay:.4});
+   gsap.utils.toArray<HTMLElement>('.fc-reveal').forEach(el=>gsap.from(el,{y:26,opacity:0,duration:.85,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 92%',once:true}}));
+  },ref);return()=>ctx.revert();
  },[]);
- useEffect(()=>{if(!menu)return;const fn=(e:KeyboardEvent)=>{if(e.key==='Escape')setMenu(false)};window.addEventListener('keydown',fn);return()=>window.removeEventListener('keydown',fn)},[menu]);
- return <div className="fc-site" ref={root}>
-  <a className="fc-skip" href="#fc-content">Skip to content</a>
-  <header className="fc-header">
-   <Link href="/futurecraft" className="fc-brand" aria-label="Futurecraft"><img src={LOGO} width="43" height="40" alt=""/><span>futurecraft<span className="fc-mark">.</span></span></Link>
-   <nav className={'fc-nav '+(menu?'fc-nav-open':'')} aria-label="Main navigation">
-    <a onClick={()=>setMenu(false)} href="#opportunity">The opportunity</a>
-    <a onClick={()=>setMenu(false)} href="#tracks">What you'll learn</a>
-    <a onClick={()=>setMenu(false)} href="#stories">Real stories</a>
-    <a onClick={()=>setMenu(false)} href="#cohorts">Cohorts</a>
-   </nav>
-   <a href="#register" className="fc-header-cta">Join Genesis <ArrowUpRight size={17}/></a>
-   <button className="fc-menu" type="button" onClick={()=>setMenu(!menu)} aria-expanded={menu} aria-label={menu?'Close navigation':'Open navigation'}>{menu?<X/>:<Menu/>}</button>
-  </header>
-  <main id="fc-content">
-   <section className="fc-hero">
-    <Countdown/>
-    <div className="fc-hero-text">
-      <div className="fc-hero-tag">Futurecraft Academy <span>✳</span> First free cohort</div>
-      <h1>Introducing the <strong>Genesis<br/>Bootcamp <i>1.0</i></strong></h1>
-      <p className="fc-hero-lead">Join a community of creators and builders learning to design, develop, animate and automate with AI. Start from scratch. Build something real.</p>
-      <div className="fc-hero-actions fc-hero-lead"><PillLink href="#register">Join Genesis for free</PillLink><a className="fc-text-link" href="#opportunity">See why it matters <ArrowDown size={18}/></a></div>
-      <div className="fc-hero-mini fc-hero-lead"><span>14 weeks</span><span>2-hour practical sessions</span><span>Beginner-friendly</span></div>
+ return <div ref={ref} className="fc-site">
+  <a className="fc-skip" href="#fc-main">Skip to content</a>
+  <Header/>
+  <main id="fc-main">
+   <section className="fc-hero" aria-labelledby="fc-title">
+    <div className="fc-hero-main">
+     <div className="fc-hero-intro"><FoldText text="Introducing the" foldStyle="paper" splitBy="word" hinge="top" trigger="mount" duration={.8} stagger={.12} creaseShading={.26} fontSize="clamp(1.3rem, 2.2vw, 2.2rem)" fontWeight={500}/></div>
+     <h1 id="fc-title"><span className="fc-visually-hidden">Introducing the Genesis Bootcamp 1.0</span><span className="fc-hero-warp" aria-hidden="true"><WarpText text={'Genesis\nBootcamp'} fontFamily="var(--fc-display)" fontSize="clamp(4.5rem, 11vw, 11.6rem)" color="#1763f6" fontWeight={850} letterSpacing="-.07em" lineHeight={.86} warpStrength={.07} warpScale={1.7} speed={.55} lens="pinch" pointerInfluence={.42} pointerStrength={.38} refraction={.018} chromatic={.3} idleDrift={.14} intro ripple clickRipple style={{height:'clamp(250px,34vw,470px)'}}/></span></h1>
+     <span className="fc-version">1.0</span>
+     <p className="fc-hero-copy">Join a community of creators and builders learning to design, develop, animate and automate with AI. Start from scratch. Build something real.</p>
+     <div className="fc-hero-actions"><Pill href="#register">Join the bootcamp — free</Pill><Pill href="#curriculum" ghost>Explore the programme</Pill></div>
     </div>
-    <div className="fc-hero-photo fc-animate"><img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1800&q=85" alt="A group of creators collaborating around a table" loading="eager"/></div>
+    <a href="#programme" className="fc-scroll-cue" aria-label="Scroll to programme"><span>Discover Genesis</span><ArrowRight size={18}/></a>
    </section>
-   <section className="fc-section fc-opportunity" id="opportunity">
-    <div className="fc-section-heading fc-animate"><h2>There’s real opportunity<br/><em>in what you make.</em></h2><p>AI is changing how people create, work and run businesses. The opportunity isn’t a promise of instant income. It’s learning useful skills and putting them to work.</p></div>
-    <div className="fc-facts">
-      <article className="fc-fact fc-animate"><strong>50<span>%</span></strong><h3>of surveyed freelancers reported earning more per project with AI.</h3><a href="https://s3.amazonaws.com/press.freelancer.com/Generative%20AI%20Is%20Boosting%20Freelancers%20Pay%2C%20Finds%20Global%20Survey.docx.pdf" target="_blank" rel="noopener noreferrer">Freelancer.com survey, 2024 <ArrowUpRight size={15}/></a></article>
-      <article className="fc-fact fc-fact-blue fc-animate"><strong>92<span>%</span></strong><h3>of AI practitioners surveyed reported improved productivity.</h3><a href="https://www.stateof.ai/2025-explore/survey" target="_blank" rel="noopener noreferrer">State of AI practitioner survey, 2025 <ArrowUpRight size={15}/></a></article>
-      <article className="fc-fact fc-animate"><strong>$2.6<span>T+</span></strong><h3>estimated global annual economic potential from generative AI use cases.</h3><a href="https://www.mckinsey.com/capabilities/tech-and-ai/our-insights/the-economic-potential-of-generative-ai-the-next-productivity-frontier" target="_blank" rel="noopener noreferrer">McKinsey estimate, not individual earnings <ArrowUpRight size={15}/></a></article>
+   <section className="fc-section fc-overview" id="programme">
+    <div className="fc-section-inner fc-overview-grid"><div className="fc-reveal"><span className="fc-eyebrow">The programme</span><h2>Not another<br/><i>tutorial playlist.</i></h2></div><div className="fc-overview-copy fc-reveal"><p>Genesis is Futurecraft Academy’s first free bootcamp. Fourteen weeks of learning through making, with other beginners beside you.</p><p>No previous coding experience required. Just curiosity and the willingness to start.</p><div className="fc-detail-row"><span>14 weeks</span><span>Practical two-hour classes</span><span>Free</span></div></div></div>
+   </section>
+   <section className="fc-section fc-curriculum" id="curriculum"><div className="fc-section-inner">
+    <div className="fc-section-heading fc-reveal"><div><span className="fc-eyebrow">What you’ll learn</span><h2>Find your<br/><i>way to make.</i></h2></div><p>Four directions. Real projects. Skills you can carry into your own ideas.</p></div>
+    <div className="fc-track-list">{tracks.map((track,i)=><article key={track.title} className="fc-track fc-reveal"><span className="fc-track-index">0{i+1}</span><div className="fc-track-main"><h3>{track.title}</h3><p>{track.description}</p></div><span className="fc-track-end">{track.detail}<ArrowUpRight size={20}/></span></article>)}</div>
+   </div></section>
+   <section className="fc-section fc-experience" id="experience"><div className="fc-section-inner fc-experience-grid">
+    <div className="fc-reveal"><span className="fc-eyebrow">How it works</span><h2>Learn it.<br/>Try it.<br/><i>Make it.</i></h2></div>
+    <div className="fc-experience-content fc-reveal"><p>Sessions are made for doing. Follow along, ask questions, make mistakes, learn from people already building with AI, and leave with work you can show.</p><div className="fc-experience-line">Learn alongside other beginners</div><div className="fc-experience-line">Get feedback on your projects</div><div className="fc-experience-line">Meet working AI creators</div>
+    <div className="fc-typed-line"><TextType text={['Ideas become projects.','Beginners become makers.','Small starts become real work.']} typingSpeed={55} deletingSpeed={36} pauseDuration={2000} cursorStyle="bar" typeEffect="fade" showCursor cursorGlide /></div>
     </div>
-    <p className="fc-source-note">Survey findings are self-reported and are not promises of income or outcomes from Genesis.</p>
-   </section>
-   <section className="fc-section fc-stories" id="stories">
-    <div className="fc-section-heading fc-animate"><h2>AI is already changing<br/><em>the way people work.</em></h2><p>Real experiences published by businesses and creators—not testimonials from Genesis students.</p></div>
-    <div className="fc-quotes">
-      {quotes.map((q,i)=><article className="fc-quote fc-animate" key={q.name}><span className="fc-quote-mark">“</span><blockquote>{q.quote}</blockquote><div className="fc-quote-person"><div><strong>{q.name}</strong><span>{q.role}</span></div><a href={q.url} aria-label={'Read '+q.name+' story'} target="_blank" rel="noopener noreferrer"><ArrowUpRight size={20}/></a></div></article>)}
-    </div>
-   </section>
-   <section className="fc-section fc-tracks" id="tracks">
-    <div className="fc-section-heading fc-animate"><h2>Learn it.<br/><em>Then make it.</em></h2><p>Four creative directions. Practical work. A community to grow with.</p></div>
-    <div className="fc-track-list">{tracks.map(t=><div className="fc-track fc-animate" key={t.n}><span className="fc-track-number">{t.n}</span><div><h3>{t.title}</h3><p>{t.desc}</p></div><span className="fc-track-tag">{t.kind}</span><ArrowUpRight className="fc-track-arrow" size={26}/></div>)}</div>
-    <div className="fc-project-images fc-animate">
-       <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=85" alt="Team collaborating on their digital projects" loading="lazy"/>
-       <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=85" alt="Working development workspace with laptop" loading="lazy"/>
-    </div>
-   </section>
-   <section className="fc-section fc-how">
-    <div className="fc-section-heading fc-animate"><h2>Start at zero.<br/><em>Make your first thing.</em></h2><p>Two-hour practical sessions, project feedback and makers learning side by side. No endless lecture marathons.</p></div>
-    <div className="fc-steps">{[['01','Join','Register and receive a confirmation and welcome email.'],['02','Create','Learn the tools by building hands-on projects.'],['03','Share','Improve your work, get feedback and keep growing.']].map(([n,t,d])=><div className="fc-step fc-animate" key={n}><span>{n}</span><h3>{t}</h3><p>{d}</p></div>)}</div>
-   </section>
-   <section className="fc-section fc-cohorts" id="cohorts">
-     <div className="fc-section-heading fc-animate"><h2>What’s coming next?</h2><p>Genesis is just the beginning. We’re laying the foundation for future cohorts and a student portal.</p></div>
-     <div className="fc-future-grid"><article className="fc-future fc-animate"><div className="fc-future-icon"><CalendarDays size={25}/></div><div><h3>Genesis 1.0</h3><p>Fourteen weeks · Free cohort</p><p>Next milestone: 3 November 2026. Class start date will be confirmed by email.</p></div><a href="#register" className="fc-future-link">Get updates <ArrowUpRight size={17}/></a></article>
-     <article className="fc-future fc-animate"><div className="fc-future-icon"><LockKeyhole size={25}/></div><div><h3>Student portal <span className="fc-soon">Coming later</span></h3><p>One place for class recordings, assignments, progress tracking and resources.</p></div></article></div>
-   </section>
-   <section className="fc-section fc-join" id="register">
-    <div className="fc-join-copy fc-animate"><img src={LOGO} width="70" height="65" alt=""/><h2>Ready to build<br/><em>with us?</em></h2><p>Your first project starts with showing up. Genesis 1.0 is free and built for beginners.</p></div>
-    <Registration/>
-   </section>
-   <section className="fc-section fc-news-section"><div className="fc-news-copy"><h2>A little more<br/><em>Futurecraft.</em></h2><p>Updates on cohorts, experiments and things we’re building. No clutter.</p></div><Newsletter/></section>
-   <section className="fc-section fc-faq" id="faq"><div className="fc-section-heading fc-animate"><h2>Good questions.</h2></div><div className="fc-faq-list">{faqs.map(([q,a],i)=><div className="fc-faq-row" key={q}><button type="button" aria-expanded={faq===i} onClick={()=>setFaq(faq===i?null:i)}><span>{q}</span><ChevronDown size={22} className={faq===i?'fc-rotate':''}/></button>{faq===i&&<p>{a}</p>}</div>)}</div></section>
+   </div></section>
+   <section className="fc-section fc-next"><div className="fc-section-inner fc-next-inner">
+    <div className="fc-reveal"><span className="fc-eyebrow">What comes next</span><h2>Genesis is<br/><i>just the start.</i></h2></div>
+    <div className="fc-next-content fc-reveal"><p>The first programme runs for 14 weeks. The exact start date and class format will be confirmed by email.</p><p>A student portal with recordings, assignments and progress tracking is planned for a later release.</p><Pill href="#register">Join the first cohort</Pill></div>
+   </div></section>
+   <section className="fc-section fc-register" id="register"><div className="fc-section-inner fc-register-grid">
+    <div className="fc-reveal"><span className="fc-eyebrow">Your first step</span><h2>Let’s build<br/><i>something.</i></h2><p>Genesis 1.0 is free and open to beginners. Leave your details and we’ll keep you posted on what happens next.</p></div><Registration/>
+   </div></section>
+   <section className="fc-section fc-final-section" id="faq"><div className="fc-section-inner fc-faq-grid"><div className="fc-reveal"><h2>Questions?<br/><i>Good.</i></h2><Newsletter/></div><div className="fc-faq-list">{faqs.map(([question,answer],i)=><div key={question} className="fc-faq"><button type="button" aria-expanded={faq===i} onClick={()=>setFaq(faq===i?null:i)}>{question}<ChevronDown className={faq===i?'fc-faq-chevron is-open':'fc-faq-chevron'} size={19}/></button><AnimatePresence initial={false}>{faq===i&&<motion.div initial={{height:0,opacity:0}} animate={{height:'auto',opacity:1}} exit={{height:0,opacity:0}} transition={{duration:.22}} className="fc-faq-answer"><p>{answer}</p></motion.div>}</AnimatePresence></div>)}</div></div></section>
   </main>
-  <footer className="fc-footer"><div className="fc-footer-brand"><img src={LOGO} alt="" width="49" height="47"/><strong>futurecraft.</strong></div><div><span>A creative technology academy.</span><p>Learn the future by making it.</p></div><nav><a href="/futurecraft/privacy">Privacy</a><a href="#register">Join Genesis</a><a href="#top" onClick={e=>{e.preventDefault();window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}}>Back to top ↑</a></nav></footer>
+  <footer className="fc-footer"><Link href="/futurecraft" className="fc-footer-brand"><img src="/futurecraft/mark.svg" width="34" height="34" alt=""/><span>futurecraft.</span></Link><p>Learn the future by making it.</p><div className="fc-footer-links"><Link href="/futurecraft/privacy">Privacy</Link><a href="#top">Back to top ↑</a></div></footer>
  </div>;
 }
