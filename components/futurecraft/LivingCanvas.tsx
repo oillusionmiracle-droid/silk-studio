@@ -82,8 +82,8 @@ export default function LivingCanvas() {
     drift.current.forEach(tween => next || root.current?.dataset.scrolling === 'true' ? tween.pause() : tween.resume());
   }
 
-  return <section ref={root} className="lc-hero" aria-labelledby="lc-title" data-paused={paused}>
-    <noscript><style>{`.lc-content .fold-text-piece,.lc-content .fold-text-slat{opacity:1!important}.lc-content .fold-text-slat[data-fold-slat="b"]{display:none}.lc-hero{height:auto}.lc-motion{display:none}`}</style></noscript>
+  return <section ref={root} className="lc-hero no-pad" aria-labelledby="lc-title" data-paused={paused}>
+    <noscript><style>{`.lc-content .fold-text-piece,.lc-content .fold-text-slat{opacity:1!important}.lc-content .fold-text-slat[data-fold-slat="b"]{display:none}.fc-site .lc-hero{height:auto}.lc-motion{display:none}`}</style></noscript>
     <div className="lc-stage">
       <div className="lc-canvas" aria-hidden="true">
         {artwork.map(([name, alt], index) => <div className={`lc-artwork lc-artwork-${index}`} key={name}>

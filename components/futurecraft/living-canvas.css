@@ -2,7 +2,7 @@
 @font-face{font-family:Futurecraft Anton;src:url('/futurecraft/fonts/Anton-Regular.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
 
 /* The canvas owns its geometry: artwork never crosses the central reading area. */
-.lc-hero{position:relative;height:calc(170svh - 88px);background:#000;font-family:Futurecraft Mograph,sans-serif}
+.fc-site .lc-hero{position:relative;height:calc(170svh - 88px);padding:0;background:#000;font-family:Futurecraft Mograph,sans-serif}
 .lc-stage{height:calc(100svh - 88px);min-height:720px;position:sticky;top:0;isolation:isolate;overflow:hidden;background:#000}
 .lc-canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
 .lc-artwork{position:absolute;overflow:visible;transform-origin:center}
@@ -37,7 +37,7 @@
 .fc-header:has(+main .lc-hero) .fc-header-join{font-weight:400}
 @media(min-width:1700px){.lc-content{width:1300px}}
 @media(max-width:1000px) and (min-width:700px){.lc-content{width:88%}.lc-artwork-2{left:-9%}.lc-artwork-3{left:94%}.lc-artwork-0{width:16%}.lc-artwork-1{width:14%}}
-@media(max-width:790px){.lc-hero{height:calc(175svh - 72px)}.lc-stage{height:calc(100svh - 72px)}.fc-header:has(+main .lc-hero) .fc-brand{font-size:20px}.fc-header:has(+main .lc-hero) .fc-brand img{width:31px;height:31px}.fc-header:has(+main .lc-hero){padding-inline:20px}}
+@media(max-width:790px){.fc-site .lc-hero{height:calc(175svh - 72px)}.lc-stage{height:calc(100svh - 72px)}.fc-header:has(+main .lc-hero) .fc-brand{font-size:20px}.fc-header:has(+main .lc-hero) .fc-brand img{width:31px;height:31px}.fc-header:has(+main .lc-hero){padding-inline:20px}}
 @media(max-width:699px){
  .lc-stage{min-height:680px}.lc-content{width:94%;top:49%}
  .fc-site .lc-content h1{font-size:16.7vw;line-height:1.08;letter-spacing:-.025em}
@@ -46,12 +46,12 @@
  .fc-site .lc-cohort{font-size:10px;margin-top:19px}
  .lc-artwork-0{left:-3%;top:4%;width:29%;height:20%;transform:rotate(-12deg)}
  .lc-artwork-1{left:77%;top:2%;width:25%;height:21%;transform:rotate(13deg)}
- .lc-artwork-2{left:-17%;top:24%;width:22%;height:17%}
- .lc-artwork-3{left:95%;top:32%;width:25%;height:21%}
+ .lc-artwork-2{left:-17%;top:24%;width:22%;height:17%;opacity:0}
+ .lc-artwork-3{left:95%;top:32%;width:25%;height:21%;opacity:0}
  .lc-artwork-4{left:0%;top:77%;width:40%;height:17%;transform:rotate(8deg)}
  .lc-artwork-5{left:67%;top:76%;width:39%;height:18%;transform:rotate(-10deg)}
  .lc-artwork-6{left:35%;top:-7%;width:31%;height:17%;transform:rotate(5deg)}
- .lc-artwork-7{left:40%;top:93%;width:35%;height:15%}
+ .lc-artwork-7{left:40%;top:98%;width:35%;height:15%;opacity:0}
  .lc-scroll{left:20px;bottom:17px;font-size:10px;gap:8px}.lc-motion{right:20px;bottom:12px;width:30px;height:30px}
 }
-@media(prefers-reduced-motion:reduce){.lc-hero{height:auto}.lc-stage{position:relative}.lc-motion{display:none}.lc-actions a{transition:none}.lc-content .fold-text-piece,.lc-content .fold-text-slat{opacity:1!important}.lc-content .fold-text-slat[data-fold-slat='b']{display:none}}
+@media(prefers-reduced-motion:reduce){.fc-site .lc-hero{height:auto}.lc-stage{position:relative}.lc-motion{display:none}.lc-actions a{transition:none}.lc-content .fold-text-piece,.lc-content .fold-text-slat{opacity:1!important}.lc-content .fold-text-slat[data-fold-slat='b']{display:none}}
