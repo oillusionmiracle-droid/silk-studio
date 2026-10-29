@@ -6,6 +6,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowUpRight, ArrowRight, Menu, X, Plus, Minus } from 'lucide-react';
 import LivingCanvas from './LivingCanvas';
+import MakePlayground from './MakePlayground';
 
 type Lab = { name: string; description: string };
 const labs: Lab[] = [
@@ -43,9 +44,9 @@ function Header() {
  return <header className="fc-header" id="top">
   <Link href="/futurecraft" className="fc-brand" aria-label="Futurecraft Academy home"><img src="/futurecraft/mark.svg" width="38" height="38" alt=""/><span>futurecraft<span className="fc-brand-dot">.</span></span></Link>
   <nav className="fc-desktop-nav" aria-label="Main navigation">{nav.map(([name,href])=><a href={href} key={name}>{name}</a>)}</nav>
-  <a className="fc-header-join" href="#register">Join Genesis <ArrowUpRight size={16} aria-hidden="true"/></a>
+  <a className="fc-header-join" href="#register">Join Genesis</a>
   <button type="button" className="fc-menu-trigger" aria-controls="fc-mobile-nav" aria-expanded={open} aria-label={open?'Close navigation':'Open navigation'} onClick={()=>setOpen(!open)}>{open?<X size={22}/>:<Menu size={22}/>}</button>
-  {open&&<nav id="fc-mobile-nav" className="fc-mobile-nav" aria-label="Mobile navigation">{nav.map(([name,href])=><a key={name} href={href} onClick={()=>setOpen(false)}>{name}<ArrowUpRight size={17}/></a>)}<a href="#register" onClick={()=>setOpen(false)}>Join Genesis<ArrowUpRight size={17}/></a></nav>}
+  {open&&<nav id="fc-mobile-nav" className="fc-mobile-nav" aria-label="Mobile navigation">{nav.map(([name,href])=><a key={name} href={href} onClick={()=>setOpen(false)}>{name}<ArrowUpRight size={17}/></a>)}<a href="#register" onClick={()=>setOpen(false)}>Join Genesis</a></nav>}
  </header>;
 }
 
@@ -71,7 +72,7 @@ function Registration(){
   <div className="fc-hidden-field" aria-hidden="true"><label>Do not fill<input name="website_url" tabIndex={-1} autoComplete="off"/></label></div>
   <label className="fc-consent"><input type="checkbox" name="consent" value="yes" required/><span>I agree to receive Genesis registration and programme emails. <Link href="/futurecraft/privacy" target="_blank">Privacy details</Link>.</span></label>
   {message&&<p className={state==='error'?'fc-error':'fc-note'} role="alert">{message}</p>}
-  <button type="submit" className="fc-form-submit" disabled={state==='sending'||state==='done'}>{state==='sending'?'Sending…':state==='done'?'You’re registered':'Join Genesis — free'} <ArrowUpRight size={19}/></button>
+  <button type="submit" className="fc-form-submit" disabled={state==='sending'||state==='done'}>{state==='sending'?'Sending…':state==='done'?'You’re registered':'Join Genesis — free'}</button>
   <p className="fc-form-foot">We’ll send the confirmed timetable and class details when they’re ready.</p>
  </form>;
 }
@@ -100,10 +101,11 @@ export default function FuturecraftLanding(){
   <Header/>
   <main id="fc-main">
    <LivingCanvas/>
+   <MakePlayground/>
    <section className="fc-section fc-about" id="about"><div className="fc-section-inner fc-about-layout"><div className="fc-reveal"><h2>Learn by<br/><em>making.</em></h2></div><div className="fc-about-copy fc-reveal"><p>Futurecraft is a creative technology academy built around one simple belief: the best way to understand a tool is to use it to make something.</p><p>Genesis is our first free, 14-week bootcamp. You’ll learn alongside other beginners, work on practical projects, and meet creators who use these skills in the real world.</p><div className="fc-about-details"><span>Free first cohort</span><span>14 weeks</span><span>Two-hour practical sessions</span></div></div></div></section>
    <section className="fc-section fc-labs" id="labs"><div className="fc-section-inner">
     <div className="fc-labs-heading fc-reveal"><div><p className="fc-section-kicker">The Futurecraft experience</p><h2>Inside<br/><em>the Labs.</em></h2></div><p>Not just courses to complete. Sessions to explore, experiment, build and share.</p></div>
-    <div className="fc-labs-list">{labs.map((lab,i)=><article key={lab.name} className="fc-lab fc-reveal"><span className="fc-lab-number">{String(i+1).padStart(2,'0')}</span><h3>{lab.name}</h3><p>{lab.description}</p></article>)}</div>
+    <div className="fc-labs-list">{labs.map((lab,i)=><article key={lab.name} id={`lab-${lab.name === 'Prompt & Paint' ? 'prompt-paint' : lab.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}`} className="fc-lab fc-reveal"><span className="fc-lab-number">{String(i+1).padStart(2,'0')}</span><h3>{lab.name}</h3><p>{lab.description}</p></article>)}</div>
     <p className="fc-labs-foot">The Genesis schedule will announce which Labs run during the first cohort.</p>
    </div></section>
    <section className="fc-section fc-experience" id="experience"><div className="fc-section-inner">

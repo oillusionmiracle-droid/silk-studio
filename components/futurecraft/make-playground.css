@@ -1,0 +1,33 @@
+.fc-site .make-section{padding:100px max(24px,6vw) 95px;background:#000;position:relative}
+.make-inner{max-width:1400px;margin:auto}
+.make-heading{display:flex;align-items:end;justify-content:space-between;gap:30px;margin-bottom:60px}
+.fc-site .make-heading h2{font:400 clamp(80px,9vw,142px)/.9 'Futurecraft Movault',sans-serif;letter-spacing:0}
+.fc-site .make-heading>p{color:#ccc;font-size:18px;line-height:1.6;padding-bottom:6px}
+.make-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
+.make-choice{position:relative;appearance:none;background:transparent;border:0;color:#fff;padding:0 0 20px;text-align:left;cursor:pointer;min-width:0;-webkit-tap-highlight-color:transparent}
+.make-image{display:block;position:relative;overflow:hidden;border-radius:32px;aspect-ratio:4/5;background:transparent;transform:translateZ(0);isolation:isolate}
+.make-image img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.7,.2,1);mask-image:linear-gradient(#000 55%,#000c 73%,transparent 100%);-webkit-mask-image:linear-gradient(#000 55%,#000c 73%,transparent 100%)}
+.make-image:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(135deg,#ffffff14,transparent 35%,#7e3bed0a 70%,#ffffff05);box-shadow:inset 0 1px 1px #ffffff65,inset 1px 0 0 #ffffff24,inset -1px 0 0 #ffffff12;mask-image:linear-gradient(#000 40%,transparent 100%)}
+.make-glass-edge{position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 0 1px #ffffff15;opacity:.65;mask-image:linear-gradient(#000 45%,transparent 100%)}
+.make-choice-name{position:relative;display:block;font-size:clamp(16px,1.6vw,23px);font-weight:700;letter-spacing:-.035em;line-height:1.2;margin-top:5px;padding:0 6px}
+.make-selected{display:block;height:3px;width:24px;background:#7e3bed;border-radius:99px;margin:17px 6px 0;transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.make-choice[aria-selected=true] .make-selected{transform:scaleX(1)}
+.make-choice[aria-selected=true] .make-image:after{box-shadow:inset 0 1px 1px #ffffff85,inset 1px 0 0 #af83ff88,inset -1px 0 0 #7e3bed66}
+.make-choice[aria-selected=true] .make-choice-name{color:#c8adff}
+@media(hover:hover){.make-choice:hover .make-image img{transform:scale(1.035)}.make-choice:hover .make-choice-name{color:#d6c5fa}}
+.make-choice:active .make-image{transform:scale(.985)}
+.make-project{min-height:175px;display:flex;align-items:center;justify-content:space-between;gap:60px;margin-top:30px;padding:28px 6px 0}
+.make-project-copy{max-width:720px}
+.fc-site .make-project h3{font-family:'Futurecraft Colasta',sans-serif;font-size:clamp(25px,2.8vw,38px);line-height:1.15;font-weight:700;letter-spacing:-.035em}
+.fc-site .make-project p{font-size:16px;line-height:1.7;color:#b7b2c0;margin-top:17px;max-width:640px}
+.fc-site .make-lab{white-space:nowrap;flex-shrink:0;padding:15px 25px;border-radius:999px;min-height:50px;color:#fff;background:#7e3bedb8;backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);box-shadow:inset 0 1px 1px #ffffff68,inset 0 0 0 1px #d8bdff55,0 7px 24px #4f1d9d26;font-size:14px;transition:background .25s,transform .25s}
+.make-lab:hover{background:#8e50ef}.make-lab:active{transform:scale(.97)}
+.fc-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:900px){.make-grid{gap:14px}.make-heading{margin-bottom:42px}.make-project{gap:30px}.make-lab{padding:14px 20px!important}}
+@media(max-width:699px){
+ .fc-site .make-section{padding:75px 20px 65px}.make-heading{display:block;margin-bottom:34px}.fc-site .make-heading h2{font-size:26vw;line-height:.9}.fc-site .make-heading>p{font-size:16px;line-height:1.5;margin-top:23px}.make-heading>p br{display:none}
+ .make-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:23px 13px}.make-image{border-radius:26px;aspect-ratio:4/5}.make-choice{padding-bottom:0}.make-choice-name{font-size:16px;padding:0 2px;margin-top:4px;min-height:39px}.make-selected{margin:10px 2px 0}
+ .make-project{display:block;min-height:275px;margin-top:30px;padding:17px 2px 0}.fc-site .make-project h3{font-size:27px;max-width:310px}.fc-site .make-project p{font-size:15px;margin-top:14px}.make-lab{display:inline-flex;margin-top:25px;align-items:center;font-size:13px!important}
+}
+@media(prefers-reduced-motion:reduce){.make-choice *,.make-lab{transition:none!important}}
+@supports not (backdrop-filter:blur(1px)){.fc-site .make-lab{background:#7e3bed}}
