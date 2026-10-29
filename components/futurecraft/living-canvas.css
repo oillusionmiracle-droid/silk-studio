@@ -1,0 +1,57 @@
+@font-face{font-family:Futurecraft Mograph;src:url('/futurecraft/fonts/Mograph.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:Futurecraft Anton;src:url('/futurecraft/fonts/Anton-Regular.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
+
+/* The canvas owns its geometry: artwork never crosses the central reading area. */
+.lc-hero{position:relative;height:calc(170svh - 88px);background:#000;font-family:Futurecraft Mograph,sans-serif}
+.lc-stage{height:calc(100svh - 88px);min-height:720px;position:sticky;top:0;isolation:isolate;overflow:hidden;background:#000}
+.lc-canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
+.lc-artwork{position:absolute;overflow:visible;transform-origin:center}
+.lc-artwork-intro,.lc-artwork-drift{width:100%;height:100%}
+.lc-artwork img{width:100%;height:100%;display:block;object-fit:cover;border-radius:3px}
+.lc-artwork-0{left:7%;top:5%;width:12%;height:25%;transform:rotate(-12deg)}
+.lc-artwork-1{left:81%;top:3%;width:11%;height:26%;transform:rotate(10deg)}
+.lc-artwork-2{left:-5%;top:39%;width:18%;height:23%;transform:rotate(9deg)}
+.lc-artwork-3{left:90%;top:37%;width:15%;height:30%;transform:rotate(-9deg)}
+.lc-artwork-4{left:12%;top:76%;width:19%;height:21%;transform:rotate(8deg)}
+.lc-artwork-5{left:72%;top:76%;width:19%;height:23%;transform:rotate(-10deg)}
+.lc-artwork-6{left:33%;top:-13%;width:16%;height:26%;transform:rotate(9deg)}
+.lc-artwork-7{left:51%;top:91%;width:17%;height:20%;transform:rotate(-7deg)}
+.lc-content{position:absolute;z-index:2;left:50%;top:49%;transform:translate(-50%,-50%);width:76%;text-align:center}
+.fc-site .lc-content h1{font-family:Futurecraft Anton,sans-serif;font-weight:400;font-size:clamp(80px,11.5vw,180px);line-height:1.04;letter-spacing:-.025em;margin:0}
+.lc-content h1>.fold-text{display:block;font-family:inherit;font-size:inherit;line-height:inherit;letter-spacing:inherit;white-space:nowrap}
+.lc-content h1 .fold-text-piece::after,.lc-content h1 .fold-text-slat::after{display:none}
+.fc-site .lc-subtitle{font-family:Futurecraft Mograph,sans-serif;font-size:clamp(18px,1.8vw,27px);line-height:1.4;color:#fff;margin:28px 0 0}
+.lc-actions{margin-top:27px;display:flex;justify-content:center;align-items:center;gap:12px}
+.lc-actions a{height:52px;display:inline-flex;align-items:center;justify-content:center;gap:25px;border-radius:999px;padding:0 25px;font-size:14px;transition:background .2s,transform .2s}
+.fc-site .lc-join{background:#fff;color:#000}
+.lc-join:hover{background:#ddd;transform:translateY(-2px)}
+.lc-explore{border:1px solid #696969;color:#fff}
+.lc-explore:hover{background:#202020;transform:translateY(-2px)}
+.fc-site .lc-cohort{font-size:12px;line-height:1.5;color:#aaa;margin:21px 0 0}
+.lc-scroll{position:absolute;bottom:25px;left:35px;z-index:3;display:flex;align-items:center;gap:12px;font-size:12px;color:#bbb!important}
+.lc-motion{position:absolute;bottom:20px;right:32px;z-index:3;border:1px solid #555;border-radius:50%;width:36px;height:36px;background:#000;color:#fff;display:grid;place-items:center;cursor:pointer}
+.fc-header:has(+main .lc-hero){background:#000;border-bottom:0;font-family:Futurecraft Mograph,sans-serif}
+.fc-header:has(+main .lc-hero) .fc-brand{font-family:Futurecraft Mograph,sans-serif;font-size:23px;letter-spacing:-.05em;font-weight:400}
+.fc-header:has(+main .lc-hero) .fc-brand-dot{color:#fff}
+.fc-header:has(+main .lc-hero) .fc-desktop-nav a{font-size:13px}
+.fc-header:has(+main .lc-hero) .fc-header-join{font-weight:400}
+@media(min-width:1700px){.lc-content{width:1300px}}
+@media(max-width:1000px) and (min-width:700px){.lc-content{width:88%}.lc-artwork-2{left:-9%}.lc-artwork-3{left:94%}.lc-artwork-0{width:16%}.lc-artwork-1{width:14%}}
+@media(max-width:790px){.lc-hero{height:calc(175svh - 72px)}.lc-stage{height:calc(100svh - 72px)}.fc-header:has(+main .lc-hero) .fc-brand{font-size:20px}.fc-header:has(+main .lc-hero) .fc-brand img{width:31px;height:31px}.fc-header:has(+main .lc-hero){padding-inline:20px}}
+@media(max-width:699px){
+ .lc-stage{min-height:680px}.lc-content{width:94%;top:49%}
+ .fc-site .lc-content h1{font-size:16.7vw;line-height:1.08;letter-spacing:-.025em}
+ .fc-site .lc-subtitle{font-size:18px;margin-top:24px}
+ .lc-actions{margin-top:25px;gap:10px}.lc-actions a{height:48px;padding:0 21px;font-size:12px;gap:16px}
+ .fc-site .lc-cohort{font-size:10px;margin-top:19px}
+ .lc-artwork-0{left:-3%;top:4%;width:29%;height:20%;transform:rotate(-12deg)}
+ .lc-artwork-1{left:77%;top:2%;width:25%;height:21%;transform:rotate(13deg)}
+ .lc-artwork-2{left:-17%;top:24%;width:22%;height:17%}
+ .lc-artwork-3{left:95%;top:32%;width:25%;height:21%}
+ .lc-artwork-4{left:0%;top:77%;width:40%;height:17%;transform:rotate(8deg)}
+ .lc-artwork-5{left:67%;top:76%;width:39%;height:18%;transform:rotate(-10deg)}
+ .lc-artwork-6{left:35%;top:-7%;width:31%;height:17%;transform:rotate(5deg)}
+ .lc-artwork-7{left:40%;top:93%;width:35%;height:15%}
+ .lc-scroll{left:20px;bottom:17px;font-size:10px;gap:8px}.lc-motion{right:20px;bottom:12px;width:30px;height:30px}
+}
+@media(prefers-reduced-motion:reduce){.lc-hero{height:auto}.lc-stage{position:relative}.lc-motion{display:none}.lc-actions a{transition:none}.lc-content .fold-text-piece,.lc-content .fold-text-slat{opacity:1!important}.lc-content .fold-text-slat[data-fold-slat='b']{display:none}}

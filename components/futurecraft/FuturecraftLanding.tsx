@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowUpRight, ArrowRight, Menu, X, Plus, Minus } from 'lucide-react';
-import FoldText from './motion/FoldText';
+import LivingCanvas from './LivingCanvas';
 
 type Lab = { name: string; description: string };
 const labs: Lab[] = [
@@ -92,7 +92,6 @@ export default function FuturecraftLanding(){
   if(!root.current||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   gsap.registerPlugin(ScrollTrigger);
   const ctx=gsap.context(()=>{
-   gsap.from('.fc-hero-copy, .fc-hero-actions',{y:24,opacity:0,duration:.9,ease:'power3.out',stagger:.16,delay:.35});
    gsap.utils.toArray<HTMLElement>('.fc-reveal').forEach(el=>gsap.from(el,{y:36,opacity:0,duration:.85,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 92%',once:true}}));
   },root);return()=>ctx.revert();
  },[]);
@@ -100,14 +99,7 @@ export default function FuturecraftLanding(){
   <a className="fc-skip" href="#fc-main">Skip to content</a>
   <Header/>
   <main id="fc-main">
-   <section className="fc-hero" aria-labelledby="fc-hero-title">
-    <div className="fc-hero-inner">
-     <p className="fc-hero-prefix">Introducing the</p>
-     <h1 id="fc-hero-title" className="fc-hero-title"><FoldText text="Genesis" foldStyle="blinds" splitBy="char" hinge="top" trigger="mount" duration={1} stagger={.07} fontSize="clamp(5.5rem, 16vw, 14rem)" fontWeight={800} creaseShading={.32} perspective={900}/><span className="fc-hero-title-line"><FoldText text="Bootcamp 1.0" foldStyle="blinds" splitBy="word" hinge="top" trigger="mount" duration={.95} stagger={.13} fontSize="clamp(3.2rem, 8.2vw, 8.5rem)" fontWeight={800} creaseShading={.25}/></span></h1>
-     <p className="fc-hero-copy">Join a community of creators and builders learning to design, develop, animate and automate with AI. Start from scratch. Make something real.</p>
-     <div className="fc-hero-actions"><Pill href="#register">Join Genesis — free</Pill><Pill href="#labs" secondary>Explore the Labs</Pill></div>
-    </div>
-   </section>
+   <LivingCanvas/>
    <section className="fc-section fc-about" id="about"><div className="fc-section-inner fc-about-layout"><div className="fc-reveal"><h2>Learn by<br/><em>making.</em></h2></div><div className="fc-about-copy fc-reveal"><p>Futurecraft is a creative technology academy built around one simple belief: the best way to understand a tool is to use it to make something.</p><p>Genesis is our first free, 14-week bootcamp. You’ll learn alongside other beginners, work on practical projects, and meet creators who use these skills in the real world.</p><div className="fc-about-details"><span>Free first cohort</span><span>14 weeks</span><span>Two-hour practical sessions</span></div></div></div></section>
    <section className="fc-section fc-labs" id="labs"><div className="fc-section-inner">
     <div className="fc-labs-heading fc-reveal"><div><p className="fc-section-kicker">The Futurecraft experience</p><h2>Inside<br/><em>the Labs.</em></h2></div><p>Not just courses to complete. Sessions to explore, experiment, build and share.</p></div>
