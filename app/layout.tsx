@@ -63,6 +63,7 @@ export const metadata: Metadata = {
   publisher: "Silk Studio",
   category: "Creative Services",
   manifest: "/manifest.json",
+  icons: { icon: "/favicon.ico", apple: "/icons/icon-512x512.png" },
   metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: "/",
@@ -131,7 +132,6 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500&display=swap"
         />
-        <link rel="apple-touch-icon" href="/icons/icon-512x512.png" />
       </head>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(studioStructuredData).replace(/</g, "\\u003c") }} />
