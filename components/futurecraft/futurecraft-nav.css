@@ -19,3 +19,8 @@
 @media(max-width:1000px){.fc-site .fc-pill-header{height:126px;flex-wrap:wrap;gap:8px;padding-top:13px;padding-bottom:10px}.fc-pill-nav-wrap{width:100%}.fc-creative-trigger{min-height:30px;padding:6px 14px;font-size:11px;background:#14091c22}.fc-creative-trigger>span{font-size:17px}.fc-nav-wordmark{font-size:18px}.fc-react-pill-nav[data-collapsed]~.fc-nav-wordmark{font-size:18px}}
 
 @media(max-width:1000px){.fc-site .lc-hero{height:calc(175svh - 126px)}.lc-stage{height:calc(100svh - 126px);min-height:680px}}
+.fc-site .fc-creative-trigger{font:400 13px/1 'Futurecraft Outfit',sans-serif}
+@media(max-width:1000px){.fc-site .fc-creative-trigger{font-size:11px}}
+.fc-site .fc-creative-trigger{color:#241036}.fc-creative-trigger>span{color:#7e3bed}
+.fc-react-pill-nav[data-collapsed]~.fc-nav-wordmark{color:#241036}
+.fc-site .fc-react-pill-nav[data-open] .pill-nav__row{color:#fff}

@@ -14,6 +14,7 @@ const labs=[
  ['clone-it','Clone It','Recreate an interesting interface to understand how it works.','clone-it'],
  ['fix-my-business','Fix My Business','Start with a real business problem. Build something useful.','fix-my-business'],
  ['60-minute-build','The 60-Minute Build','Take a small idea from zero to a working first version.','60-minute-build'],
+ ['guest-lab','Guest Lab','Go behind the scenes with working creators and builders.',null],
  ['creator-challenge','Creator Challenge','Get the brief. Explore your own way to make it.','creator-challenge'],
 ];
 export default function LabsDirectory(){const root=useRef<HTMLElement>(null);

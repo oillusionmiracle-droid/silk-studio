@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   const experience = typeof body.experience==='string' ? body.experience : null;
   const deviceAvailability = typeof body.deviceAvailability==='string' ? body.deviceAvailability : null;
   const interest = typeof body.interest==='string' ? body.interest : '';
-  if (name.length < 2 || name.length > 90 || !EMAIL.test(email) || email.length > 254 || phone.length > 28 || (experience !== null && !LEVELS.includes(experience)) || (deviceAvailability !== null && !['phone','computer','both','shared'].includes(deviceAvailability)) || !INTERESTS.includes(interest) || body.consent!==true) return NextResponse.json({ error:'Please complete the required fields and agree to registration emails.' },{status:400});
+  if (name.length < 2 || name.length > 90 || !EMAIL.test(email) || email.length > 254 || phone.length > 28 || (experience === null && deviceAvailability === null) || (experience !== null && !LEVELS.includes(experience)) || (deviceAvailability !== null && !['phone','computer','both','shared'].includes(deviceAvailability)) || !INTERESTS.includes(interest) || body.consent!==true) return NextResponse.json({ error:'Please complete the required fields and agree to registration emails.' },{status:400});
   // A registration is not complete until the email service is ready.
   if (!process.env.RESEND_API_KEY || !process.env.FUTURECRAFT_FROM_EMAIL) {
    return NextResponse.json({error:'Genesis registration is not open yet. Our email service is being configured.'},{status:503});

@@ -13,7 +13,7 @@
 .lab-gallery-art{display:flex;align-items:center;justify-content:center;width:100%;height:350px;perspective:1200px;overflow:hidden}
 .lab-gallery-art img{width:100%;height:auto;max-height:100%;object-fit:contain;transition:transform .5s cubic-bezier(.22,1,.36,1);display:block}
 .lab-gallery-piece-1 .lab-gallery-art{height:400px;mask-image:linear-gradient(#000 78%,transparent);-webkit-mask-image:linear-gradient(#000 78%,transparent)}
-.lab-gallery-piece-1 .lab-gallery-art img{height:100%;object-fit:cover;border-radius:3px}
+.lab-gallery-piece-1 .lab-gallery-art img{height:100%;object-fit:contain;border-radius:3px}
 .lab-gallery-piece-3 .lab-gallery-art{height:300px}
 @media(hover:hover){.lab-gallery-art:hover img{transform:scale(1.035) rotate(-1deg)}}
 .fc-site .lab-gallery-caption p{font-size:clamp(20px,2.2vw,29px);line-height:1.25;letter-spacing:-.025em;margin:22px 0 10px;color:#fff;max-width:430px}

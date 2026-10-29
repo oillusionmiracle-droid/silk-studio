@@ -37,7 +37,7 @@ export default function GenesisLaunch({ children }: { children: ReactNode }) {
       <p className="genesis-date">Starts <time dateTime="2026-11-03">3 November 2026</time></p>
       <div ref={title} className="genesis-title" role="img" aria-label="Genesis Bootcamp 1.0, sculpted chrome and violet 3D lettering">
         {Array.from({ length: 10 }, (_, index) => <span className="genesis-extrusion" key={index} aria-hidden="true" />)}
-        <img className="genesis-title-face" src="/futurecraft/genesis/genesis-chrome.webp" alt="" width={1536} height={1024} loading="lazy" draggable={false} />
+        <img className="genesis-title-face" src="/futurecraft/genesis/genesis-chrome.webp" alt="" width={1600} height={899} loading="lazy" draggable={false} />
       </div>
       <div className="genesis-announcement">
         <p>The first flagship Futurecraft experience. A free, 14-week bootcamp helping beginners design, build, create and automate with AI.</p>

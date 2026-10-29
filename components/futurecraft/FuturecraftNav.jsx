@@ -49,7 +49,7 @@ export default function FuturecraftNav() {
         theme="dark"
         surface="glass"
         barColor="rgba(28, 18, 42, 0.16)"
-        textColor="#ffffff"
+        textColor="#241036"
         highlightColor="#7e3bed"
         highlightTextColor="#ffffff"
         ariaLabel="Futurecraft navigation"
