@@ -1,0 +1,36 @@
+.fc-site .fc-pill-header{height:88px;display:flex;justify-content:center;align-items:center;padding:16px 24px;background:transparent;border:0;z-index:100}
+.fc-pill-nav-wrap{position:relative;max-width:100%;width:max-content;font-family:var(--fc-body)}
+.fc-react-pill-nav{vertical-align:middle}
+.fc-nav-wordmark{display:none;pointer-events:none}
+.fc-react-pill-nav[data-collapsed]~.fc-nav-wordmark{display:block;position:absolute;left:64px;top:50%;transform:translateY(-50%);font:700 19px/1 var(--fc-body);letter-spacing:-.04em;color:#fff;z-index:3}
+.fc-react-pill-nav .pill-nav__panel{z-index:1}
+.fc-site .fc-react-pill-nav :is(a,button){font-family:var(--fc-body)}
+@media(max-width:850px){.fc-pill-nav-wrap{width:100%}.fc-site .fc-pill-header{padding:14px 20px;height:80px}}
+@media(max-width:699px){.fc-site .fc-pill-header{height:80px;padding:12px 16px}.fc-react-pill-nav .pill-nav__panel{max-height:calc(100svh - 100px);overflow:auto}}
+
+.fc-site .fc-react-pill-nav .pill-nav__item,.fc-site .fc-react-pill-nav .pill-nav__row{color:var(--pn-strong)}
+/* A clear glass rim, with the supplied header artwork visible through it. */
+.fc-react-pill-nav .pill-nav__surface{box-shadow:inset 0 1px 0 #ffffff65,inset 0 0 0 1px #ffffff26,0 7px 25px #07001115!important}
+.fc-react-pill-nav:not([data-open]) .pill-nav__surface{backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3)}
+.fc-react-pill-nav[data-open] .pill-nav__surface{background:rgba(21,12,34,.68)}
+.fc-site .fc-pill-header{gap:12px;justify-content:center;flex-wrap:nowrap}
+.fc-creative-trigger{font:400 13px/1 'Futurecraft Outfit',sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;min-height:46px;padding:10px 19px;border:1px solid #ffffff50;border-radius:999px;background:#ffffff0d;box-shadow:inset 0 1px 0 #fff4;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);color:#fff;cursor:pointer;transition:background .2s}
+.fc-creative-trigger:hover{background:#7e3bed35}.fc-creative-trigger>span{font-size:22px;line-height:1;color:#c6ff34}.fc-creative-trigger:focus-visible{outline:2px solid white;outline-offset:3px}
+@media(max-width:1000px){.fc-site .fc-pill-header{height:126px;flex-wrap:wrap;gap:8px;padding-top:13px;padding-bottom:10px}.fc-pill-nav-wrap{width:100%}.fc-creative-trigger{min-height:30px;padding:6px 14px;font-size:11px;background:#14091c22}.fc-creative-trigger>span{font-size:17px}.fc-nav-wordmark{font-size:18px}.fc-react-pill-nav[data-collapsed]~.fc-nav-wordmark{font-size:18px}}
+
+@media(max-width:1000px){.fc-site .lc-hero{height:calc(175svh - 126px)}.lc-stage{height:calc(100svh - 126px);min-height:680px}}
+.fc-site .fc-creative-trigger{font:400 13px/1 'Futurecraft Outfit',sans-serif}
+@media(max-width:1000px){.fc-site .fc-creative-trigger{font-size:11px}}
+.fc-site .fc-creative-trigger{color:#241036}.fc-creative-trigger>span{color:#7e3bed}
+.fc-react-pill-nav[data-collapsed]~.fc-nav-wordmark{color:#241036}
+.fc-site .fc-react-pill-nav[data-open] .pill-nav__row{color:#fff}
+.fc-react-pill-nav[data-open]~.fc-nav-wordmark{color:#fff}
+.fc-site .fc-react-pill-nav[data-open] .pill-nav__toggle{color:#fff}
+
+.fc-site .fc-creative-trigger{position:fixed;right:22px;bottom:25px;z-index:110;width:46px;height:46px;min-height:46px;padding:0;background:#7e3bedb8;color:white;box-shadow:inset 0 1px 1px #fff7,0 5px 25px #0003}.fc-creative-trigger>span{color:white;font-size:26px}
+.fc-site .fc-pill-header{height:88px;flex-wrap:nowrap;padding:16px 24px}
+.fc-react-pill-nav .pill-nav__logo img{filter:brightness(0) invert(1)}
+@media(max-width:1000px){.fc-site .fc-pill-header{height:80px;padding:12px 16px}.fc-site .lc-hero{height:calc(175svh - 80px)}.lc-stage{height:calc(100svh - 80px)}.fc-react-pill-nav[data-collapsed]~.fc-nav-wordmark{left:50%;transform:translate(-50%,-50%);color:#fff}.fc-site .fc-creative-trigger{right:16px;bottom:20px}}
+/* Latest direction: black brand mark and centred black mobile wordmark. */
+.fc-react-pill-nav .pill-nav__logo img{filter:brightness(0)}
+.fc-react-pill-nav[data-collapsed]~.fc-nav-wordmark,.fc-react-pill-nav[data-open]~.fc-nav-wordmark{color:#000}

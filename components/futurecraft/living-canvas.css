@@ -1,0 +1,81 @@
+@font-face{font-family:'Futurecraft Outfit';src:url('/futurecraft/fonts/Outfit-Regular.ttf') format('truetype');font-weight:300 500;font-style:normal;font-display:swap}
+@font-face{font-family:'Futurecraft Outfit';src:url('/futurecraft/fonts/Outfit-Bold.ttf') format('truetype');font-weight:600 900;font-style:normal;font-display:swap}
+@font-face{font-family:'Futurecraft Movault';src:url('/futurecraft/fonts/Movault-Regular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap}
+.fc-site:has(.lc-hero){--fc-display:'Futurecraft Movault',sans-serif;--fc-body:'Futurecraft Outfit',sans-serif;--fc-accent:#7e3bed;--fc-bg:#000;background:#000 url('/futurecraft/hero-violet.webp') center top / 100% auto no-repeat;font-family:var(--fc-body)}
+.fc-site:has(.lc-hero) .fc-section,.fc-site:has(.lc-hero) .fc-footer{background:#000}
+.fc-site:has(.lc-hero) h2{font-weight:400;letter-spacing:0}
+.fc-site:has(.lc-hero) h2 em{font-weight:400;opacity:1}
+/* Supplied violet artwork is a single continuous ground behind header and hero. */
+.fc-site .lc-hero{position:relative;height:calc(170svh - 88px);padding:0;background:transparent;font-family:var(--fc-body)}
+.lc-stage{height:calc(100svh - 88px);min-height:720px;position:sticky;top:0;isolation:isolate;overflow:hidden;background:transparent}
+.lc-canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
+.lc-artwork{position:absolute;overflow:visible;transform-origin:center}
+.lc-artwork-intro,.lc-artwork-drift{width:100%;height:100%}
+.lc-artwork img{width:100%;height:100%;display:block;object-fit:cover;border-radius:5px}
+.lc-artwork-0{left:6%;top:6%;width:12%;height:25%;transform:rotate(-12deg)}
+.lc-artwork-1{left:82%;top:4%;width:11%;height:26%;transform:rotate(10deg)}
+.lc-artwork-2{left:-5%;top:39%;width:18%;height:23%;transform:rotate(9deg)}
+.lc-artwork-3{left:90%;top:37%;width:15%;height:30%;transform:rotate(-9deg)}
+.lc-artwork-4{left:12%;top:76%;width:19%;height:21%;transform:rotate(8deg)}
+.lc-artwork-5{left:72%;top:76%;width:19%;height:23%;transform:rotate(-10deg)}
+.lc-artwork-6{left:34%;top:-22%;width:16%;height:26%;transform:rotate(9deg);opacity:0}
+.lc-artwork-7{left:51%;top:93%;width:17%;height:20%;transform:rotate(-7deg)}
+.lc-content{position:absolute;z-index:2;left:50%;top:49%;transform:translate(-50%,-50%);width:76%;text-align:center}
+.fc-site .lc-content h1{font-family:var(--fc-display);font-weight:400;font-size:clamp(110px,17.5vw,270px);line-height:.91;letter-spacing:0;margin:0}
+.scrambled-text{display:block;white-space:nowrap}
+.scramble-word{display:inline-block;white-space:nowrap}
+.scramble-char{display:inline-block;text-align:center;vertical-align:baseline}
+.fc-site .lc-subtitle{font-family:var(--fc-body);font-size:clamp(18px,1.8vw,27px);line-height:1.4;color:#fff;margin:25px 0 0}
+.lc-actions{margin-top:27px;display:flex;justify-content:center;align-items:center;gap:12px}
+.lc-actions a{height:52px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:0 29px;font-size:15px;transition:background .25s,transform .25s}
+.fc-site :is(.lc-join,.lc-explore,.fc-header-join,.fc-pill,.fc-form-submit){background:#7e3bedbd;color:#fff!important;border:1px solid #d4b6ff66;backdrop-filter:blur(20px) saturate(155%);-webkit-backdrop-filter:blur(20px) saturate(155%);box-shadow:inset 0 1px 1px #ffffff65,inset 0 -1px 1px #42177666,0 5px 23px #24075226;font-family:var(--fc-body);font-weight:400}
+.fc-site .lc-explore{background:#7e3bed4d;border-color:#ac7fff77}
+.fc-site :is(.lc-join,.lc-explore,.fc-header-join,.fc-pill,.fc-form-submit):hover{background:#9253ed;transform:none}
+.fc-site :is(.lc-join,.lc-explore,.fc-header-join,.fc-pill,.fc-form-submit):active{transform:scale(.97)}
+.fc-site .lc-cohort{font-size:13px;line-height:1.5;color:#b9b4c1;margin:21px 0 0}
+.lc-scroll{position:absolute;bottom:25px;left:35px;z-index:3;display:flex;align-items:center;gap:12px;font-size:12px;color:#bbb!important}
+.fc-header:has(+main .lc-hero){background:transparent;border-bottom:0;font-family:var(--fc-body);color:#11071e}
+.fc-header:has(+main .lc-hero) .fc-brand{font-family:var(--fc-body);font-size:24px;letter-spacing:-.05em;font-weight:700;color:#170c27}
+.fc-header:has(+main .lc-hero) .fc-brand-dot{color:inherit}
+.fc-header:has(+main .lc-hero) .fc-desktop-nav a{font-size:14px;color:#21102f}
+.fc-header:has(+main .lc-hero) .fc-menu-trigger{color:#170c27}
+.fc-site .fc-mobile-nav{background:#09030feF;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid #b99aff44;border-radius:24px;left:14px;right:14px;padding:12px 24px 22px}
+.fc-site .fc-mobile-nav a{color:#fff}
+.fc-site .fc-form :is(input:not([type=checkbox]),select){background:#ffffff07;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-color:#ffffff35;box-shadow:inset 0 1px 1px #ffffff12}
+.fc-site .fc-consent input{accent-color:#7e3bed}
+.fc-site ::selection{background:#7e3bed;color:white}
+@media(min-width:1700px){.lc-content{width:1300px}}
+@media(max-width:1000px) and (min-width:700px){.lc-content{width:88%}.lc-artwork-2{left:-9%}.lc-artwork-3{left:94%}.lc-artwork-0{width:16%}.lc-artwork-1{width:14%}}
+@media(max-width:790px){.fc-site .lc-hero{height:calc(175svh - 72px)}.lc-stage{height:calc(100svh - 72px)}.fc-header:has(+main .lc-hero) .fc-brand{font-size:21px}.fc-header:has(+main .lc-hero) .fc-brand img{width:31px;height:31px}.fc-header:has(+main .lc-hero){padding-inline:20px}}
+@media(max-width:699px){
+ .fc-site:has(.lc-hero){background-size:auto 620px}
+ .lc-stage{min-height:680px}.lc-content{width:94%;top:49%}
+ .fc-site .lc-content h1{font-size:26.5vw;line-height:.94;letter-spacing:0}
+ .fc-site .lc-subtitle{font-size:19px;margin-top:23px}
+ .lc-actions{margin-top:25px;gap:10px}.lc-actions a{height:49px;padding:0 23px;font-size:14px}
+ .fc-site .lc-cohort{font-size:11px;margin-top:18px}
+ .lc-artwork-0{left:-3%;top:4%;width:27%;height:18%;transform:rotate(-12deg)}
+ .lc-artwork-1{left:79%;top:2%;width:25%;height:19%;transform:rotate(13deg)}
+ .lc-artwork-2{left:-17%;top:24%;width:22%;height:17%;opacity:0}
+ .lc-artwork-3{left:95%;top:32%;width:25%;height:21%;opacity:0}
+ .lc-artwork-4{left:0%;top:77%;width:40%;height:17%;transform:rotate(8deg)}
+ .lc-artwork-5{left:67%;top:76%;width:39%;height:18%;transform:rotate(-10deg)}
+ .lc-artwork-6{left:35%;top:-14%;width:31%;height:17%;transform:rotate(5deg)}
+ .lc-artwork-7{left:40%;top:98%;width:35%;height:15%;opacity:0}
+ .lc-scroll{left:20px;bottom:17px;font-size:11px;gap:8px}
+}
+@media(prefers-reduced-motion:reduce){.fc-site .lc-hero{height:auto}.lc-stage{position:relative}.lc-actions a{transition:none}}
+@supports not (backdrop-filter:blur(1px)){.fc-site :is(.lc-join,.lc-explore,.fc-header-join,.fc-pill,.fc-form-submit){background:#7e3bed}}
+
+/* Colasta owns section headings; Movault is reserved for the hero and academy statement. */
+.fc-site:has(.lc-hero) h2{font-family:var(--fc-body);font-weight:700;font-size:clamp(38px,5.4vw,78px);line-height:1.05;letter-spacing:-.05em}
+.fc-site:has(.lc-hero) h2 em{font-weight:700}
+.fc-site:has(.lc-hero) .fc-about h2{font-family:var(--fc-display);font-weight:400;font-size:clamp(70px,9vw,138px);line-height:.95;letter-spacing:0}
+.fc-site:has(.lc-hero) .fc-about h2 em{font-weight:400}
+.fc-site:has(.lc-hero) .make-heading h2{font-family:var(--fc-body);font-weight:700;font-size:clamp(38px,5.2vw,72px);line-height:1.05;letter-spacing:-.05em}
+.fc-site:has(.lc-hero) :is(.make-section,.fc-section,.fc-footer){background-color:#030013;background-image:linear-gradient(#030013b3,#030013b3),url('/futurecraft/genesis/atmosphere.webp');background-size:cover;background-position:center}
+.fc-site .genesis-registration .fc-form{background:#07031475;border:1px solid #d8baff24;border-radius:30px;padding:30px;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+@media(max-width:699px){.fc-site:has(.lc-hero) .make-heading h2{font-size:43px;line-height:1.07}.fc-site .genesis-registration .fc-form{padding:22px 16px;border-radius:25px}.fc-site:has(.lc-hero) .genesis-register-copy h2{font-size:42px}}
+
+.fc-site:has(.lc-hero) .fc-about{background:#fff8e9;color:#15111a}.fc-site:has(.lc-hero) .fc-about :is(h2,h2 em,p,.fc-about-details span){color:#15111a}.fc-site .fc-about-details{border-color:#15111a30}
+.fc-site:has(.lc-hero) .fc-faq{background:#fff;color:#15111a}.fc-site .fc-faq :is(h2,h2 em,button,p){color:#15111a}.fc-site .fc-faq-item{border-color:#15111a30}.fc-site .fc-faq button:focus-visible{outline-color:#7e3bed}
