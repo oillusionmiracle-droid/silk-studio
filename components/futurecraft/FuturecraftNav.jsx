@@ -30,7 +30,7 @@ export default function FuturecraftNav() {
     return () => { observer.disconnect(); window.removeEventListener('hashchange', update); };
   }, []);
 
-  return <header className="fc-header fc-pill-header" id="top">
+  return <header className="fc-header fc-pill-header">
     <div className="fc-pill-nav-wrap">
       <PillNav
         logo="/futurecraft/mark.svg"

@@ -74,7 +74,7 @@ export default function FuturecraftLanding(){
    gsap.utils.toArray<HTMLElement>('.fc-reveal').forEach(el=>gsap.from(el,{y:36,opacity:0,duration:.85,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 92%',once:true}}));
   },root);return()=>ctx.revert();
  },[]);
- return <div ref={root} className="fc-site">
+ return <div ref={root} className="fc-site" id="top">
   <a className="fc-skip" href="#fc-main">Skip to content</a>
   <FuturecraftNav/>
   <main id="fc-main">
