@@ -103,7 +103,7 @@ export default function FuturecraftLanding(){
    <section className="fc-hero" aria-labelledby="fc-hero-title">
     <div className="fc-hero-inner">
      <p className="fc-hero-prefix">Introducing the</p>
-     <h1 id="fc-hero-title" className="fc-hero-title"><FoldText text="Genesis" foldStyle="paper" splitBy="char" hinge="top" trigger="mount" duration={1} stagger={.07} fontSize="clamp(5.5rem, 16vw, 14rem)" fontWeight={800} creaseShading={.32} perspective={900}/><span className="fc-hero-title-line"><FoldText text="Bootcamp 1.0" foldStyle="paper" splitBy="word" hinge="bottom" trigger="mount" duration={.95} stagger={.13} fontSize="clamp(3.2rem, 8.2vw, 8.5rem)" fontWeight={800} creaseShading={.25}/></span></h1>
+     <h1 id="fc-hero-title" className="fc-hero-title"><FoldText text="Genesis" foldStyle="blinds" splitBy="char" hinge="top" trigger="mount" duration={1} stagger={.07} fontSize="clamp(5.5rem, 16vw, 14rem)" fontWeight={800} creaseShading={.32} perspective={900}/><span className="fc-hero-title-line"><FoldText text="Bootcamp 1.0" foldStyle="blinds" splitBy="word" hinge="top" trigger="mount" duration={.95} stagger={.13} fontSize="clamp(3.2rem, 8.2vw, 8.5rem)" fontWeight={800} creaseShading={.25}/></span></h1>
      <p className="fc-hero-copy">Join a community of creators and builders learning to design, develop, animate and automate with AI. Start from scratch. Make something real.</p>
      <div className="fc-hero-actions"><Pill href="#register">Join Genesis — free</Pill><Pill href="#labs" secondary>Explore the Labs</Pill></div>
     </div>
