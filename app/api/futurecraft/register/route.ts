@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
   let emailsPending=false;
   for (const msg of mailings) {
    try {
-    const result=await resend.emails.send({from:sender,to:[email],subject:msg.subject,html:msg.html},{idempotencyKey:msg.key});
+    const result=await resend.emails.send({from:sender,replyTo:process.env.FUTURECRAFT_REPLY_TO,to:[email],subject:msg.subject,html:msg.html},{idempotencyKey:msg.key});
     if(result.error){emailsPending=true;console.error('Genesis transactional email failed',msg.type,result.error.name);}
     else await db.from('futurecraft_genesis_registrations').update({[msg.type]:new Date().toISOString()}).eq('id',data.id);
    }catch(err){emailsPending=true;console.error('Genesis mail exception',msg.type,err instanceof Error?err.name:'unknown');}
