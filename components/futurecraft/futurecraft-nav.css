@@ -34,3 +34,11 @@
 /* Latest direction: black brand mark and centred black mobile wordmark. */
 .fc-react-pill-nav .pill-nav__logo img{filter:brightness(0)}
 .fc-react-pill-nav[data-collapsed]~.fc-nav-wordmark,.fc-react-pill-nav[data-open]~.fc-nav-wordmark{color:#000}
+/* Keep the navigation centred independently of the corner experiment control. */
+.fc-site:has(.fc-pill-header){padding-top:88px}
+.fc-site .fc-pill-header{position:fixed;inset:0 0 auto;width:100%;justify-content:center}
+.fc-pill-nav-wrap{display:flex;justify-content:center;margin-inline:auto}
+.fc-react-pill-nav{--pn-surface:rgba(255,248,255,.78)!important}
+.fc-react-pill-nav[data-open] .pill-nav__surface{background:rgba(255,248,255,.94)}
+.fc-site .fc-react-pill-nav[data-open] :is(.pill-nav__row,.pill-nav__toggle){color:#241036}
+@media(max-width:1000px){.fc-site:has(.fc-pill-header){padding-top:80px}}
