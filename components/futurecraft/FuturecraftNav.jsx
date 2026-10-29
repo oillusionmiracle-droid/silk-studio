@@ -58,7 +58,7 @@ export default function FuturecraftNav() {
       />
       <span className="fc-nav-wordmark" aria-hidden="true">futurecraft.</span>
     </div>
-    <button className="fc-creative-trigger" type="button" onClick={() => setExperimentOpen(true)} aria-haspopup="dialog">I’m feeling creative<span aria-hidden="true">✳</span></button>
+    <button className="fc-creative-trigger" type="button" onClick={() => setExperimentOpen(true)} aria-haspopup="dialog" aria-label="Open the Futurecraft creative experiment" title="I’m feeling creative"><span aria-hidden="true">✳</span></button>
     {experimentOpen && <CreativeExperiment onClose={() => setExperimentOpen(false)}/>}
   </header>;
 }

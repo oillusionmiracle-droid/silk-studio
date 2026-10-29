@@ -26,3 +26,11 @@
 .fc-site .fc-react-pill-nav[data-open] .pill-nav__row{color:#fff}
 .fc-react-pill-nav[data-open]~.fc-nav-wordmark{color:#fff}
 .fc-site .fc-react-pill-nav[data-open] .pill-nav__toggle{color:#fff}
+
+.fc-site .fc-creative-trigger{position:fixed;right:22px;bottom:25px;z-index:110;width:46px;height:46px;min-height:46px;padding:0;background:#7e3bedb8;color:white;box-shadow:inset 0 1px 1px #fff7,0 5px 25px #0003}.fc-creative-trigger>span{color:white;font-size:26px}
+.fc-site .fc-pill-header{height:88px;flex-wrap:nowrap;padding:16px 24px}
+.fc-react-pill-nav .pill-nav__logo img{filter:brightness(0) invert(1)}
+@media(max-width:1000px){.fc-site .fc-pill-header{height:80px;padding:12px 16px}.fc-site .lc-hero{height:calc(175svh - 80px)}.lc-stage{height:calc(100svh - 80px)}.fc-react-pill-nav[data-collapsed]~.fc-nav-wordmark{left:50%;transform:translate(-50%,-50%);color:#fff}.fc-site .fc-creative-trigger{right:16px;bottom:20px}}
+/* Latest direction: black brand mark and centred black mobile wordmark. */
+.fc-react-pill-nav .pill-nav__logo img{filter:brightness(0)}
+.fc-react-pill-nav[data-collapsed]~.fc-nav-wordmark,.fc-react-pill-nav[data-open]~.fc-nav-wordmark{color:#000}

@@ -76,3 +76,6 @@
 .fc-site:has(.lc-hero) :is(.make-section,.fc-section,.fc-footer){background-color:#030013;background-image:linear-gradient(#030013b3,#030013b3),url('/futurecraft/genesis/atmosphere.webp');background-size:cover;background-position:center}
 .fc-site .genesis-registration .fc-form{background:#07031475;border:1px solid #d8baff24;border-radius:30px;padding:30px;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
 @media(max-width:699px){.fc-site:has(.lc-hero) .make-heading h2{font-size:43px;line-height:1.07}.fc-site .genesis-registration .fc-form{padding:22px 16px;border-radius:25px}.fc-site:has(.lc-hero) .genesis-register-copy h2{font-size:42px}}
+
+.fc-site:has(.lc-hero) .fc-about{background:#fff8e9;color:#15111a}.fc-site:has(.lc-hero) .fc-about :is(h2,h2 em,p,.fc-about-details span){color:#15111a}.fc-site .fc-about-details{border-color:#15111a30}
+.fc-site:has(.lc-hero) .fc-faq{background:#fff;color:#15111a}.fc-site .fc-faq :is(h2,h2 em,button,p){color:#15111a}.fc-site .fc-faq-item{border-color:#15111a30}.fc-site .fc-faq button:focus-visible{outline-color:#7e3bed}

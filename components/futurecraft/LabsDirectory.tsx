@@ -8,7 +8,7 @@ const labs=[
  ['prompt-paint','Prompt & Paint','Turn imagination into visual work.','prompt-paint'],
  ['ship-it','Ship It','Make a website or app and publish it.','ship-it'],
  ['ad-lab','Ad Lab','Make campaigns and commercials.','ad-lab'],
- ['automate-this','Automate This','Take a repetitive task. Build a workflow that gives you the time back.',null],
+ ['automate-this','Automate It','Take a repetitive task. Build a workflow that gives you the time back.','automate-it'],
  ['game-jam','Game Jam','Invent a tiny world. Make a game you can actually play.','game-jam'],
  ['future-friday','Future Friday','Try an unfamiliar tool. Find out what you can make with it.','future-friday'],
  ['clone-it','Clone It','Recreate an interesting interface to understand how it works.','clone-it'],
