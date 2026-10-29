@@ -1,0 +1,29 @@
+.fc-site .genesis-launch{padding:95px max(24px,6vw) 110px;background:#030013;position:relative;isolation:isolate;scroll-margin-top:30px}
+.genesis-inner{max-width:1380px;margin:auto}
+.fc-site .genesis-date{font:700 clamp(22px,3vw,38px)/1.3 var(--fc-body);text-align:center;color:#f0e6ff;margin:0 0 10px;letter-spacing:-.04em}
+.genesis-title{position:relative;width:min(900px,88%);margin:0 auto 45px;perspective:1200px;isolation:isolate}
+.genesis-title-face{position:relative;z-index:11;display:block;width:100%;height:auto;transform-origin:center;filter:drop-shadow(0 22px 25px #05001266)}
+.genesis-extrusion{position:absolute;inset:0;mask:url('/futurecraft/genesis/genesis-chrome.webp') center/contain no-repeat;-webkit-mask:url('/futurecraft/genesis/genesis-chrome.webp') center/contain no-repeat;background:#6d1fa0;transform:translate(5px,7px);pointer-events:none}
+.genesis-extrusion:nth-child(3n){background:#b529b6}.genesis-extrusion:nth-child(3n+1){background:#542197}
+.genesis-announcement{max-width:840px;margin:auto;text-align:center}
+.fc-site .genesis-announcement>p{font-size:clamp(19px,2.1vw,27px);line-height:1.55;color:#f2eafb;letter-spacing:-.025em}
+.genesis-actions{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:30px}
+.genesis-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:52px;border-radius:999px;padding:14px 27px;font-size:15px;color:#fff;border:1px solid #ceb0ff55;box-shadow:inset 0 1px 1px #fff6;background:#7e3bedbf;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:background .2s,transform .2s}
+.genesis-actions .genesis-channel{background:#7e3bed36}.genesis-actions a:hover{background:#9253ed}.genesis-actions a:active{transform:scale(.97)}
+.genesis-details{max-width:1000px;margin:65px auto 0}
+.genesis-tabs{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.genesis-tabs button{border:1px solid #c3a3f43b;background:#ffffff08;color:#c9bfda;min-height:46px;border-radius:999px;padding:11px 24px;cursor:pointer;font-size:14px;box-shadow:inset 0 1px 0 #ffffff16}
+.genesis-tabs button[aria-selected=true]{background:#7e3bedb3;color:#fff;box-shadow:inset 0 1px 1px #fff5;border-color:#c4a0ff65}
+.genesis-info{min-height:180px;padding:35px 25px 10px;text-align:center;max-width:800px;margin:auto}
+.fc-site .genesis-info h3{font:700 clamp(23px,2.7vw,34px)/1.2 var(--fc-body);letter-spacing:-.04em;color:#fff}
+.fc-site .genesis-info p{margin-top:17px;font-size:17px;line-height:1.7;color:#cfc5df}
+.genesis-info a{display:inline-block;margin-top:16px;font-size:15px;color:#dcc5ff!important;text-decoration:underline!important;text-underline-offset:5px}
+.genesis-registration{display:grid;grid-template-columns:.8fr 1.2fr;gap:10%;margin-top:85px;scroll-margin-top:60px}
+.fc-site .genesis-register-copy h2{font:700 clamp(36px,4.8vw,68px)/1.05 var(--fc-body);letter-spacing:-.055em;color:#fff;margin:0 0 25px}
+.fc-site .genesis-register-copy p{font-size:17px;line-height:1.7;color:#d4c7e3;margin-top:15px}
+.fc-site .genesis-register-copy p:last-child{font-size:15px;color:#baa0da}
+.fc-site:has(.lc-hero) .genesis-launch{background:#030013 url('/futurecraft/genesis/atmosphere.webp') center 35%/cover no-repeat}
+.genesis-launch:before{content:'';position:absolute;inset:0;background:#03001370;z-index:-1;pointer-events:none}
+@media(max-width:790px){.fc-site .genesis-launch{padding:65px 22px 80px}.genesis-title{width:100%;margin-bottom:30px}.genesis-registration{grid-template-columns:1fr;gap:35px;margin-top:55px}.genesis-info{padding-inline:0}.genesis-details{margin-top:45px}}
+@media(max-width:480px){.fc-site .genesis-date{font-size:23px;margin-bottom:15px}.genesis-title{width:calc(100% + 24px);margin-left:-12px}.fc-site .genesis-announcement>p{font-size:19px}.genesis-actions{gap:10px;margin-top:24px}.genesis-actions a{font-size:13px;min-height:48px;padding:12px 19px}.genesis-tabs{gap:7px}.genesis-tabs button{font-size:12px;padding:10px 17px;min-height:44px}.genesis-info{min-height:250px;padding-top:27px}.fc-site .genesis-info p{font-size:15px}.fc-site .genesis-register-copy h2{font-size:42px}.genesis-registration{margin-top:40px}}
+@media(prefers-reduced-motion:reduce){.genesis-extrusion{display:none}.genesis-actions a{transition:none}}

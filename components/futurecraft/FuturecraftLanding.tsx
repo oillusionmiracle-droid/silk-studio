@@ -1,12 +1,14 @@
 'use client';
 
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowUpRight, ArrowRight, Menu, X, Plus, Minus } from 'lucide-react';
+import { ArrowRight, Plus, Minus } from 'lucide-react';
 import LivingCanvas from './LivingCanvas';
 import MakePlayground from './MakePlayground';
+import FuturecraftNav from './FuturecraftNav';
+import GenesisLaunch from './GenesisLaunch';
 
 type Lab = { name: string; description: string };
 const labs: Lab[] = [
@@ -24,6 +26,7 @@ const labs: Lab[] = [
   { name: 'Guest Lab', description: 'Go behind the scenes with working creators and builders to see how they really do it.' },
 ];
 const faqs = [
+  ['When does Genesis start?', 'Genesis Bootcamp 1.0 starts on 3 November 2026. It runs for 14 weeks. The weekly session timetable will be shared by email and on the Futurecraft Academy WhatsApp channel.'],
   ['Is Genesis free?', 'Yes. Genesis Bootcamp 1.0 is free to register for. No payment details are required.'],
   ['Can I join as a complete beginner?', 'Yes. Start from zero. You do not need to know how to code or have previous experience with AI.'],
   ['How long is the bootcamp?', 'Fourteen weeks. Practical sessions are planned to run for two hours each; the confirmed timetable will be shared with registered participants.'],
@@ -32,23 +35,6 @@ const faqs = [
   ['How will I get class details?', 'After registration, Futurecraft will send confirmation and welcome emails. Joining instructions and the final schedule will follow when confirmed.'],
   ['Is there a student portal?', 'A portal for recordings, assignments and progress tracking is planned for a later phase. It is not part of this first landing-page launch.'],
 ];
-
-function Pill({ href, children, secondary=false }:{ href:string; children:ReactNode; secondary?:boolean }) {
- return <a className={'fc-pill'+(secondary?' fc-pill-secondary':'')} href={href}><span>{children}</span><ArrowUpRight size={18} strokeWidth={1.8} aria-hidden="true" /></a>;
-}
-
-function Header() {
- const [open,setOpen]=useState(false);
- useEffect(()=>{if(!open)return;const fn=(e:KeyboardEvent)=>{if(e.key==='Escape')setOpen(false)};window.addEventListener('keydown',fn);return()=>window.removeEventListener('keydown',fn)},[open]);
- const nav=[['About','#about'],['The Labs','#labs'],['The experience','#experience'],['FAQs','#faq']];
- return <header className="fc-header" id="top">
-  <Link href="/futurecraft" className="fc-brand" aria-label="Futurecraft Academy home"><img src="/futurecraft/mark.svg" width="38" height="38" alt=""/><span>futurecraft<span className="fc-brand-dot">.</span></span></Link>
-  <nav className="fc-desktop-nav" aria-label="Main navigation">{nav.map(([name,href])=><a href={href} key={name}>{name}</a>)}</nav>
-  <a className="fc-header-join" href="#register">Join Genesis</a>
-  <button type="button" className="fc-menu-trigger" aria-controls="fc-mobile-nav" aria-expanded={open} aria-label={open?'Close navigation':'Open navigation'} onClick={()=>setOpen(!open)}>{open?<X size={22}/>:<Menu size={22}/>}</button>
-  {open&&<nav id="fc-mobile-nav" className="fc-mobile-nav" aria-label="Mobile navigation">{nav.map(([name,href])=><a key={name} href={href} onClick={()=>setOpen(false)}>{name}<ArrowUpRight size={17}/></a>)}<a href="#register" onClick={()=>setOpen(false)}>Join Genesis</a></nav>}
- </header>;
-}
 
 function Registration(){
  const [state,setState]=useState<'idle'|'sending'|'done'|'error'>('idle'),[message,setMessage]=useState('');
@@ -73,7 +59,7 @@ function Registration(){
   <label className="fc-consent"><input type="checkbox" name="consent" value="yes" required/><span>I agree to receive Genesis registration and programme emails. <Link href="/futurecraft/privacy" target="_blank">Privacy details</Link>.</span></label>
   {message&&<p className={state==='error'?'fc-error':'fc-note'} role="alert">{message}</p>}
   <button type="submit" className="fc-form-submit" disabled={state==='sending'||state==='done'}>{state==='sending'?'Sending…':state==='done'?'You’re registered':'Join Genesis — free'}</button>
-  <p className="fc-form-foot">We’ll send the confirmed timetable and class details when they’re ready.</p>
+  <p className="fc-form-foot">Genesis starts 3 November 2026. We’ll email your session timetable and joining details.</p>
  </form>;
 }
 function Newsletter(){
@@ -98,10 +84,11 @@ export default function FuturecraftLanding(){
  },[]);
  return <div ref={root} className="fc-site">
   <a className="fc-skip" href="#fc-main">Skip to content</a>
-  <Header/>
+  <FuturecraftNav/>
   <main id="fc-main">
    <LivingCanvas/>
    <MakePlayground/>
+   <GenesisLaunch><Registration/></GenesisLaunch>
    <section className="fc-section fc-about" id="about"><div className="fc-section-inner fc-about-layout"><div className="fc-reveal"><h2>Learn by<br/><em>making.</em></h2></div><div className="fc-about-copy fc-reveal"><p>Futurecraft is a creative technology academy built around one simple belief: the best way to understand a tool is to use it to make something.</p><p>Genesis is our first free, 14-week bootcamp. You’ll learn alongside other beginners, work on practical projects, and meet creators who use these skills in the real world.</p><div className="fc-about-details"><span>Free first cohort</span><span>14 weeks</span><span>Two-hour practical sessions</span></div></div></div></section>
    <section className="fc-section fc-labs" id="labs"><div className="fc-section-inner">
     <div className="fc-labs-heading fc-reveal"><div><p className="fc-section-kicker">The Futurecraft experience</p><h2>Inside<br/><em>the Labs.</em></h2></div><p>Not just courses to complete. Sessions to explore, experiment, build and share.</p></div>
@@ -120,7 +107,6 @@ export default function FuturecraftLanding(){
     <div className="fc-reveal"><h2>And then<br/><em>what’s next?</em></h2></div>
     <div className="fc-future-content fc-reveal"><p>The student portal is coming later—with class recordings, assignments and progress tracking. Future cohorts and their calendars will be announced once dates are confirmed.</p><Newsletter/></div>
    </div></section>
-   <section className="fc-section fc-register" id="register"><div className="fc-section-inner fc-register-layout"><div className="fc-reveal"><p className="fc-section-kicker">Genesis Bootcamp 1.0</p><h2>Your next<br/><em>thing starts here.</em></h2><p>Be part of the first Futurecraft cohort. Registration is free.</p></div><Registration/></div></section>
    <section className="fc-section fc-faq" id="faq"><div className="fc-section-inner fc-faq-layout"><div className="fc-reveal"><h2>Good<br/><em>questions.</em></h2></div><div className="fc-faq-list">{faqs.map(([q,a],i)=><div key={q} className="fc-faq-item"><button type="button" aria-expanded={activeFaq===i} onClick={()=>setActiveFaq(activeFaq===i?null:i)}><span>{q}</span>{activeFaq===i?<Minus size={19}/>:<Plus size={19}/>}</button>{activeFaq===i&&<p>{a}</p>}</div>)}</div></div></section>
   </main>
   <footer className="fc-footer"><Link href="/futurecraft" className="fc-brand"><img src="/futurecraft/mark.svg" alt="" width="33" height="33"/><span>futurecraft<span className="fc-brand-dot">.</span></span></Link><span>Learn the future by making it.</span><div><Link href="/futurecraft/privacy">Privacy</Link><a href="#top">Back to top ↑</a></div></footer>
