@@ -99,6 +99,6 @@ export default function FuturecraftLanding(){
    <FirstMakers/>
   </main>
   <GradualBlur width={undefined} container={undefined} style={undefined} target="page" position="bottom" height="6rem" strength={2} layers={8} curve="linear" exponential tint="rgba(18, 15, 23, 0.6)" autoHide zIndex={25}/>
-  <footer className="fc-footer"><Link href="/futurecraft" className="fc-brand"><img src="/futurecraft/mark.svg" alt="" width="33" height="33"/><span>futurecraft<span className="fc-brand-dot">.</span></span></Link><span>Learn the future by making it.</span><div><MotionPreference/><Link href="/futurecraft/privacy">Privacy</Link><a href="#top">Back to top ↑</a></div></footer>
+  <footer className="fc-footer"><Link href="/futurecraft" className="fc-brand"><img src="/futurecraft/mark.svg" alt="" width="33" height="33"/><span>futurecraft<span className="fc-brand-dot">.</span></span></Link><span>Learn the future by making it.</span><div><MotionPreference/><button type="button" className="fc-motion-preference" onClick={()=>window.dispatchEvent(new Event('silk-cookie-settings'))}>Cookie settings</button><Link href="/futurecraft/privacy">Privacy</Link><a href="#top">Back to top ↑</a></div></footer>
  </div>;
 }
