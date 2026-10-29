@@ -24,3 +24,5 @@
 .fc-site .fc-creative-trigger{color:#241036}.fc-creative-trigger>span{color:#7e3bed}
 .fc-react-pill-nav[data-collapsed]~.fc-nav-wordmark{color:#241036}
 .fc-site .fc-react-pill-nav[data-open] .pill-nav__row{color:#fff}
+.fc-react-pill-nav[data-open]~.fc-nav-wordmark{color:#fff}
+.fc-site .fc-react-pill-nav[data-open] .pill-nav__toggle{color:#fff}
