@@ -24,6 +24,7 @@ export default function ScrambledText({ children, className = '', radius = 100, 
   const root = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
+    try { if(localStorage.getItem('futurecraft-motion')==='reduced') return; } catch {}
     const element = root.current;
     if (!element) return;
     gsap.registerPlugin(ScrambleTextPlugin);

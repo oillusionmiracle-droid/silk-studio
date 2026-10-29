@@ -22,9 +22,10 @@ export async function POST(req: NextRequest) {
   const name = typeof body.name==='string' ? body.name.trim().replace(/\s+/g,' ') : '';
   const email = typeof body.email==='string' ? body.email.trim().toLowerCase() : '';
   const phone = typeof body.phone==='string' ? body.phone.trim() : '';
-  const experience = typeof body.experience==='string' ? body.experience : '';
+  const experience = typeof body.experience==='string' ? body.experience : null;
+  const deviceAvailability = typeof body.deviceAvailability==='string' ? body.deviceAvailability : null;
   const interest = typeof body.interest==='string' ? body.interest : '';
-  if (name.length < 2 || name.length > 90 || !EMAIL.test(email) || email.length > 254 || phone.length > 28 || !LEVELS.includes(experience) || !INTERESTS.includes(interest) || body.consent!==true) return NextResponse.json({ error:'Please complete the required fields and agree to registration emails.' },{status:400});
+  if (name.length < 2 || name.length > 90 || !EMAIL.test(email) || email.length > 254 || phone.length > 28 || (experience !== null && !LEVELS.includes(experience)) || (deviceAvailability !== null && !['phone','computer','both','shared'].includes(deviceAvailability)) || !INTERESTS.includes(interest) || body.consent!==true) return NextResponse.json({ error:'Please complete the required fields and agree to registration emails.' },{status:400});
   // A registration is not complete until the email service is ready.
   if (!process.env.RESEND_API_KEY || !process.env.FUTURECRAFT_FROM_EMAIL) {
    return NextResponse.json({error:'Genesis registration is not open yet. Our email service is being configured.'},{status:503});
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
   const emailLimit = await checkDistributedRateLimit('futurecraft:email:'+anonymized,3,24*60*60*1000);
   if(!emailLimit.allowed)return rateLimitedResponse(emailLimit.retryAfterSeconds,'This email was recently submitted.');
   const db=getServerSupabase();
-  const { data, error }=await db.from('futurecraft_genesis_registrations').insert({name,email,phone:phone||null,experience,interest,consent_at:new Date().toISOString(),status:'registered'}).select('id').single();
+  const { data, error }=await db.from('futurecraft_genesis_registrations').insert({name,email,phone:phone||null,experience,interest,device_availability:deviceAvailability,consent_at:new Date().toISOString(),status:'registered'}).select('id').single();
   if(error?.code==='23505')return NextResponse.json({ok:true,alreadyRegistered:true});
   if(error || !data){ console.error('Genesis registration save failed',error?.code);return NextResponse.json({error:'Registration is temporarily unavailable. Please try again.'},{status:503}); }
   const sender=process.env.FUTURECRAFT_FROM_EMAIL;

@@ -14,6 +14,7 @@ export default function GenesisLaunch({ children }: { children: ReactNode }) {
   const [topic, setTopic] = useState(0);
 
   useLayoutEffect(() => {
+  try { if (localStorage.getItem('futurecraft-motion') === 'reduced') return; } catch {}
     gsap.registerPlugin(ScrollTrigger);
     const media = gsap.matchMedia();
     media.add('(prefers-reduced-motion: no-preference)', () => {

@@ -21,6 +21,7 @@ const artwork = [
 export default function LivingCanvas() {
   const root = useRef<HTMLElement>(null);
   useLayoutEffect(() => {
+  try { if (localStorage.getItem('futurecraft-motion') === 'reduced') return; } catch {}
     gsap.registerPlugin(ScrollTrigger);
     const element = root.current;
     if (!element) return;

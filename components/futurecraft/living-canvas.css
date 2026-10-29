@@ -1,9 +1,7 @@
+@font-face{font-family:'Futurecraft Outfit';src:url('/futurecraft/fonts/Outfit-Regular.ttf') format('truetype');font-weight:300 500;font-style:normal;font-display:swap}
+@font-face{font-family:'Futurecraft Outfit';src:url('/futurecraft/fonts/Outfit-Bold.ttf') format('truetype');font-weight:600 900;font-style:normal;font-display:swap}
 @font-face{font-family:'Futurecraft Movault';src:url('/futurecraft/fonts/Movault-Regular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Futurecraft Colasta';src:url('/futurecraft/fonts/Colasta.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Futurecraft Colasta';src:url('/futurecraft/fonts/Colasta-Bold.otf') format('opentype');font-weight:700;font-style:normal;font-display:swap}
-@font-face{font-family:'Futurecraft Colasta';src:url('/futurecraft/fonts/Colasta-Light.otf') format('opentype');font-weight:300;font-style:normal;font-display:swap}
-@font-face{font-family:'Futurecraft Colasta';src:url('/futurecraft/fonts/Colasta-Italic.otf') format('opentype');font-weight:400;font-style:italic;font-display:swap}
-.fc-site:has(.lc-hero){--fc-display:'Futurecraft Movault',sans-serif;--fc-body:'Futurecraft Colasta',sans-serif;--fc-accent:#7e3bed;--fc-bg:#000;background:#000 url('/futurecraft/hero-violet.webp') center top / 100% auto no-repeat;font-family:var(--fc-body)}
+.fc-site:has(.lc-hero){--fc-display:'Futurecraft Movault',sans-serif;--fc-body:'Futurecraft Outfit',sans-serif;--fc-accent:#7e3bed;--fc-bg:#000;background:#000 url('/futurecraft/hero-violet.webp') center top / 100% auto no-repeat;font-family:var(--fc-body)}
 .fc-site:has(.lc-hero) .fc-section,.fc-site:has(.lc-hero) .fc-footer{background:#000}
 .fc-site:has(.lc-hero) h2{font-weight:400;letter-spacing:0}
 .fc-site:has(.lc-hero) h2 em{font-weight:400;opacity:1}

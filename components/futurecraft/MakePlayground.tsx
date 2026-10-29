@@ -19,6 +19,7 @@ export default function MakePlayground() {
   const project = projects[selected];
 
   useLayoutEffect(() => {
+  try { if (localStorage.getItem('futurecraft-motion') === 'reduced') return; } catch {}
     gsap.registerPlugin(ScrollTrigger);
     const media = gsap.matchMedia();
     media.add('(prefers-reduced-motion: no-preference)', () => {
@@ -65,7 +66,7 @@ export default function MakePlayground() {
       </div>
       <div ref={panel} id="make-project" role="tabpanel" tabIndex={0} aria-labelledby={`make-tab-${project.id}`} className="make-project">
         <div className="make-project-copy" aria-live="polite" aria-atomic="true"><h3>{project.title}</h3><p>{project.description}</p></div>
-        <a className="make-lab" href={`#lab-${project.target}`}>Explore {project.lab}</a>
+        <a className="make-lab" href={project.target === 'automate-this' ? '/futurecraft/labs#automate-this' : `#lab-${project.target}`}>Explore {project.lab}</a>
       </div>
     </div>
   </section>;

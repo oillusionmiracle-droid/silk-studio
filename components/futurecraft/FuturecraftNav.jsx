@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import PillNav from './navigation/PillNav';
+import dynamic from 'next/dynamic';
+const CreativeExperiment = dynamic(() => import('./CreativeExperiment'), { ssr: false });
 import './futurecraft-nav.css';
 
 const items = [
@@ -14,6 +16,7 @@ const items = [
 ];
 
 export default function FuturecraftNav() {
+  const [experimentOpen, setExperimentOpen] = useState(false);
   const [activeHref, setActiveHref] = useState('#genesis');
   useEffect(() => {
     const update = () => { if (window.location.hash) setActiveHref(window.location.hash); };
@@ -45,15 +48,17 @@ export default function FuturecraftNav() {
         size="lg"
         theme="dark"
         surface="glass"
-        barColor="rgba(20, 9, 38, 0.78)"
+        barColor="rgba(28, 18, 42, 0.16)"
         textColor="#ffffff"
         highlightColor="#7e3bed"
         highlightTextColor="#ffffff"
         ariaLabel="Futurecraft navigation"
         className="fc-react-pill-nav"
-        style={{ '--pn-tile': 'rgba(126,59,237,.19)', '--pn-tile-rim': 'inset 0 1px 0 rgba(255,255,255,.16), inset 0 0 0 1px rgba(199,166,255,.12)' }}
+        style={{ '--pn-tile': 'rgba(126,59,237,.09)', '--pn-tile-rim': 'inset 0 1px 0 rgba(255,255,255,.16), inset 0 0 0 1px rgba(199,166,255,.12)' }}
       />
       <span className="fc-nav-wordmark" aria-hidden="true">futurecraft.</span>
     </div>
+    <button className="fc-creative-trigger" type="button" onClick={() => setExperimentOpen(true)} aria-haspopup="dialog">I’m feeling creative<span aria-hidden="true">✳</span></button>
+    {experimentOpen && <CreativeExperiment onClose={() => setExperimentOpen(false)}/>}
   </header>;
 }
