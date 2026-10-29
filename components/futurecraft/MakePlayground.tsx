@@ -55,9 +55,9 @@ export default function MakePlayground() {
 
   return <section ref={root} id="make" className="make-section no-pad" aria-labelledby="make-title">
     <div className="make-inner">
-      <div className="make-heading"><h2 id="make-title">WHAT WILL<br />YOU MAKE?</h2><p>Pick a direction.<br />See where it could take you.</p></div>
+      <div className="make-heading"><h2 id="make-title">WHAT WILL <br />YOU MAKE?</h2><p>Pick a direction.<br />See where it could take you.</p></div>
       <div className="make-grid" role="tablist" aria-label="Choose what you want to make">
-        {projects.map((item, index) => <button key={item.id} type="button" role="tab" id={`make-tab-${item.id}`} aria-selected={selected === index} aria-controls="make-project" tabIndex={selected === index ? 0 : -1} className="make-choice" onClick={() => setSelected(index)} onKeyDown={event => onKeyDown(event, index)}>
+        {projects.map((item, index) => <button key={item.id} type="button" role="tab" aria-label={item.label} id={`make-tab-${item.id}`} aria-selected={selected === index} aria-controls="make-project" tabIndex={selected === index ? 0 : -1} className="make-choice" onClick={() => setSelected(index)} onKeyDown={event => onKeyDown(event, index)}>
           <span className="make-image"><img src={`/futurecraft/playground/${item.id}.webp`} alt={item.alt} width={900} height={1125} loading="lazy" draggable={false} /><span className="make-glass-edge" /></span>
           <span className="make-choice-name">{item.label}</span>
           <span className="make-selected" aria-hidden="true" />

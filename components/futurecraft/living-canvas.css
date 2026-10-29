@@ -20,7 +20,7 @@
 .lc-artwork-3{left:90%;top:37%;width:15%;height:30%;transform:rotate(-9deg)}
 .lc-artwork-4{left:12%;top:76%;width:19%;height:21%;transform:rotate(8deg)}
 .lc-artwork-5{left:72%;top:76%;width:19%;height:23%;transform:rotate(-10deg)}
-.lc-artwork-6{left:34%;top:-22%;width:16%;height:26%;transform:rotate(9deg)}
+.lc-artwork-6{left:34%;top:-22%;width:16%;height:26%;transform:rotate(9deg);opacity:0}
 .lc-artwork-7{left:51%;top:93%;width:17%;height:20%;transform:rotate(-7deg)}
 .lc-content{position:absolute;z-index:2;left:50%;top:49%;transform:translate(-50%,-50%);width:76%;text-align:center}
 .fc-site .lc-content h1{font-family:var(--fc-display);font-weight:400;font-size:clamp(110px,17.5vw,270px);line-height:.91;letter-spacing:0;margin:0}

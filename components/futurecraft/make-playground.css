@@ -1,7 +1,8 @@
 .fc-site .make-section{padding:100px max(24px,6vw) 95px;background:#000;position:relative}
-.make-inner{max-width:1400px;margin:auto}
+.fc-site #make{scroll-margin-top:0}.make-inner{max-width:1400px;margin:auto}
 .make-heading{display:flex;align-items:end;justify-content:space-between;gap:30px;margin-bottom:60px}
 .fc-site .make-heading h2{font:400 clamp(80px,9vw,142px)/.9 'Futurecraft Movault',sans-serif;letter-spacing:0}
+.make-heading h2 br{display:none}
 .fc-site .make-heading>p{color:#ccc;font-size:18px;line-height:1.6;padding-bottom:6px}
 .make-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
 .make-choice{position:relative;appearance:none;background:transparent;border:0;color:#fff;padding:0 0 20px;text-align:left;cursor:pointer;min-width:0;-webkit-tap-highlight-color:transparent}
@@ -25,7 +26,7 @@
 .fc-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @media(max-width:900px){.make-grid{gap:14px}.make-heading{margin-bottom:42px}.make-project{gap:30px}.make-lab{padding:14px 20px!important}}
 @media(max-width:699px){
- .fc-site .make-section{padding:75px 20px 65px}.make-heading{display:block;margin-bottom:34px}.fc-site .make-heading h2{font-size:26vw;line-height:.9}.fc-site .make-heading>p{font-size:16px;line-height:1.5;margin-top:23px}.make-heading>p br{display:none}
+ .fc-site .make-section{padding:75px 20px 65px}.make-heading{display:block;margin-bottom:34px}.make-heading h2 br{display:block}.fc-site .make-heading h2{font-size:26vw;line-height:.9}.fc-site .make-heading>p{font-size:16px;line-height:1.5;margin-top:23px}.make-heading>p br{display:none}
  .make-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:23px 13px}.make-image{border-radius:26px;aspect-ratio:4/5}.make-choice{padding-bottom:0}.make-choice-name{font-size:16px;padding:0 2px;margin-top:4px;min-height:39px}.make-selected{margin:10px 2px 0}
  .make-project{display:block;min-height:275px;margin-top:30px;padding:17px 2px 0}.fc-site .make-project h3{font-size:27px;max-width:310px}.fc-site .make-project p{font-size:15px;margin-top:14px}.make-lab{display:inline-flex;margin-top:25px;align-items:center;font-size:13px!important}
 }
