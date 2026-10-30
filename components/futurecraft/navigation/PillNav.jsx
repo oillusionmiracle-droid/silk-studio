@@ -137,6 +137,7 @@ const readVar = (element, name) => parseFloat(getComputedStyle(element).getPrope
 const PillNav = ({
   logo,
   logoAlt = 'Logo',
+  logoAnimation = 'spin',
   logoHref = '#',
   items = DEFAULT_ITEMS,
   activeHref,
@@ -735,7 +736,7 @@ const PillNav = ({
     >
       {logo && (
         <span ref={logoRef} className={[LOGO, joined ? '' : SURFACE].filter(Boolean).join(' ')}>
-          <LinkComponent href={logoHref} className={LOGO_LINK} aria-label={logoAlt} onPointerEnter={spin}>
+          <LinkComponent href={logoHref} className={LOGO_LINK} aria-label={logoAlt} onPointerEnter={logoAnimation === 'spin' ? spin : undefined}>
             <span ref={markRef} className={MARK}>
               {typeof logo === 'string' ? <img src={logo} alt="" draggable={false} /> : logo}
             </span>
