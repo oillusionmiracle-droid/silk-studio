@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import PillNav from './navigation/PillNav';
+import FuturecraftAnimatedMark from './FuturecraftAnimatedMark';
 import dynamic from 'next/dynamic';
 const CreativeExperiment = dynamic(() => import('./CreativeExperiment'), { ssr: false });
 import './futurecraft-nav.css';
@@ -33,7 +34,8 @@ export default function FuturecraftNav() {
   return <header className="fc-header fc-pill-header">
     <div className="fc-pill-nav-wrap">
       <PillNav
-        logo="/futurecraft/mark.svg"
+        logo={<FuturecraftAnimatedMark width="100%" height="100%" color="#000000" />}
+        logoAnimation="none"
         logoAlt="Futurecraft Academy home"
         logoHref="#top"
         items={items}
