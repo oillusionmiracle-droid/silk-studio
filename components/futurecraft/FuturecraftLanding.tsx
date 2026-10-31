@@ -39,11 +39,12 @@ function Registration(){
    const res=await fetch('/api/futurecraft/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
    const data=await res.json();
    if(!res.ok)throw new Error(data.error||'We could not register you right now.');
-   if(data.alreadyRegistered){setState('done');setMessage('You’re already registered. Taking you to the Futurecraft WhatsApp channel…');window.location.assign(FUTURECRAFT_WHATSAPP_CHANNEL);return;}
-   setState('done');setMessage('Registration complete. Taking you to the Futurecraft WhatsApp channel…');
-   window.location.assign(FUTURECRAFT_WHATSAPP_CHANNEL);
+   if(data.alreadyRegistered){setState('done');setMessage('You’re already on the list. Taking you to the Futurecraft WhatsApp channel…');window.setTimeout(()=>window.location.assign(FUTURECRAFT_WHATSAPP_CHANNEL),2600);return;}
+   setState('done');setMessage('You’re on the list. Taking you to the Futurecraft WhatsApp channel…');
+   window.setTimeout(()=>window.location.assign(FUTURECRAFT_WHATSAPP_CHANNEL),2600);
   }catch(err){setState('error');setMessage(err instanceof Error?err.message:'Please try again.');}
  }
+ if(state==='done')return <div className="fc-registration-success" role="status" aria-live="polite"><span className="fc-registration-check" aria-hidden="true">✓</span><p className="fc-registration-eyebrow">GENESIS 1.0 · REGISTRATION CONFIRMED</p><h3>You’re on<br/><em>the list.</em></h3><p className="fc-registration-copy">Your place is registered. We’re taking you to the Futurecraft Academy WhatsApp channel so you can stay close to the updates.</p><div className="fc-registration-redirect"><span className="fc-registration-pulse"/>Redirecting you to our WhatsApp channel<span className="fc-registration-dots" aria-hidden="true">···</span></div><a className="fc-registration-fallback" href={FUTURECRAFT_WHATSAPP_CHANNEL}>Not redirected? Open the channel</a></div>;
  return <form className="fc-form" onSubmit={submit}>
   <div className="fc-form-grid"><label>Full name<input name="name" type="text" required minLength={2} maxLength={90} autoComplete="name" placeholder="Your full name"/></label><label>Email address<input name="email" type="email" required maxLength={254} autoComplete="email" placeholder="you@example.com"/></label></div>
   <div className="fc-form-grid"><label>WhatsApp number <span className="fc-optional">Optional</span><input name="phone" type="tel" maxLength={28} autoComplete="tel" placeholder="+234…"/></label><label>What will you use?<select name="deviceAvailability" required defaultValue=""><option value="" disabled>Choose your device</option><option value="phone">Phone</option><option value="computer">Laptop or desktop</option><option value="both">Phone and computer</option><option value="shared">Shared device / still arranging access</option></select></label></div>
