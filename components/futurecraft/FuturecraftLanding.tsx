@@ -16,6 +16,8 @@ import BellToggle from './interactions/BellToggle';
 import GradualBlur from './interactions/GradualBlur';
 import './futurecraft-editorial.css';
 
+const FUTURECRAFT_WHATSAPP_CHANNEL = 'https://whatsapp.com/channel/0029VbDswxf1NCrdDeaZac3j';
+
 const faqs = [
  ['Who can join Genesis?', 'Genesis is designed for beginners. No previous coding or AI experience is needed. Any age or location restrictions will be published after the co-founders confirm them.'],
  ['How much does it cost?', 'Genesis Bootcamp 1.0 is free to join. We will confirm any tool or data requirements before sessions begin, so you can decide what works for you. No payment details are required to register.'],
@@ -23,7 +25,7 @@ const faqs = [
  ['Is it online or in person?', 'The attendance format has not yet been confirmed by the co-founders. We will publish whether sessions are online, in person, or a mix, together with the joining details.'],
  ['When does Genesis start, and what is the schedule?', 'The announced start date is 3 November 2026. The weekly days, session times and final programme timetable are awaiting co-founder confirmation. Registered learners will receive the confirmed details by email and through the Futurecraft Academy WhatsApp channel.'],
  ['What will I learn to make?', 'The Genesis focus is designing, building, creating and automating with AI. Our featured Labs include Build Night, Prompt & Paint, Ship It and Ad Lab. The final cohort line-up will be published with the schedule.'],
- ['What happens after I register?', 'We record your details and send registration and welcome emails. Programme updates and confirmed joining instructions follow by email. You can also follow the Futurecraft Academy WhatsApp channel.'],
+ ['What happens after I register?', 'Once your registration is successful, we’ll take you straight to the Futurecraft Academy WhatsApp channel so you can follow programme updates. We’ll also send your registration and welcome emails.'],
 ];
 
 function Registration(){
@@ -37,8 +39,9 @@ function Registration(){
    const res=await fetch('/api/futurecraft/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
    const data=await res.json();
    if(!res.ok)throw new Error(data.error||'We could not register you right now.');
-   if(data.alreadyRegistered){setState('done');setMessage('This email is already registered. Look out for Genesis updates.');return;}
-   window.location.assign('/futurecraft/success');
+   if(data.alreadyRegistered){setState('done');setMessage('You’re already registered. Taking you to the Futurecraft WhatsApp channel…');window.location.assign(FUTURECRAFT_WHATSAPP_CHANNEL);return;}
+   setState('done');setMessage('Registration complete. Taking you to the Futurecraft WhatsApp channel…');
+   window.location.assign(FUTURECRAFT_WHATSAPP_CHANNEL);
   }catch(err){setState('error');setMessage(err instanceof Error?err.message:'Please try again.');}
  }
  return <form className="fc-form" onSubmit={submit}>
