@@ -42,3 +42,17 @@
 @media(prefers-reduced-motion:reduce){.lab-gallery-art img{transition:none}}
 .fc-motion-preference{border:1px solid #ffffff30;border-radius:999px;padding:8px 13px;background:transparent;color:#bcb1ce;font:inherit;font-size:12px;cursor:pointer}
 html[data-fc-motion='reduced'] :is(.fc-site,.creative-dialog) *,html[data-fc-motion='reduced'] :is(.fc-site,.creative-dialog) *:before{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+
+/* Genesis registration confirmation before the WhatsApp hand-off. */
+.fc-site .fc-registration-success{max-width:620px;margin:0 auto;padding:clamp(34px,6vw,68px) clamp(24px,5vw,54px);text-align:left;border:1px solid #c4a5ff35;border-radius:28px;background:linear-gradient(145deg,rgba(126,59,237,.15),rgba(20,13,31,.72));box-shadow:inset 0 1px 0 #ffffff12,0 24px 80px #0005;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.fc-registration-check{display:grid;place-items:center;width:48px;height:48px;border:1px solid #bca0f966;border-radius:50%;background:#7e3bed30;color:#e6d5ff;font-size:23px;margin-bottom:30px}
+.fc-site .fc-registration-eyebrow{font-size:11px;letter-spacing:.16em;color:#c4a5ff;margin:0 0 20px}
+.fc-site .fc-registration-success h3{font:700 clamp(46px,7vw,78px)/.94 var(--fc-body);letter-spacing:-.065em;color:#fff;margin:0 0 24px}
+.fc-site .fc-registration-success h3 em{font-style:normal;color:#c4a5ff}
+.fc-site .fc-registration-copy{max-width:440px;color:#c9c0d8;font-size:16px;line-height:1.7;margin:0 0 30px}
+.fc-registration-redirect{display:flex;align-items:center;gap:11px;min-height:54px;padding:0 17px;border:1px solid #c4a5ff38;border-radius:999px;background:#7e3bed20;color:#f3eaff;font-size:13px}
+.fc-registration-pulse{width:8px;height:8px;flex:none;border-radius:50%;background:#b99aff;box-shadow:0 0 0 5px #a879ff20;animation:fc-redirect-pulse 1.2s ease-in-out infinite}
+.fc-registration-dots{margin-left:auto;letter-spacing:3px;color:#c4a5ff;font-weight:700}
+.fc-site .fc-registration-fallback{display:inline-block;margin:19px 0 0 4px;color:#bca0f9;font-size:13px;text-decoration:underline;text-underline-offset:4px}
+@keyframes fc-redirect-pulse{50%{opacity:.45;box-shadow:0 0 0 9px #a879ff08}}
+@media(prefers-reduced-motion:reduce){.fc-registration-pulse{animation:none}}
