@@ -52,7 +52,7 @@ function Registration(){
   <div className="fc-hidden-field" aria-hidden="true"><label>Do not fill<input name="website_url" tabIndex={-1} autoComplete="off"/></label></div>
   <label className="fc-consent"><input type="checkbox" name="consent" value="yes" required/><span>I agree to receive Genesis registration and programme emails. <Link href="/futurecraft/privacy" target="_blank">Privacy details</Link>.</span></label>
   {message&&<p className={state==='error'?'fc-error':'fc-note'} role="alert">{message}</p>}
-  <button type="submit" className="fc-form-submit" disabled={state==='sending'||state==='done'}>{state==='sending'?'Sending…':state==='done'?'You’re registered':'Join Genesis — free'}</button>
+  <button type="submit" className="fc-form-submit" disabled={state==='sending'}>{state==='sending'?'Sending…':'Join Genesis — free'}</button>
   <p className="fc-form-foot">Genesis starts 3 November 2026. We’ll email your session timetable and joining details.</p>
  </form>;
 }
