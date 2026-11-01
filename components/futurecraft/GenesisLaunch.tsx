@@ -8,6 +8,33 @@ import './genesis-launch.css';
 const channel = 'https://whatsapp.com/channel/0029VbDswxf1NCrdDeaZac3j';
 const topics = ['Programme', 'Schedule', 'How to join'] as const;
 
+function GenesisCountdown() {
+  const [remaining, setRemaining] = useState<number | null>(null);
+  useEffect(() => {
+    // Midnight at the start of 3 November in Nigeria (WAT, UTC+1).
+    const target = Date.UTC(2026, 10, 2, 23, 0, 0);
+    const update = () => setRemaining(Math.max(0, target - Date.now()));
+    update();
+    const timer = window.setInterval(update, 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const totalSeconds = remaining === null ? 0 : Math.floor(remaining / 1000);
+  const units = [
+    { label: 'Days', value: Math.floor(totalSeconds / 86400) },
+    { label: 'Hours', value: Math.floor((totalSeconds % 86400) / 3600) },
+    { label: 'Minutes', value: Math.floor((totalSeconds % 3600) / 60) },
+    { label: 'Seconds', value: totalSeconds % 60 },
+  ];
+
+  return <div className="genesis-countdown" aria-label="Countdown to Genesis Bootcamp starting 3 November 2026">
+    <p className="genesis-countdown-kicker">The first build begins in</p>
+    {remaining === null ? <p className="genesis-countdown-loading">Loading countdown…</p> : remaining === 0 ? <p className="genesis-countdown-live">Genesis starts today.</p> : <div className="genesis-countdown-units" aria-hidden="true">
+      {units.map(unit => <div className="genesis-countdown-unit" key={unit.label}><span>{String(unit.value).padStart(2, '0')}</span><small>{unit.label}</small></div>)}
+    </div>}
+  </div>;
+}
+
 export default function GenesisLaunch({ children }: { children: ReactNode }) {
   const root = useRef<HTMLElement>(null);
   const title = useRef<HTMLDivElement>(null);
@@ -43,6 +70,7 @@ export default function GenesisLaunch({ children }: { children: ReactNode }) {
         <p>The first flagship Futurecraft experience. A free, 14-week bootcamp helping beginners design, build, create and automate with AI.</p>
         <div className="genesis-actions"><a className="genesis-cta" href="#register">Register for Genesis</a><a className="genesis-channel" href={channel} target="_blank" rel="noopener noreferrer">Follow on WhatsApp</a></div>
       </div>
+      <GenesisCountdown />
       <div className="genesis-details">
         <div className="genesis-tabs" role="tablist" aria-label="Genesis programme information">
           {topics.map((name, index) => <button key={name} id={`genesis-tab-${index}`} type="button" role="tab" aria-selected={topic === index} aria-controls="genesis-info" tabIndex={topic === index ? 0 : -1} onClick={() => setTopic(index)} onKeyDown={event => {
