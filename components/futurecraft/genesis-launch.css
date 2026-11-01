@@ -27,3 +27,13 @@
 @media(max-width:790px){.fc-site .genesis-launch{padding:65px 22px 80px}.genesis-title{width:100%;margin-bottom:30px}.genesis-registration{grid-template-columns:1fr;gap:35px;margin-top:55px}.genesis-info{padding-inline:0}.genesis-details{margin-top:45px}}
 @media(max-width:480px){.fc-site .genesis-date{font-size:23px;margin-bottom:15px}.genesis-title{width:calc(100% + 24px);margin-left:-12px}.fc-site .genesis-announcement>p{font-size:19px}.genesis-actions{gap:10px;margin-top:24px}.genesis-actions a{font-size:13px;min-height:48px;padding:12px 19px}.genesis-tabs{gap:7px}.genesis-tabs button{font-size:12px;padding:10px 17px;min-height:44px}.genesis-info{min-height:250px;padding-top:27px}.fc-site .genesis-info p{font-size:15px}.fc-site .genesis-register-copy h2{font-size:42px}.genesis-registration{margin-top:40px}}
 @media(prefers-reduced-motion:reduce){.genesis-extrusion{display:none}.genesis-actions a{transition:none}}
+
+/* Live countdown to the Genesis opening date. */
+.genesis-countdown{width:min(590px,100%);margin:48px auto 0;text-align:center}
+.fc-site .genesis-countdown-kicker{margin:0 0 16px;color:#cbb4ed;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase}
+.genesis-countdown-units{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.genesis-countdown-unit{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:94px;padding:12px 8px;border:1px solid #c4a5ff42;border-radius:20px;background:linear-gradient(145deg,#8b55c52b,#ffffff08);box-shadow:inset 0 1px 0 #ffffff17;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.genesis-countdown-unit span{font:700 clamp(29px,5vw,43px)/1 var(--fc-body);letter-spacing:-.06em;color:#fff;font-variant-numeric:tabular-nums}
+.genesis-countdown-unit small{margin-top:9px;color:#c4b4d9;font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+.fc-site .genesis-countdown-live,.fc-site .genesis-countdown-loading{margin:0;color:#e7d7ff;font-size:clamp(21px,3vw,29px);font-weight:600}
+@media(max-width:480px){.genesis-countdown{margin-top:34px}.genesis-countdown-units{gap:7px}.genesis-countdown-unit{min-height:78px;border-radius:15px;padding:10px 4px}.genesis-countdown-unit span{font-size:31px}.genesis-countdown-unit small{font-size:9px;letter-spacing:.08em}}
