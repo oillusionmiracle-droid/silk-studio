@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import './futurecraft.css';
-const title='Genesis Bootcamp 1.0 | Futurecraft Academy';
-const description='Join the first free, 14-week Futurecraft Genesis Bootcamp. Learn to design, build, animate and automate with other beginners through practical Labs.';
+const title='Genesis Bootcamp 1.0 — Free AI Bootcamp in Lagos | Futurecraft Academy';
+const description='Join the first free, 14-week Futurecraft Genesis Bootcamp in Lagos, Nigeria. Learn to design, build, animate and automate with other beginners through practical Labs.';
 const image={url:'/futurecraft/identity/share.jpg',width:1200,height:630,alt:'Futurecraft Academy — The future isn’t waiting. Design. Build. Create. Automate.'};
 export const metadata: Metadata = {
  title,description,
  applicationName:'Futurecraft Academy',
  authors:[{name:'Futurecraft Academy'}],creator:'Futurecraft Academy',publisher:'Futurecraft Academy',
- category:'Education',keywords:['Futurecraft Academy','Genesis Bootcamp','AI learning','creative technology','learn by making'],
+ category:'Education',keywords:['Futurecraft Academy','Genesis Bootcamp','free AI bootcamp Lagos','AI learning Nigeria','creative technology','learn by making'],
  alternates:{canonical:'/futurecraft'},
  manifest:'/futurecraft/manifest.webmanifest',
  appleWebApp:{capable:true,statusBarStyle:'default',title:'Futurecraft Academy'},

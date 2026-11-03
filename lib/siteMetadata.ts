@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 export const SITE_URL = 'https://www.silkstudios.com.ng';
-export const SERVICE_DESCRIPTION = 'Branding and graphic design, websites and apps, custom software and automation, UGC and AI video ads, print, packaging and custom apparel. Silk Studio works with businesses in Nigeria and worldwide.';
+export const SERVICE_DESCRIPTION = 'Web design, branding, print, packaging and custom apparel in Lagos, Nigeria. Business websites, landing pages, apps, UGC and AI video ads, flyers, banners, logos and event packages — delivered in 48 hours.';
 export const studioServices = [
   { name: 'Branding & graphic design', description: 'Brand identities, logos, packaging, campaign artwork and print-ready design.', url: '/?brief=Branding%20%26%20design#brief' },
   { name: 'Websites & apps', description: 'Business websites, landing pages, web apps and useful digital products.', url: '/?brief=Website%20or%20app#brief' },
@@ -15,7 +15,7 @@ export function pageMetadata(title: string, description: string, path: string, i
 export const studioStructuredData = {
   '@context': 'https://schema.org', '@type': 'Organization', '@id': `${SITE_URL}/#studio`,
   name: 'Silk Studio', url: SITE_URL, logo: `${SITE_URL}/logo.svg`, description: SERVICE_DESCRIPTION,
-  telephone: '+2347064829776', email: 'thesilkstudiong@gmail.com',
+  telephone: '+2347064829776', email: 'thesilkstudiong@gmail.com', areaServed: 'Lagos, Nigeria',
   sameAs: ['https://instagram.com/thesilkstudiong', 'https://tiktok.com/@thesilkstudiong'],
   hasOfferCatalog: { '@type': 'OfferCatalog', name: 'Silk Studio services', itemListElement: studioServices.map(service => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: service.name, description: service.description, provider: { '@id': `${SITE_URL}/#studio` }, url: `${SITE_URL}${service.url}` } })) },
 };

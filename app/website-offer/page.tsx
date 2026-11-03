@@ -5,10 +5,10 @@ import { naira, offerPrice, websiteClaimLink, websitePackages } from '@/lib/webs
 import './offer.css';
 
 export const metadata: Metadata = {
-  title: '40% Off Website Packages | Silk Studio',
-  description: 'Explore Silk Studio website packages, standard fees, 40% offer prices and clear deliverables. Landing pages from ₦90,000 and business websites from ₦150,000.',
+  title: 'Website Design in Lagos from ₦90,000 — 40% Off | Silk Studio',
+  description: 'Website design in Lagos, Nigeria: explore Silk Studio website packages, standard fees, 40% offer prices and clear deliverables. Landing pages from ₦90,000 and business websites from ₦150,000.',
   alternates: { canonical: '/website-offer' },
-  openGraph: { title: 'Your business deserves its own address. | Silk Studio', description: '40% off selected website design and build packages. See prices, deliverables and how to claim.', url: '/website-offer' },
+  openGraph: { title: 'Website Design in Lagos from ₦90,000 — 40% Off | Silk Studio', description: '40% off selected website design and build packages in Lagos. See prices, deliverables and how to claim.', url: '/website-offer' },
 };
 
 export default function WebsiteOfferPage() {

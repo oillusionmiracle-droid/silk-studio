@@ -34,7 +34,7 @@ const dmMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Silk Studio — Design, Apps, Ads & Print",
+  title: "Web Design, Printing & Branding in Lagos | Silk Studio",
   description:
     SERVICE_DESCRIPTION,
   keywords: [
@@ -85,7 +85,7 @@ export const metadata: Metadata = {
     title: "Silk Studio",
   },
   openGraph: {
-    title: "Silk Studio — Design, Apps, Ads & Print",
+    title: "Web Design, Printing & Branding in Lagos | Silk Studio",
     description:
       SERVICE_DESCRIPTION,
     url: "https://www.silkstudios.com.ng",
@@ -97,13 +97,13 @@ export const metadata: Metadata = {
         url: "/og-home.jpg",
         width: 1200,
         height: 630,
-        alt: "Silk Studio — Design, Apps, Ads & Print",
+        alt: "Web Design, Printing & Branding in Lagos | Silk Studio",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Silk Studio — Design, Apps, Ads & Print",
+    title: "Web Design, Printing & Branding in Lagos | Silk Studio",
     description:
       SERVICE_DESCRIPTION,
     images: ["/og-home.jpg"],
